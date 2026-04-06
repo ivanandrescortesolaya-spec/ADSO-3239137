@@ -1,4 +1,28 @@
-# 📘 Espacio para la ficha **ADSO-3239137**
+<!--
+CONFIG
+FULL_NAME: ivan andres cortes olaya
+GITHUB_USER: ivan andres cortes olaya
+EMAIL:ivanandrescortesolaya@gmail.com
+CODE_ORGANIZATION: code-sena
+-->
+
+<h1 align="center">ivan andres cortes olaya</h1>
+
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=juanperezdev&label=Profile%20views&style=flat-square&color=brightgreen" alt="Profile views">
+</p>
+
+
+## 📌 Perfil
+- *Nombre:* ivan andres cortes olaya
+- *GitHub:* [@ivan andres cortes olaya](https://github.com/ivan andres cortes olaya)
+- *Email:* [ivanandrescortesolaya@gmail.com](mailto:ivanandrescortesolaya@gmail.com)
+- *Organización institucional:* [code-sena](https://github.com/code-sena)
+
+---
+
+## 🚀 Repositorio institucional
+Este repositorio está asociado a la organización *code-sena*.# 📘 Espacio para la ficha **ADSO-3239137**
 
 ## ⏰ Horario
 **Lunes a viernes:** 18:00 – 24:00  
