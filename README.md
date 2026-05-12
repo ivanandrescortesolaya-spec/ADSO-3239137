@@ -1,44 +1,70 @@
 <!--
 CONFIG
-FULL_NAME: ivan andres cortes olaya
-GITHUB_USER: ivan andres cortes olaya
-EMAIL:ivanandrescortesolaya@gmail.com
+FULL_NAME: Ivan Andres Cortes Olaya
+GITHUB_USER: ivanandrescortesolaya
+EMAIL: ivanandrescortesolaya@gmail.com
 CODE_ORGANIZATION: code-sena
 -->
 
-<h1 align="center">ivan andres cortes olaya</h1>
+<h1 align="center">👨‍💻 Ivan Andres Cortes Olaya</h1>
 
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=juanperezdev&label=Profile%20views&style=flat-square&color=brightgreen" alt="Profile views">
+  <img src="https://komarev.com/ghpvc/?username=ivanandrescortesolaya&label=Profile%20views&style=flat-square&color=brightgreen" alt="Profile views">
 </p>
-
-
-## 📌 Perfil
-- *Nombre:* ivan andres cortes olaya
-- *GitHub:* [@ivan andres cortes olaya](https://github.com/ivan andres cortes olaya)
-- *Email:* [ivanandrescortesolaya@gmail.com](mailto:ivanandrescortesolaya@gmail.com)
-- *Organización institucional:* [code-sena](https://github.com/code-sena)
 
 ---
 
-## 🚀 Repositorio institucional
-Este repositorio está asociado a la organización *code-sena*.# 📘 Espacio para la ficha **ADSO-3239137**
+## 📌 Perfil
 
-## ⏰ Horario
-**Lunes a viernes:** 18:00 – 24:00  
-*(L – M – Mi – J – V)*
+Soy un estudiante apasionado por el desarrollo de software, actualmente en formación como tecnólogo en el SENA. Me interesa el aprendizaje continuo, la resolución de problemas y la creación de soluciones tecnológicas que generen impacto.
 
-## 📅 Fechas clave
-- **Ingreso:** 25 de julio de 2025  
-- **Finalización estimada:** 16 de diciembre de 2026  
+---
 
-## 🏫 Programa de formación
-El programa de formación corresponde a **Análisis y Desarrollo de Software (ADSO)**.
+## 🎓 Formación
 
-## 🛠️ Tecnologías esperadas
-Durante el proceso de desarrollo se espera trabajar con:
+- 📚 Tecnólogo en **Análisis y Desarrollo de Software** (en curso) - SENA  
+- 🕒 Horario de formación: 18:00 a 24:00  
 
-- **Java**
-- **C#**
-- **Angular**
-- **Docker**
+---
+
+## 🚀 Aspiraciones
+
+Mi objetivo profesional es convertirme en **Ingeniero de Sistemas**, fortaleciendo mis habilidades en programación, desarrollo de aplicaciones y nuevas tecnologías.
+
+---
+
+## 💻 Habilidades
+
+- Lenguajes: HTML, CSS, JavaScript (en aprendizaje)
+- Control de versiones: Git y GitHub
+- Bases de datos: Conceptos básicos en SQL
+- Metodologías: Trabajo en equipo y aprendizaje ágil
+
+---
+
+## ⚡ Intereses
+
+- 🏃‍♂️ Deporte y actividad física  
+- 💡 Tecnología e innovación  
+- 📖 Aprendizaje constante  
+- 🤝 Trabajo colaborativo  
+
+---
+
+## 📫 Contacto
+
+- *GitHub:* [@ivanandrescortesolaya](https://github.com/ivanandrescortesolaya)  
+- *Email:* ivanandrescortesolaya@gmail.com  
+- *Organización:* [code-sena](https://github.com/code-sena)  
+
+---
+
+## 🌱 Actualmente
+
+- Aprendiendo desarrollo web  
+- Mejorando mis habilidades en programación  
+- Trabajando en proyectos personales  
+
+---
+
+⭐ *Siempre dispuesto a aprender, mejorar y asumir nuevos retos en el mundo del desarrollo de software.*
