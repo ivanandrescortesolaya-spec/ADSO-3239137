@@ -1,0 +1,1 @@
+ALTER TABLE vista ADD CONSTRAINT fk_vista_modulo FOREIGN KEY (modulo_id) REFERENCES modulo(id) ON DELETE CASCADE;
