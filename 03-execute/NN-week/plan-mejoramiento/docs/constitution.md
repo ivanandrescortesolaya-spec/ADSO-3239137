@@ -2,9 +2,9 @@
 
 **Identificador:** music-school  
 **Proyecto:** Sistema de préstamo de instrumentos musicales  
-**Ficha:** ADSO 3239137  
-**Aprendiz:** Ivan Andres Cortes Olaya  
+**Ficha:** ADSO 3239137    
 **Versión:** 1.0
+**Codigo del Aprendiz** A12
 
 ## 1. Propósito
 
