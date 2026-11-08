@@ -125,7 +125,7 @@ Criterios de aceptación:
 - El sistema debe mostrar los instrumentos activos.
 - Debe mostrar la categoría correspondiente.
 - Debe mostrar las unidades disponibles.
-- Los instrumentos dados de baja no deben aparecer como disponibles para nuevos préstamos.
+- Los instrumentos dados de baja no deben mostrarse como disponibles para nuevos préstamos ni permitir que se registren nuevos préstamos sobre ellos.
 
 ### HU-03. Gestión de estudiantes
 
@@ -172,7 +172,7 @@ Criterios de aceptación:
 - Las unidades disponibles nunca deben superar las unidades totales.
 - La devolución debe conservarse como registro histórico.
 - La información original del préstamo debe mantenerse sin modificaciones.
-- La operación debe actualizar el estado del préstamo para identificarlo como devuelto.
+- El sistema debe identificar el préstamo como devuelto mediante el registro asociado en la tabla de devoluciones (returns), sin modificar la información original del préstamo.
 
 ### HU-06. Control de préstamos vencidos
 
@@ -459,10 +459,11 @@ Esta especificación servirá como referencia para construir los siguientes arte
 | tasks.md | Descompone el trabajo de implementación en las 23 tareas establecidas. |
 | adr/ | Contiene el registro de al menos 3 decisiones arquitectónicas y sus justificaciones. |
 
-Los artefactos deberán respetar el alcance definido en esta especificación y no introducir funcionalidades que no estén contempladas en ella.
+Los artefactos deberán respetar el alcance definido en esta especificación y mantener la trazabilidad entre las historias de usuario, los requisitos funcionales, las reglas de negocio y los requisitos no funcionales. No deberán introducir funcionalidades que no estén contempladas en ella.
 
 ## 12. Control de cambios
 
-| Versión | Descripción | Estado |
-|---|---|---|
-| 1.0 | Creación inicial de la especificación de Music School. | Borrador |
+| Versión | Fecha | Descripción | Estado |
+|---|---|---|---|
+| 1.0 | 07/11/2026 | Creación inicial de la especificación de Music School. | Borrador |
+| 1.1 | 07/11/2026 | Ajustes en los criterios de aceptación de las historias HU-02 y HU-05 para mejorar la coherencia con el modelo de datos. | Borrador para validación |
