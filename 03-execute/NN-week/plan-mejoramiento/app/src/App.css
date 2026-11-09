@@ -456,7 +456,9 @@ button {
   }
 }
 
+
 @media (max-width: 650px) {
+  /* Menú lateral */
   .sidebar {
     width: 75px;
     padding: 20px 10px;
@@ -476,28 +478,50 @@ button {
   .nav-item {
     justify-content: center;
     padding: 12px 5px;
-  }
-
-  .nav-item:not(.active) {
     font-size: 0;
   }
 
   .nav-item span {
     font-size: 20px;
+    width: 20px;
   }
 
+  /* Barra superior */
   .topbar {
-    padding: 0 15px;
+    height: 64px;
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .breadcrumb {
+    display: none;
+  }
+
+  .user-profile span {
+    display: none;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Contenido principal */
+  .page-heading h1 {
+    font-size: 24px;
   }
 
   .page-content {
-    padding: 20px 12px;
+    padding: 18px 12px;
   }
 
+  /* Tarjetas del Dashboard */
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
+  /* Formularios */
   .form-grid {
     grid-template-columns: 1fr;
   }
@@ -510,7 +534,42 @@ button {
   .form-actions {
     flex-direction: column;
   }
+    /* Tablas y acciones en móviles */
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .inventory-table {
+    min-width: 650px;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+
+  .instrument-form {
+    margin: 0 12px 18px;
+    padding: 15px;
+  }
+
+  .panel-heading {
+    padding: 18px;
+  }
+    .inventory-table th,
+  .inventory-table td {
+    padding: 13px 16px;
+  }
+
+  .inventory-table {
+    min-width: 650px;
+  }
+
+  .panel {
+    max-width: 100%;
+  }
 }
+
 .status-pending,
 .status-overdue,
 .status-returned {
@@ -549,6 +608,4 @@ button {
   font-weight: 600;
 }
 
-.student-search {
-  margin: 20px;
-}
+
