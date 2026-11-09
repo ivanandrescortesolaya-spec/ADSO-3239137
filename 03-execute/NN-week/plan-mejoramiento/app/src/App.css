@@ -511,3 +511,31 @@ button {
     flex-direction: column;
   }
 }
+.status-pending,
+.status-overdue,
+.status-returned {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-overdue {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.status-returned {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.student-search {
+  margin: 20px;
+}

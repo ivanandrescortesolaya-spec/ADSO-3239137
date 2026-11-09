@@ -1,6 +1,7 @@
 
 import Categories from "./pages/Categories";
 import Students from "./pages/Students";
+import Loans from "./pages/Loans";
 import { useEffect, useState } from "react";
 import {
   getInstruments,
@@ -418,13 +419,15 @@ function App() {
             </>
           )}
 
-          {activePage === "Categorías" && <Categories />}
+            {activePage === "Categorías" && <Categories />}
 
             {activePage === "Estudiantes" && <Students />}
 
-            {["Préstamos", "Devoluciones"].includes(activePage) && (
+            {activePage === "Préstamos" && <Loans />}
+
+            {activePage === "Devoluciones" && (
               <div className="coming-soon">
-                <h1>{activePage}</h1>
+                <h1>Devoluciones</h1>
                 <p>Este módulo está pendiente de desarrollo.</p>
               </div>
             )}
