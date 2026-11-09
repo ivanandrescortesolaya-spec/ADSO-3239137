@@ -539,3 +539,16 @@ button {
 .student-search {
   margin: 20px;
 }
+.loan-counter {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: #e8efff;
+  color: #2458c6;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.student-search {
+  margin: 20px;
+}

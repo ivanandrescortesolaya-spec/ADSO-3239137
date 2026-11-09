@@ -2,6 +2,7 @@
 import Categories from "./pages/Categories";
 import Students from "./pages/Students";
 import Loans from "./pages/Loans";
+import Returns from "./pages/Returns";
 import { useEffect, useState } from "react";
 import {
   getInstruments,
@@ -425,12 +426,7 @@ function App() {
 
             {activePage === "Préstamos" && <Loans />}
 
-            {activePage === "Devoluciones" && (
-              <div className="coming-soon">
-                <h1>Devoluciones</h1>
-                <p>Este módulo está pendiente de desarrollo.</p>
-              </div>
-            )}
+            {activePage === "Devoluciones" && <Returns />}
         </section>
       </main>
     </div>
