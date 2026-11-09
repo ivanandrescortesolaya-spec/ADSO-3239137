@@ -199,64 +199,47 @@ Deberá permitir preparar los datos necesarios para validar las funcionalidades 
 
 La información inicial deberá contemplar las cinco categorías de instrumentos definidas en `spec.md`.
 
+
 ## 5. Arquitectura lógica
 
 La comunicación entre los componentes seguirá el siguiente flujo:
 
-```text
-                         USUARIO
-                            |
-                            v
-                 +----------------------+
-                 |      FRONTEND        |
-                 |        React         |
-                 +----------------------+
-                            |
-                            | HTTP / JSON
-                            v
-                 +----------------------+
-                 |       BACKEND        |
-                 |       Laravel        |
-                 +----------------------+
-                            |
-                            v
-                 +----------------------+
-                 |     CONTROLADORES    |
-                 |     (Controllers)    |
-                 +----------------------+
-                            |
-                            v
-                 +----------------------+
-                 |       SERVICIOS      |
-                 |  Reglas de negocio   |
-                 +----------------------+
-                            |
-                            v
-                 +----------------------+
-                 |       MODELOS        |
-                 |    Laravel Eloquent |
-                 +----------------------+
-                            |
-                            v
-                 +----------------------+
-                 |        MySQL         |
-                 |     Base de datos    |
-                 +----------------------+
+```mermaid
+flowchart TB
+    U["Usuario / Operador"]
 
-     +----------------------+       +----------------------+
-     |    SITIO PÚBLICO     |       | HERRAMIENTA DE       |
-     |    Página estática  |       | SIEMBRA DE DATOS     |
-     +----------------------+       +----------------------+
-                                            |
-                                            | HTTP / JSON
-                                            v
-                                   +----------------------+
-                                   |       BACKEND        |
-                                   |       Laravel        |
-                                   +----------------------+
+    subgraph CLIENTES["Capa de presentación"]
+        APP["Aplicación administrativa<br/>React"]
+        PAGE["Sitio público<br/>HTML, CSS y JavaScript"]
+        SEED["Herramienta de inicialización<br/>Node.js"]
+    end
 
-              INFRAESTRUCTURA: DOCKER COMPOSE
-       Administra los servicios y su configuración.
+    subgraph BACKEND["Capa de aplicación"]
+        API["API REST<br/>Laravel"]
+        CTRL["Controladores"]
+        SERVICE["Servicios<br/>Reglas de negocio"]
+        MODEL["Modelos<br/>Eloquent ORM"]
+    end
+
+    DB[("MySQL<br/>Base de datos")]
+
+    subgraph INFRA["Infraestructura"]
+        DOCKER["Docker Compose<br/>Orquestación de servicios"]
+    end
+
+    U --> APP
+    U --> PAGE
+    APP -->|"HTTP / JSON"| API
+    SEED -->|"HTTP / JSON"| API
+    API --> CTRL
+    CTRL --> SERVICE
+    SERVICE --> MODEL
+    MODEL --> DB
+
+    DOCKER -.-> APP
+    DOCKER -.-> API
+    DOCKER -.-> DB
+    DOCKER -.-> PAGE
 ```
 
 El frontend no tendrá acceso directo a MySQL. Todas las operaciones de consulta y modificación deberán realizarse mediante los endpoints del backend.
@@ -355,23 +338,58 @@ La infraestructura se organizará mediante Docker Compose para facilitar la ejec
 
 La estructura prevista será:
 
-music-school/
-├── docs/
-│   ├── constitution.md
-│   ├── spec.md
-│   ├── plan.md
-│   ├── architecture.md
-│   ├── data-model.md
-│   ├── api-contract.md
-│   ├── tasks.md
-│   └── adr/
-├── api/
-├── app/
-├── page/
-├── infra/
+
+plan-mejoramiento/
+│
+├── api/                         # Backend Laravel
+│
+├── app/                         # Frontend React
+│   ├── public/
+│   └── src/
+│       ├── assets/
+│       ├── pages/
+│       │   ├── Categories.jsx
+│       │   ├── Students.jsx
+│       │   ├── Loans.jsx
+│       │   ├── Returns.jsx
+│       │   └── Dashboard.jsx
+│       ├── services/
+│       │   ├── api.js
+│       │   ├── categoryService.js
+│       │   ├── instrumentService.js
+│       │   ├── studentService.js
+│       │   ├── loanService.js
+│       │   ├── returnService.js
+│       │   └── reportService.js
+│       ├── App.jsx
+│       ├── App.css
+│       └── index.css
+│
+├── docs/                        # Documentación técnica
+│   └── adr/                     # Decisiones arquitectónicas
+│
+├── infra/                       # Infraestructura
 │   ├── docker-compose.yml
+│   └── .env.example
+│
+├── page/                        # Sitio público estático
+│   ├── index.html
+│   ├── styles.css
+│   └── script.js
+│
+├── tool/                        # Herramienta de inicialización
+│   ├── src/
+│   │   ├── api.js
+│   │   ├── config.js
+│   │   └── seed.js
+│   ├── categories.json
+│   ├── instruments.json
+│   ├── package.json
 │   └── README.md
-└── tool/
+│
+├── .gitignore
+└── README.md
+
 
 La configuración definitiva deberá corresponder con la ubicación real de los archivos de construcción y configuración de cada componente.
 
