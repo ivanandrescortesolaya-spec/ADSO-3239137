@@ -4,6 +4,7 @@ import Students from "./pages/Students";
 import Loans from "./pages/Loans";
 import Returns from "./pages/Returns";
 import { useEffect, useState } from "react";
+import Dashboard from "./pages/Dashboard";
 import {
   getInstruments,
   createInstrument,
@@ -222,66 +223,7 @@ function App() {
         </header>
 
         <section className="page-content">
-          {activePage === "Dashboard" && (
-            <>
-              <div className="page-heading">
-                <h1>Dashboard</h1>
-                <p>Resumen general del sistema Music School.</p>
-              </div>
-
-              {loading ? (
-                <p>Cargando información...</p>
-              ) : error ? (
-                <p className="error-message">{error}</p>
-              ) : (
-                <>
-                  <div className="stats-grid">
-                    <div className="stat-card">
-                      <span className="stat-icon blue">♫</span>
-                      <p>Tipos de instrumentos</p>
-                      <h2>{totalInstruments}</h2>
-                      <small>Registrados en el catálogo</small>
-                    </div>
-
-                    <div className="stat-card">
-                      <span className="stat-icon green">✓</span>
-                      <p>Unidades disponibles</p>
-                      <h2>{availableUnits}</h2>
-                      <small>Disponibles para préstamo</small>
-                    </div>
-
-                    <div className="stat-card">
-                      <span className="stat-icon purple">▣</span>
-                      <p>Unidades totales</p>
-                      <h2>{totalUnits}</h2>
-                      <small>En el inventario</small>
-                    </div>
-
-                    <div className="stat-card">
-                      <span className="stat-icon orange">!</span>
-                      <p>Unidades prestadas</p>
-                      <h2>{totalUnits - availableUnits}</h2>
-                      <small>Calculadas según inventario</small>
-                    </div>
-                  </div>
-
-                  <section className="panel">
-                    <div className="panel-heading">
-                      <div>
-                        <h2>Inventario de instrumentos</h2>
-                        <p>Información obtenida desde Laravel API</p>
-                      </div>
-                      <span className="record-count">
-                        {totalInstruments} registros
-                      </span>
-                    </div>
-
-                    <InstrumentTable instruments={instruments} />
-                  </section>
-                </>
-              )}
-            </>
-          )}
+          {activePage === "Dashboard" && <Dashboard />}
 
           {activePage === "Instrumentos" && (
             <>
