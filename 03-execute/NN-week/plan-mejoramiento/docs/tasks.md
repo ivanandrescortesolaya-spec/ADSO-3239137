@@ -4,9 +4,9 @@
 **Proyecto:** Sistema de préstamo de instrumentos musicales  
 **Ficha:** 3239137  
 **Identificación del aprendiz:** A12  
-**Versión:** 1.0  
-**Estado:** Borrador para validación  
-**Fecha:** 08/11/2026
+**Versión:** 1.1
+**Estado:** En ejecución y seguimiento
+**Fecha de actualización:** 09/11/2026
 
 ---
 
@@ -225,6 +225,17 @@ Las tareas se organizan en orden de ejecución y según las dependencias entre c
   4. Cuando dos operadores intentan prestar la última unidad, solo uno completa la operación.
   5. La operación que no puede completarse recibe HTTP 409.
   6. Los errores provocan la reversión de la transacción correspondiente.
+  
+  **Estado:** En revisión.
+
+**Evidencias registradas:**
+- Implementación de transacciones en las operaciones de préstamos y devoluciones.
+- Bloqueo de registros mediante `lockForUpdate()`.
+- Revalidación de disponibilidad después de obtener el bloqueo.
+- Prueba manual con dos solicitudes independientes.
+- Primera solicitud: HTTP 201 Created.
+- Segunda solicitud: HTTP 409 Conflict.
+- Disponibilidad final del instrumento: 0 unidades.
 - **Entregable o evidencia:** Implementación transaccional y pruebas de concurrencia.
 
 ### TASK-15 — Implementar el reporte de instrumentos más solicitados
@@ -431,35 +442,52 @@ Se utilizarán los siguientes estados:
 - **Completada:** La tarea cumple todos sus criterios de aceptación y cuenta con evidencias verificables.
 - **Bloqueada:** La tarea no puede continuar debido a una dependencia o inconveniente identificado.
 
+
+
 ### 4.2 Matriz de seguimiento
 
-La siguiente matriz se actualizará durante la ejecución del proyecto. Los campos de responsable, fechas y evidencias deberán completarse con información real.
+La siguiente matriz permite realizar el seguimiento de las actividades del proyecto Music School. El estado de cada tarea se actualizará conforme se publiquen sus entregables en el repositorio GitHub.
 
-| Tarea | Estado inicial | Responsable | Fecha de inicio | Fecha de finalización | Evidencia |
-|---|---|---|---|---|---|
-| TASK-01 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-02 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-03 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-04 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-05 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-06 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-07 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-08 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-09 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-10 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-11 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-12 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-13 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-14 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-15 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-16 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-17 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-18 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-19 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-20 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-21 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-22 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
-| TASK-23 | Pendiente | Por registrar | Por registrar | Por registrar | Por registrar |
+**Resumen de publicación**
+
+| Indicador | Cantidad |
+|:---|---:|
+| Total de tareas | 23 |
+| Completadas | 4 |
+| Pendientes | 19 |
+
+**Detalle de actividades**
+
+| ID | Actividad | Estado | Evidencia |
+|:---|:---|:---:|:---|
+| TASK-01 | Preparación de la estructura del proyecto | Completada | `docs/` |
+| TASK-02 | Configuración del entorno | Pendiente | — |
+| TASK-03 | Diseño del modelo de datos | Pendiente | — |
+| TASK-04 | Creación de migraciones | Pendiente | — |
+| TASK-05 | Conexión con MySQL | Pendiente | — |
+| TASK-06 | API de categorías | Pendiente | — |
+| TASK-07 | API de instrumentos | Pendiente | — |
+| TASK-08 | Control de inventario | Pendiente | — |
+| TASK-09 | API de estudiantes | Pendiente | — |
+| TASK-10 | Registro de préstamos | Pendiente | — |
+| TASK-11 | Consultas de préstamos | Pendiente | — |
+| TASK-12 | Consulta de préstamos vencidos | Pendiente | — |
+| TASK-13 | Registro de devoluciones | Pendiente | — |
+| TASK-14 | Control de concurrencia | Pendiente | — |
+| TASK-15 | Reporte de instrumentos solicitados | Pendiente | — |
+| TASK-16 | Validaciones y manejo de errores | Pendiente | — |
+| TASK-17 | Desarrollo del frontend React | Completada | `app/` |
+| TASK-18 | Vistas administrativas | Completada | `app/` |
+| TASK-19 | Gestión visual de préstamos y devoluciones | Completada | `app/` |
+| TASK-20 | Sitio web público | Pendiente | — |
+| TASK-21 | Herramienta de inicialización de datos | Pendiente | — |
+| TASK-22 | Integración con Docker Compose | Pendiente | — |
+| TASK-23 | Pruebas, documentación y entrega | Pendiente | — |
+
+**Responsable:** Aprendiz A12.
+
+**Criterio de actualización:** una tarea cambiará a Completada cuando sus archivos y entregables correspondientes hayan sido publicados en GitHub y se haya verificado su contenido.
+
 
 ### 4.3 Reglas para actualizar el seguimiento
 
@@ -509,6 +537,7 @@ La organización propuesta permite avanzar desde la preparación del repositorio
 | Versión | Fecha | Descripción |
 |---|---|---|
 | 1.0 | 08/11/2026 | Creación inicial del plan de tareas con 23 actividades y sus criterios de aceptación. |
+| 1.2 | 09/11/2026 | Actualización de la estructura real del repositorio y del diagrama de arquitectura lógica, incluyendo Dashboard, servicios y herramienta de inicialización.	En revisión. |
 
 ---
 
