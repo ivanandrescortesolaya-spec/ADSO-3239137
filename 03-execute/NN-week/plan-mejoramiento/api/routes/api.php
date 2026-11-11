@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\ReturnController;
 // Categorias
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/categories', [CategoryController::class, 'store']);
+Route::patch('/categories/{id}/deactivate', [CategoryController::class, 'deactivate'])->whereNumber('id');
+Route::patch('/categories/{id}/activate', [CategoryController::class, 'activate'])->whereNumber('id');
 // Instrumentos
 Route::get('/instruments', [InstrumentController::class, 'index']);
 Route::get('/instruments/{id}', [InstrumentController::class, 'show']);

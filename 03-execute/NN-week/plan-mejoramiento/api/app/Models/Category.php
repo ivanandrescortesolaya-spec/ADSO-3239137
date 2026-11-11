@@ -10,7 +10,15 @@ class Category extends Model
     protected $fillable = [
         'code',
         'name',
+        'is_active',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
 
     public function instruments(): HasMany
     {

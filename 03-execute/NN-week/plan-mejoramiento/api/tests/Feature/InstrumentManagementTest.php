@@ -69,6 +69,28 @@ class InstrumentManagementTest extends TestCase
         ]);
     }
 
+    public function test_instrument_cannot_be_updated_to_an_inactive_category(): void
+    {
+        $this->category->update(['is_active' => false]);
+
+        $this->putJson('/api/instruments/' . $this->instrument->id, [
+            'category_id' => $this->category->id,
+            'code' => 'INS-TEST-001',
+            'name' => 'Guitarra actualizada',
+            'total_units' => 5,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'category_id' => 'No se puede registrar un instrumento en una categoria inactiva',
+            ]);
+
+        $this->assertDatabaseHas('instruments', [
+            'id' => $this->instrument->id,
+            'category_id' => $this->category->id,
+            'name' => 'Guitarra de prueba',
+        ]);
+    }
+
     public function test_increasing_total_units_preserves_units_on_loan(): void
     {
         $response = $this->putJson(

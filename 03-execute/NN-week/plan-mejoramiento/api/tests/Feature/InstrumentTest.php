@@ -70,6 +70,34 @@ class InstrumentTest extends TestCase
         ]);
     }
 
+    public function test_instrument_cannot_be_registered_in_an_inactive_category(): void
+    {
+        $this->category->update(['is_active' => false]);
+
+        $this->postJson('/api/instruments', [
+            'category_id' => $this->category->id,
+            'code' => 'INS-INACTIVE',
+            'name' => 'Instrumento de prueba',
+            'total_units' => 1,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'category_id' => 'No se puede registrar un instrumento en una categoria inactiva',
+            ]);
+
+        $this->assertDatabaseMissing('instruments', ['code' => 'INS-INACTIVE']);
+    }
+
+    public function test_deactivating_a_category_does_not_change_existing_instruments(): void
+    {
+        $this->category->update(['is_active' => false]);
+
+        $this->assertDatabaseHas('instruments', [
+            'id' => $this->instrument->id,
+            'category_id' => $this->category->id,
+        ]);
+    }
+
     public function test_inventory_cannot_be_reduced_below_units_on_loan(): void
     {
         $this->instrument->update([

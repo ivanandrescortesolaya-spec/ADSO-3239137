@@ -6,6 +6,7 @@ use App\Models\Instrument;
 use App\Models\Loan;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class LoanService
@@ -29,6 +30,12 @@ class LoanService
                 throw new ConflictHttpException(
                     'El instrumento no esta disponible para prestamos.'
                 );
+            }
+
+            if (!$instrument->category()->where('is_active', true)->exists()) {
+                throw ValidationException::withMessages([
+                    'instrument_id' => 'No se puede prestar un instrumento de una categoria inactiva',
+                ]);
             }
 
             // Verificar prestamos pendientes o vencidos.

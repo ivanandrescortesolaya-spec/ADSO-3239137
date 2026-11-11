@@ -65,6 +65,40 @@ class LoanTest extends TestCase
         );
     }
 
+    public function test_api_allows_a_loan_for_an_instrument_in_an_active_category(): void
+    {
+        $response = $this->postJson('/api/loans', [
+            'student_id' => $this->student->id,
+            'instrument_id' => $this->instrument->id,
+        ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('loans', [
+            'id' => $response->json('data.id'),
+            'instrument_id' => $this->instrument->id,
+        ]);
+    }
+
+    public function test_api_rejects_a_loan_for_an_instrument_in_an_inactive_category(): void
+    {
+        $this->instrument->category->update(['is_active' => false]);
+
+        $this->postJson('/api/loans', [
+            'student_id' => $this->student->id,
+            'instrument_id' => $this->instrument->id,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'instrument_id' => 'No se puede prestar un instrumento de una categoria inactiva',
+            ]);
+
+        $this->assertDatabaseCount('loans', 0);
+        $this->assertDatabaseHas('instruments', [
+            'id' => $this->instrument->id,
+            'available_units' => 5,
+        ]);
+    }
+
     public function test_student_cannot_have_two_pending_loans(): void
     {
         $service = app(LoanService::class);

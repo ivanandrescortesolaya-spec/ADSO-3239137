@@ -8,6 +8,8 @@ use App\Models\Instrument;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class InstrumentController extends Controller
@@ -47,7 +49,7 @@ class InstrumentController extends Controller
             'category_id' => [
                 'required',
                 'integer',
-                'exists:categories,id',
+                Rule::exists('categories', 'id'),
             ],
             'code' => [
                 'required',
@@ -66,6 +68,8 @@ class InstrumentController extends Controller
                 'min:0',
             ],
         ]);
+
+        $this->ensureCategoryIsActive($validated['category_id']);
 
         $instrument = Instrument::create([
             'category_id' => $validated['category_id'],
@@ -92,7 +96,7 @@ class InstrumentController extends Controller
             'category_id' => [
                 'required',
                 'integer',
-                'exists:categories,id',
+                Rule::exists('categories', 'id'),
             ],
             'code' => [
                 'required',
@@ -111,6 +115,8 @@ class InstrumentController extends Controller
                 'min:0',
             ],
         ]);
+
+        $this->ensureCategoryIsActive($validated['category_id']);
 
         $instrument = DB::transaction(function () use ($validated, $id) {
             $instrument = Instrument::query()
@@ -166,5 +172,16 @@ class InstrumentController extends Controller
             'message' => 'Instrumento desactivado correctamente.',
             'data' => $instrument,
         ], 200);
+    }
+
+    private function ensureCategoryIsActive(int $categoryId): void
+    {
+        $category = Category::findOrFail($categoryId);
+
+        if (!$category->is_active) {
+            throw ValidationException::withMessages([
+                'category_id' => 'No se puede registrar un instrumento en una categoria inactiva',
+            ]);
+        }
     }
 }

@@ -65,6 +65,32 @@ class ReturnEndpointTest extends TestCase
         ]);
     }
 
+    public function test_return_remains_available_for_a_loan_when_its_category_is_inactive(): void
+    {
+        $loan = app(LoanService::class)->createLoan(
+            $this->student->id,
+            $this->instrument->id
+        );
+
+        $this->instrument->category->update(['is_active' => false]);
+
+        $response = $this->postJson(
+            '/api/loans/' . $loan->id . '/returns',
+            []
+        );
+
+        $response->assertCreated();
+
+        $this->assertDatabaseHas('loans', [
+            'id' => $loan->id,
+            'instrument_id' => $this->instrument->id,
+            'student_id' => $this->student->id,
+        ]);
+        $this->assertDatabaseHas('returns', [
+            'loan_id' => $loan->id,
+        ]);
+    }
+
     public function test_duplicate_return_through_api_returns_409(): void
     {
         $loan = app(LoanService::class)->createLoan(
