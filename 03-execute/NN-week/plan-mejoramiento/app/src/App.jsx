@@ -123,8 +123,8 @@ function App() {
       const responseData = err.response?.data;
 
       if (responseData?.errors) {
-        const firstError = Object.values(responseData.errors)
-          .flat()[0];
+        const firstError = responseData.errors.category_id?.[0]
+          || Object.values(responseData.errors).flat()[0];
 
         setError(firstError || "Revisa los datos ingresados.");
       } else {
@@ -275,7 +275,7 @@ function App() {
                         >
                           <option value="">Selecciona una categoria</option>
 
-                          {categories.map((category) => (
+                          {categories.filter((category) => category.is_active).map((category) => (
                             <option key={category.id} value={category.id}>
                               {category.name}
                             </option>

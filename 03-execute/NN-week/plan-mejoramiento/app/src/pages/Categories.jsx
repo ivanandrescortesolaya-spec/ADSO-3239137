@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   getCategories,
   createCategory,
+  updateCategoryStatus,
 } from "../services/categoryService";
 
 function Categories() {
@@ -12,6 +13,7 @@ function Categories() {
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [changingCategoryId, setChangingCategoryId] = useState(null);
 
   const [form, setForm] = useState({
     code: "",
@@ -79,6 +81,29 @@ function Categories() {
       }
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleStatusChange = async (category) => {
+    const nextActive = !category.is_active;
+    const action = nextActive ? "activar" : "desactivar";
+
+    if (!window.confirm(`Deseas ${action} la categoria ${category.name}?`)) {
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setChangingCategoryId(category.id);
+
+    try {
+      await updateCategoryStatus(category.id, nextActive);
+      setSuccess(`Categoria ${nextActive ? "activada" : "desactivada"} correctamente.`);
+      await loadCategories();
+    } catch (err) {
+      setError(err.response?.data?.message || "No fue posible actualizar el estado de la categoria.");
+    } finally {
+      setChangingCategoryId(null);
     }
   };
 
@@ -172,19 +197,33 @@ function Categories() {
                 <tr>
                   <th>Codigo</th>
                   <th>Nombre de categoria</th>
+                  <th>Estado</th>
+                  <th>Accion</th>
                 </tr>
               </thead>
 
               <tbody>
                 {categories.length === 0 ? (
                   <tr>
-                    <td colSpan="2">No hay categorias registradas.</td>
+                    <td colSpan="4">No hay categorias registradas.</td>
                   </tr>
                 ) : (
                   categories.map((category) => (
                     <tr key={category.id}>
                       <td>{category.code}</td>
                       <td>{category.name}</td>
+                      <td>{category.is_active ? "Activa" : "Inactiva"}</td>
+                      <td>
+                        <button
+                          className={category.is_active ? "secondary-button" : "primary-button"}
+                          onClick={() => handleStatusChange(category)}
+                          disabled={changingCategoryId === category.id}
+                        >
+                          {changingCategoryId === category.id
+                            ? "Actualizando..."
+                            : category.is_active ? "Desactivar" : "Activar"}
+                        </button>
+                      </td>
                     </tr>
                   ))
                 )}
