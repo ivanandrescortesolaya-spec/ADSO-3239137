@@ -1,0 +1,7 @@
+
+# Copias de seguridad de MySQL
+backups/
+*.sql
+
+# Archivos de entorno
+.env
