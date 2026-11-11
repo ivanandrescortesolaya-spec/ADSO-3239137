@@ -36,15 +36,11 @@ Route::post('/loans', [LoanController::class, 'store']);
 // Devoluciones
 Route::post('/loans/{loanId}/returns', [ReturnController::class, 'store']);
 
-// Devoluciones
-Route::post('/loans/{loanId}/returns', [ReturnController::class, 'store']);
 // Reportes
 Route::get(
     '/reports/most-requested-instruments',
     [ReportController::class, 'mostRequestedInstruments']
 );
-// Préstamos vencidos: debe ir antes de /loans/{id}.
-Route::get('/loans/overdue', [LoanController::class, 'overdue']);
 
 // Historial de préstamos de un estudiante.
 Route::get('/students/{id}/loans', [StudentController::class, 'loans']);
