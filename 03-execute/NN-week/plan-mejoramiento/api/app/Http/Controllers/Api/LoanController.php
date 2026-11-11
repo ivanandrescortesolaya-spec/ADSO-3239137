@@ -59,7 +59,7 @@ class LoanController extends Controller
         );
 
         return response()->json([
-            'message' => 'Préstamo registrado correctamente.',
+            'message' => 'Prestamo registrado correctamente.',
             'data' => $loan->load([
                 'student',
                 'instrument',
@@ -69,7 +69,7 @@ class LoanController extends Controller
     }
 
     /**
-     * Consultar préstamos vencidos que no tienen devolución.
+     * Consultar prestamos vencidos que no tienen devolucion.
      */
     public function overdue(): JsonResponse
     {

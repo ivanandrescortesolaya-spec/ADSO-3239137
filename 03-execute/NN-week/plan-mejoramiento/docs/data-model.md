@@ -1,279 +1,279 @@
 # Modelo de datos — Music School
 
 **Identificador:** music-school  
-**Proyecto:** Sistema de préstamo de instrumentos musicales  
+**Proyecto:** Sistema de prestamo de instrumentos musicales  
 **Ficha:** ADSO 3239137  
-**Código del aprendiz:** A12
-**Versión:** 1.1
-**Estado:** Borrador para validación
+**Codigo del aprendiz:** A12
+**Version:** 1.1
+**Estado:** Borrador para validacion
 
 ---
 
-## 1. Propósito
+## 1. Proposito
 
-Este documento define la estructura lógica de la base de datos del sistema Music School, incluyendo sus entidades, atributos, tipos de datos, claves primarias, claves foráneas, restricciones e índices.
+Este documento define la estructura logica de la base de datos del sistema Music School, incluyendo sus entidades, atributos, tipos de datos, claves primarias, claves foraneas, restricciones e indices.
 
-El modelo de datos servirá como referencia para implementar la persistencia utilizando MySQL y Laravel.
+El modelo de datos servira como referencia para implementar la persistencia utilizando MySQL y Laravel.
 
-Su diseño debe garantizar la integridad de la información, el control del inventario, la conservación del historial de operaciones y la consistencia de los préstamos y devoluciones.
+Su diseño debe garantizar la integridad de la informacion, el control del inventario, la conservacion del historial de operaciones y la consistencia de los prestamos y devoluciones.
 
-## 2. Tecnología de persistencia
+## 2. Tecnologia de persistencia
 
-| Elemento | Tecnología |
+| Elemento | Tecnologia |
 |---|---|
 | Motor de base de datos | MySQL 8 |
 | Backend de persistencia | PHP con Laravel |
-| Identificadores | Inglés |
+| Identificadores | Ingles |
 | Fechas y horas | UTC |
-| Integridad referencial | Claves foráneas |
+| Integridad referencial | Claves foraneas |
 | Control de operaciones | Transacciones de base de datos |
 
 ## 3. Entidades principales
 
 El modelo contempla las siguientes entidades:
 
-- `categories`: almacena las categorías de instrumentos.
+- `categories`: almacena las categorias de instrumentos.
 - `instruments`: almacena los modelos de instrumentos y sus cantidades.
-- `students`: almacena la información de los estudiantes.
-- `loans`: registra los préstamos realizados y conserva los datos históricos.
-- `returns`: registra las devoluciones asociadas a los préstamos.
+- `students`: almacena la informacion de los estudiantes.
+- `loans`: registra los prestamos realizados y conserva los datos historicos.
+- `returns`: registra las devoluciones asociadas a los prestamos.
 
-## 4. Definición de entidades
+## 4. Definicion de entidades
 
 ### 4.1. Tabla `categories`
 
-Almacena las categorías de instrumentos musicales.
+Almacena las categorias de instrumentos musicales.
 
-| Campo | Tipo de dato | Restricción | Descripción |
+| Campo | Tipo de dato | Restriccion | Descripcion |
 |---|---|---|---|
-| id | BIGINT | PK, AUTO_INCREMENT | Identificador de categoría. |
-| code | VARCHAR(20) | UNIQUE, NOT NULL | Código de categoría. |
-| name | VARCHAR(100) | NOT NULL | Nombre de categoría. |
-| created_at | DATETIME(6) | NOT NULL | Fecha de creación en UTC. |
-| updated_at | DATETIME(6) | NOT NULL | Fecha de actualización en UTC. |
+| id | BIGINT | PK, AUTO_INCREMENT | Identificador de categoria. |
+| code | VARCHAR(20) | UNIQUE, NOT NULL | Codigo de categoria. |
+| name | VARCHAR(100) | NOT NULL | Nombre de categoria. |
+| created_at | DATETIME(6) | NOT NULL | Fecha de creacion en UTC. |
+| updated_at | DATETIME(6) | NOT NULL | Fecha de actualizacion en UTC. |
 
-Categorías iniciales:
+Categorias iniciales:
 
-| Código | Categoría |
+| Codigo | Categoria |
 |---|---|
 | CAT-01 | Cuerdas |
 | CAT-02 | Vientos |
-| CAT-03 | Percusión |
+| CAT-03 | Percusion |
 | CAT-04 | Teclados |
-| CAT-05 | Electrónicos |
+| CAT-05 | Electronicos |
 
 ### 4.2. Tabla `instruments`
 
 Almacena los modelos de instrumentos musicales y sus cantidades.
 
-| Campo | Tipo de dato | Restricción | Descripción |
+| Campo | Tipo de dato | Restriccion | Descripcion |
 |---|---|---|---|
 | id | BIGINT | PK, AUTO_INCREMENT | Identificador del instrumento. |
-| category_id | BIGINT | FK, NOT NULL | Categoría asociada. |
-| code | VARCHAR(50) | UNIQUE, NOT NULL | Código único del modelo. |
+| category_id | BIGINT | FK, NOT NULL | Categoria asociada. |
+| code | VARCHAR(50) | UNIQUE, NOT NULL | Codigo unico del modelo. |
 | name | VARCHAR(150) | NOT NULL | Nombre del instrumento. |
 | total_units | INT | NOT NULL | Cantidad total de unidades. |
 | available_units | INT | NOT NULL | Cantidad de unidades disponibles. |
-| is_active | BOOLEAN | NOT NULL, DEFAULT TRUE | Estado del instrumento para baja lógica. |
-| created_at | DATETIME(6) | NOT NULL | Fecha de creación en UTC. |
-| updated_at | DATETIME(6) | NOT NULL | Fecha de actualización en UTC. |
+| is_active | BOOLEAN | NOT NULL, DEFAULT TRUE | Estado del instrumento para baja logica. |
+| created_at | DATETIME(6) | NOT NULL | Fecha de creacion en UTC. |
+| updated_at | DATETIME(6) | NOT NULL | Fecha de actualizacion en UTC. |
 
 Restricciones:
 
 - `total_units` debe ser mayor o igual a cero.
 - `available_units` debe ser mayor o igual a cero.
 - `available_units` no puede superar `total_units`.
-- Los instrumentos inactivos no pueden recibir nuevos préstamos.
-- Los instrumentos dados de baja deben conservar sus registros históricos.
-- La baja de un instrumento no debe eliminar físicamente su registro.
+- Los instrumentos inactivos no pueden recibir nuevos prestamos.
+- Los instrumentos dados de baja deben conservar sus registros historicos.
+- La baja de un instrumento no debe eliminar fisicamente su registro.
 
 ### 4.3. Tabla `students`
 
-Almacena la información de los estudiantes.
+Almacena la informacion de los estudiantes.
 
-| Campo | Tipo de dato | Restricción | Descripción |
+| Campo | Tipo de dato | Restriccion | Descripcion |
 |---|---|---|---|
 | id | BIGINT | PK, AUTO_INCREMENT | Identificador del estudiante. |
-| student_code | VARCHAR(50) | UNIQUE, NOT NULL | Código del estudiante. |
+| student_code | VARCHAR(50) | UNIQUE, NOT NULL | Codigo del estudiante. |
 | full_name | VARCHAR(150) | NOT NULL | Nombre completo. |
-| email | VARCHAR(150) | UNIQUE, NOT NULL | Correo electrónico. |
-| created_at | DATETIME(6) | NOT NULL | Fecha de creación en UTC. |
-| updated_at | DATETIME(6) | NOT NULL | Fecha de actualización en UTC. |
+| email | VARCHAR(150) | UNIQUE, NOT NULL | Correo electronico. |
+| created_at | DATETIME(6) | NOT NULL | Fecha de creacion en UTC. |
+| updated_at | DATETIME(6) | NOT NULL | Fecha de actualizacion en UTC. |
 
 Restricciones:
 
-- Cada estudiante debe tener un identificador único.
-- El código del estudiante no debe repetirse.
-- La información de los estudiantes relacionada con préstamos históricos debe conservarse mediante los datos congelados registrados en cada operación.
+- Cada estudiante debe tener un identificador unico.
+- El codigo del estudiante no debe repetirse.
+- La informacion de los estudiantes relacionada con prestamos historicos debe conservarse mediante los datos congelados registrados en cada operacion.
 
 ### 4.4. Tabla `loans`
 
-Almacena los préstamos realizados y conserva la información original del estudiante y del instrumento al momento de la operación.
+Almacena los prestamos realizados y conserva la informacion original del estudiante y del instrumento al momento de la operacion.
 
-| Campo | Tipo de dato | Restricción | Descripción |
+| Campo | Tipo de dato | Restriccion | Descripcion |
 |---|---|---|---|
-| id | BIGINT | PK, AUTO_INCREMENT | Identificador del préstamo. |
+| id | BIGINT | PK, AUTO_INCREMENT | Identificador del prestamo. |
 | student_id | BIGINT | FK, NOT NULL | Estudiante asociado. |
 | instrument_id | BIGINT | FK, NOT NULL | Modelo de instrumento asociado. |
-| student_code_snapshot | VARCHAR(50) | NOT NULL | Código del estudiante al realizar el préstamo. |
-| student_name_snapshot | VARCHAR(150) | NOT NULL | Nombre del estudiante al realizar el préstamo. |
-| instrument_code_snapshot | VARCHAR(50) | NOT NULL | Código del instrumento al realizar el préstamo. |
-| instrument_name_snapshot | VARCHAR(150) | NOT NULL | Nombre del instrumento al realizar el préstamo. |
-| loaned_at | DATETIME(6) | NOT NULL | Fecha y hora del préstamo en UTC. |
+| student_code_snapshot | VARCHAR(50) | NOT NULL | Codigo del estudiante al realizar el prestamo. |
+| student_name_snapshot | VARCHAR(150) | NOT NULL | Nombre del estudiante al realizar el prestamo. |
+| instrument_code_snapshot | VARCHAR(50) | NOT NULL | Codigo del instrumento al realizar el prestamo. |
+| instrument_name_snapshot | VARCHAR(150) | NOT NULL | Nombre del instrumento al realizar el prestamo. |
+| loaned_at | DATETIME(6) | NOT NULL | Fecha y hora del prestamo en UTC. |
 | due_at | DATETIME(6) | NOT NULL | Fecha y hora de vencimiento en UTC. |
-| created_at | DATETIME(6) | NOT NULL | Fecha de creación del registro en UTC. |
+| created_at | DATETIME(6) | NOT NULL | Fecha de creacion del registro en UTC. |
 
 Restricciones:
 
-- Cada préstamo debe pertenecer a un estudiante existente.
-- Cada préstamo debe corresponder a un instrumento existente.
-- Cada préstamo representa una unidad del modelo de instrumento.
-- La fecha de vencimiento debe establecerse a 21 días desde la fecha de registro del préstamo.
-- El estudiante no puede tener más de un préstamo pendiente de devolución.
-- Los estudiantes con préstamos vencidos y pendientes no pueden recibir nuevos instrumentos.
-- Los datos congelados deben conservar la información original del estudiante y del instrumento.
-- Los préstamos no deben eliminarse físicamente.
-- Los registros históricos no deben modificarse por cambios posteriores en el catálogo o en la información del estudiante.
+- Cada prestamo debe pertenecer a un estudiante existente.
+- Cada prestamo debe corresponder a un instrumento existente.
+- Cada prestamo representa una unidad del modelo de instrumento.
+- La fecha de vencimiento debe establecerse a 21 dias desde la fecha de registro del prestamo.
+- El estudiante no puede tener mas de un prestamo pendiente de devolucion.
+- Los estudiantes con prestamos vencidos y pendientes no pueden recibir nuevos instrumentos.
+- Los datos congelados deben conservar la informacion original del estudiante y del instrumento.
+- Los prestamos no deben eliminarse fisicamente.
+- Los registros historicos no deben modificarse por cambios posteriores en el catalogo o en la informacion del estudiante.
 
-**Identificación del estado del préstamo:**
+**Identificacion del estado del prestamo:**
 
-El estado del préstamo se determinará mediante la existencia de un registro relacionado en la tabla `returns`.
+El estado del prestamo se determinara mediante la existencia de un registro relacionado en la tabla `returns`.
 
-- Si no existe una devolución asociada, el préstamo permanece pendiente.
-- Si existe una devolución asociada, el préstamo se considera devuelto.
-- Si no existe devolución y `due_at` ya fue superada, el préstamo se considera vencido.
+- Si no existe una devolucion asociada, el prestamo permanece pendiente.
+- Si existe una devolucion asociada, el prestamo se considera devuelto.
+- Si no existe devolucion y `due_at` ya fue superada, el prestamo se considera vencido.
 
-Este mecanismo evita mantener un campo de estado duplicado que pueda generar inconsistencias con los registros de devolución.
+Este mecanismo evita mantener un campo de estado duplicado que pueda generar inconsistencias con los registros de devolucion.
 
 ### 4.5. Tabla `returns`
 
 Almacena las devoluciones de los instrumentos.
 
-| Campo | Tipo de dato | Restricción | Descripción |
+| Campo | Tipo de dato | Restriccion | Descripcion |
 |---|---|---|---|
-| id | BIGINT | PK, AUTO_INCREMENT | Identificador de devolución. |
-| loan_id | BIGINT | FK, UNIQUE, NOT NULL | Préstamo devuelto. |
-| returned_at | DATETIME(6) | NOT NULL | Fecha y hora de devolución en UTC. |
-| created_at | DATETIME(6) | NOT NULL | Fecha de creación del registro en UTC. |
+| id | BIGINT | PK, AUTO_INCREMENT | Identificador de devolucion. |
+| loan_id | BIGINT | FK, UNIQUE, NOT NULL | Prestamo devuelto. |
+| returned_at | DATETIME(6) | NOT NULL | Fecha y hora de devolucion en UTC. |
+| created_at | DATETIME(6) | NOT NULL | Fecha de creacion del registro en UTC. |
 
 Restricciones:
 
-- Cada devolución debe estar asociada a un préstamo existente.
-- Cada préstamo puede tener como máximo una devolución.
+- Cada devolucion debe estar asociada a un prestamo existente.
+- Cada prestamo puede tener como maximo una devolucion.
 - No se permiten devoluciones duplicadas.
-- Las devoluciones no deben eliminarse físicamente.
-- La devolución debe incrementar las unidades disponibles del instrumento correspondiente.
+- Las devoluciones no deben eliminarse fisicamente.
+- La devolucion debe incrementar las unidades disponibles del instrumento correspondiente.
 - Las unidades disponibles nunca deben superar las unidades totales.
-- La devolución debe conservar la información histórica del préstamo al que pertenece.
+- La devolucion debe conservar la informacion historica del prestamo al que pertenece.
 
 ## 5. Relaciones entre entidades
 
-| Entidad principal | Relación | Entidad relacionada |
+| Entidad principal | Relacion | Entidad relacionada |
 |---|---|---|
 | categories | 1:N | instruments |
 | instruments | 1:N | loans |
 | students | 1:N | loans |
 | loans | 1:0..1 | returns |
 
-Descripción de las relaciones:
+Descripcion de las relaciones:
 
-- Una categoría puede contener varios modelos de instrumentos.
-- Un instrumento puede estar relacionado con varios préstamos históricos.
-- Un estudiante puede tener varios préstamos a lo largo del tiempo, respetando el límite de un préstamo pendiente.
-- Un préstamo puede tener cero o una devolución registrada.
+- Una categoria puede contener varios modelos de instrumentos.
+- Un instrumento puede estar relacionado con varios prestamos historicos.
+- Un estudiante puede tener varios prestamos a lo largo del tiempo, respetando el limite de un prestamo pendiente.
+- Un prestamo puede tener cero o una devolucion registrada.
 
 ## 6. Reglas de integridad
 
-1. Las claves foráneas deben garantizar la integridad referencial.
+1. Las claves foraneas deben garantizar la integridad referencial.
 2. Las unidades disponibles deben permanecer entre cero y las unidades totales.
-3. Un estudiante no puede tener más de un préstamo pendiente de devolución.
-4. Un estudiante con un préstamo vencido y pendiente no puede recibir otro instrumento.
-5. Cada préstamo debe tener un plazo de 21 días.
-6. Una devolución debe estar asociada a un préstamo existente.
-7. Un préstamo no puede tener más de una devolución.
-8. Los préstamos y las devoluciones deben conservarse como registros históricos.
-9. Los datos congelados deben mantener la información original de las operaciones.
-10. Los instrumentos retirados del catálogo deben utilizar baja lógica.
-11. Las operaciones simultáneas deben proteger la disponibilidad del inventario.
+3. Un estudiante no puede tener mas de un prestamo pendiente de devolucion.
+4. Un estudiante con un prestamo vencido y pendiente no puede recibir otro instrumento.
+5. Cada prestamo debe tener un plazo de 21 dias.
+6. Una devolucion debe estar asociada a un prestamo existente.
+7. Un prestamo no puede tener mas de una devolucion.
+8. Los prestamos y las devoluciones deben conservarse como registros historicos.
+9. Los datos congelados deben mantener la informacion original de las operaciones.
+10. Los instrumentos retirados del catalogo deben utilizar baja logica.
+11. Las operaciones simultaneas deben proteger la disponibilidad del inventario.
 12. Las fechas y horas deben almacenarse y procesarse en UTC.
 
-## 7. Índices recomendados
+## 7. Indices recomendados
 
-| Tabla | Índice | Propósito |
+| Tabla | Indice | Proposito |
 |---|---|---|
-| categories | UNIQUE(code) | Consultar categorías por código. |
+| categories | UNIQUE(code) | Consultar categorias por codigo. |
 | instruments | UNIQUE(code) | Identificar modelos de instrumentos. |
-| instruments | category_id | Consultar instrumentos por categoría. |
+| instruments | category_id | Consultar instrumentos por categoria. |
 | instruments | is_active | Consultar instrumentos activos. |
-| students | UNIQUE(student_code) | Buscar estudiantes por código. |
+| students | UNIQUE(student_code) | Buscar estudiantes por codigo. |
 | students | UNIQUE(email) | Evitar correos duplicados. |
-| loans | student_id | Consultar préstamos por estudiante. |
-| loans | instrument_id | Consultar préstamos por instrumento. |
-| loans | due_at | Identificar préstamos vencidos. |
-| loans | student_id, loaned_at | Consultar préstamos de un estudiante por fecha. |
+| loans | student_id | Consultar prestamos por estudiante. |
+| loans | instrument_id | Consultar prestamos por instrumento. |
+| loans | due_at | Identificar prestamos vencidos. |
+| loans | student_id, loaned_at | Consultar prestamos de un estudiante por fecha. |
 | returns | UNIQUE(loan_id) | Evitar devoluciones duplicadas. |
 
-Las claves primarias, las restricciones UNIQUE y las claves foráneas también generan o requieren índices según las reglas de MySQL.
+Las claves primarias, las restricciones UNIQUE y las claves foraneas tambien generan o requieren indices segun las reglas de MySQL.
 
-## 8. Consideraciones de implementación
+## 8. Consideraciones de implementacion
 
-### 8.1. Control de préstamos
+### 8.1. Control de prestamos
 
-El registro de un préstamo debe ejecutarse mediante una transacción de base de datos.
+El registro de un prestamo debe ejecutarse mediante una transaccion de base de datos.
 
-Dentro de la transacción se debe:
+Dentro de la transaccion se debe:
 
 1. Verificar que el estudiante exista.
-2. Bloquear la fila del estudiante durante la validación del préstamo para evitar que dos solicitudes simultáneas registren préstamos pendientes para el mismo estudiante.
-3. Verificar que el estudiante no tenga otro préstamo pendiente.
-4. Verificar que el estudiante no tenga préstamos vencidos pendientes.
+2. Bloquear la fila del estudiante durante la validacion del prestamo para evitar que dos solicitudes simultaneas registren prestamos pendientes para el mismo estudiante.
+3. Verificar que el estudiante no tenga otro prestamo pendiente.
+4. Verificar que el estudiante no tenga prestamos vencidos pendientes.
 5. Bloquear la fila del instrumento que se desea prestar.
-6. Comprobar que el instrumento esté activo.
+6. Comprobar que el instrumento este activo.
 7. Comprobar que existan unidades disponibles.
-8. Registrar el préstamo y sus datos congelados.
+8. Registrar el prestamo y sus datos congelados.
 9. Disminuir las unidades disponibles en una unidad.
-10. Confirmar la transacción.
+10. Confirmar la transaccion.
 
-La validación de préstamos pendientes debe ejecutarse dentro de la misma transacción que registra el nuevo préstamo. Para ello, Laravel debe bloquear la fila del estudiante mediante el mecanismo de bloqueo pesimista (lockForUpdate()), consultar si tiene un préstamo sin devolución y, si no tiene ninguno, registrar el nuevo préstamo y actualizar el inventario. El bloqueo debe mantenerse hasta que la transacción finalice mediante commit o rollback. De esta manera, se evita que dos solicitudes simultáneas creen préstamos pendientes para el mismo estudiante.
+La validacion de prestamos pendientes debe ejecutarse dentro de la misma transaccion que registra el nuevo prestamo. Para ello, Laravel debe bloquear la fila del estudiante mediante el mecanismo de bloqueo pesimista (lockForUpdate()), consultar si tiene un prestamo sin devolucion y, si no tiene ninguno, registrar el nuevo prestamo y actualizar el inventario. El bloqueo debe mantenerse hasta que la transaccion finalice mediante commit o rollback. De esta manera, se evita que dos solicitudes simultaneas creen prestamos pendientes para el mismo estudiante.
 
 ### 8.2. Control de devoluciones
 
-La devolución debe ejecutarse mediante una transacción.
+La devolucion debe ejecutarse mediante una transaccion.
 
-Dentro de la transacción se debe:
+Dentro de la transaccion se debe:
 
-1. Identificar el préstamo.
-2. Bloquear la fila del préstamo durante la operación de devolución.
-3. Verificar que no tenga una devolución registrada.
-4. Registrar la devolución.
-5. Incrementar en una unidad la disponibilidad del instrumento asociado al préstamo.
+1. Identificar el prestamo.
+2. Bloquear la fila del prestamo durante la operacion de devolucion.
+3. Verificar que no tenga una devolucion registrada.
+4. Registrar la devolucion.
+5. Incrementar en una unidad la disponibilidad del instrumento asociado al prestamo.
 6. Verificar que las unidades disponibles no superen las unidades totales.
-7. Confirmar la transacción.
+7. Confirmar la transaccion.
 
 ### 8.3. Control de concurrencia
 
-Para evitar que dos operadores entreguen simultáneamente la última unidad disponible de un instrumento:
+Para evitar que dos operadores entreguen simultaneamente la ultima unidad disponible de un instrumento:
 
 - Se deben utilizar transacciones de base de datos.
-- Se debe bloquear la fila del instrumento durante la operación de préstamo.
-- La disponibilidad debe verificarse dentro de la transacción.
-- La actualización de las unidades disponibles y el registro del préstamo deben realizarse dentro de la misma transacción.
-- Si otro operador ya ha registrado el préstamo de la última unidad, la operación debe rechazarse.
-- La operación rechazada debe responder con el código HTTP `409 Conflict`.
-- Cuando la operación sea rechazada, no se debe crear el préstamo ni modificar las unidades disponibles.
-- Si ocurre un error durante la operación, se debe ejecutar un `ROLLBACK` para evitar cambios parciales.
-- Si la operación finaliza correctamente, se debe ejecutar un `COMMIT`.
+- Se debe bloquear la fila del instrumento durante la operacion de prestamo.
+- La disponibilidad debe verificarse dentro de la transaccion.
+- La actualizacion de las unidades disponibles y el registro del prestamo deben realizarse dentro de la misma transaccion.
+- Si otro operador ya ha registrado el prestamo de la ultima unidad, la operacion debe rechazarse.
+- La operacion rechazada debe responder con el codigo HTTP `409 Conflict`.
+- Cuando la operacion sea rechazada, no se debe crear el prestamo ni modificar las unidades disponibles.
+- Si ocurre un error durante la operacion, se debe ejecutar un `ROLLBACK` para evitar cambios parciales.
+- Si la operacion finaliza correctamente, se debe ejecutar un `COMMIT`.
 
-### 8.4. Integridad referencial y eliminación de registros
+### 8.4. Integridad referencial y eliminacion de registros
 
-Para garantizar la integridad de la información y conservar el historial de préstamos:
+Para garantizar la integridad de la informacion y conservar el historial de prestamos:
 
-- Las relaciones entre las tablas deben implementarse mediante claves foráneas.
-- No se debe permitir la eliminación física de estudiantes que tengan préstamos registrados.
-- No se debe permitir la eliminación física de instrumentos que tengan préstamos asociados.
-- Las claves foráneas deben utilizar la restricción `ON DELETE RESTRICT` cuando corresponda.
-- Los instrumentos deben retirarse del catálogo mediante baja lógica, utilizando el campo `is_active`.
-- Los préstamos y las devoluciones deben conservarse permanentemente para mantener la trazabilidad de las operaciones.
+- Las relaciones entre las tablas deben implementarse mediante claves foraneas.
+- No se debe permitir la eliminacion fisica de estudiantes que tengan prestamos registrados.
+- No se debe permitir la eliminacion fisica de instrumentos que tengan prestamos asociados.
+- Las claves foraneas deben utilizar la restriccion `ON DELETE RESTRICT` cuando corresponda.
+- Los instrumentos deben retirarse del catalogo mediante baja logica, utilizando el campo `is_active`.
+- Los prestamos y las devoluciones deben conservarse permanentemente para mantener la trazabilidad de las operaciones.
 
 ### 8.5. Restricciones de integridad del inventario
 
@@ -284,8 +284,8 @@ Se deben aplicar las siguientes restricciones:
 - `total_units` debe ser mayor o igual a cero.
 - `available_units` debe ser mayor o igual a cero.
 - `available_units` no puede superar `total_units`.
-- Las unidades disponibles deben disminuir al registrar un préstamo correctamente.
-- Las unidades disponibles deben aumentar al registrar una devolución correctamente.
+- Las unidades disponibles deben disminuir al registrar un prestamo correctamente.
+- Las unidades disponibles deben aumentar al registrar una devolucion correctamente.
 - Las operaciones que modifiquen las cantidades deben ejecutarse mediante transacciones.
 - Las restricciones deben validarse tanto en Laravel como en la base de datos.
 
@@ -301,31 +301,31 @@ CONSTRAINT chk_available_units
 CONSTRAINT chk_inventory_units
     CHECK (available_units <= total_units)
 ```
-Estas restricciones deben declararse dentro de la definición CREATE TABLE instruments, junto con los demás campos de la tabla. No deben ejecutarse como sentencias independientes. Su propósito es garantizar desde la base de datos que las unidades totales y disponibles no sean negativas y que las unidades disponibles nunca superen las unidades totales.
+Estas restricciones deben declararse dentro de la definicion CREATE TABLE instruments, junto con los demas campos de la tabla. No deben ejecutarse como sentencias independientes. Su proposito es garantizar desde la base de datos que las unidades totales y disponibles no sean negativas y que las unidades disponibles nunca superen las unidades totales.
 
-## 9. Criterios de aceptación del modelo de datos
+## 9. Criterios de aceptacion del modelo de datos
 
-El modelo de datos se considerará aceptable cuando cumpla las siguientes condiciones:
+El modelo de datos se considerara aceptable cuando cumpla las siguientes condiciones:
 
 1. Existan las cinco entidades principales: `categories`, `instruments`, `students`, `loans` y `returns`.
-2. Las relaciones entre las entidades estén definidas mediante claves primarias y claves foráneas.
-3. Las categorías iniciales correspondan a las cinco categorías establecidas para el proyecto.
+2. Las relaciones entre las entidades esten definidas mediante claves primarias y claves foraneas.
+3. Las categorias iniciales correspondan a las cinco categorias establecidas para el proyecto.
 4. Las unidades disponibles permanezcan entre cero y las unidades totales.
-5. Los préstamos conserven los datos históricos del estudiante y del instrumento.
-6. Cada préstamo tenga un plazo de 21 días.
-7. Cada préstamo pueda tener como máximo una devolución registrada.
-8. Los préstamos y las devoluciones conserven su información histórica.
-9. Los instrumentos retirados del catálogo se gestionen mediante baja lógica.
-10. Las operaciones de préstamo y devolución utilicen transacciones para mantener la integridad del inventario.
-11. El control de concurrencia impida entregar una misma última unidad a dos operadores y responda con HTTP 409 Conflict cuando corresponda.
+5. Los prestamos conserven los datos historicos del estudiante y del instrumento.
+6. Cada prestamo tenga un plazo de 21 dias.
+7. Cada prestamo pueda tener como maximo una devolucion registrada.
+8. Los prestamos y las devoluciones conserven su informacion historica.
+9. Los instrumentos retirados del catalogo se gestionen mediante baja logica.
+10. Las operaciones de prestamo y devolucion utilicen transacciones para mantener la integridad del inventario.
+11. El control de concurrencia impida entregar una misma ultima unidad a dos operadores y responda con HTTP 409 Conflict cuando corresponda.
 12. Las fechas y horas se almacenen y procesen en UTC.
-13. Los índices y restricciones definidos permitan mantener la consistencia y facilitar las consultas del sistema.
+13. Los indices y restricciones definidos permitan mantener la consistencia y facilitar las consultas del sistema.
 
 ## 10. Control de cambios
 
-| Versión | Fecha | Descripción |
+| Version | Fecha | Descripcion |
 |---|---|---|
-| 1.0 | 07/11/2026 | Creación inicial del modelo de datos, definición de entidades, atributos y relaciones. |
-| 1.1 | 07/11/2026 | Incorporación de consideraciones de implementación, integridad referencial, control de concurrencia, restricciones del inventario y criterios de aceptación. |
+| 1.0 | 07/11/2026 | Creacion inicial del modelo de datos, definicion de entidades, atributos y relaciones. |
+| 1.1 | 07/11/2026 | Incorporacion de consideraciones de implementacion, integridad referencial, control de concurrencia, restricciones del inventario y criterios de aceptacion. |
 
-**Estado actual:** Borrador para validación.
+**Estado actual:** Borrador para validacion.

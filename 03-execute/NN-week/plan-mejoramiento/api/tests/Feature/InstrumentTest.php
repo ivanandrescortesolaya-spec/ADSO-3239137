@@ -23,7 +23,7 @@ class InstrumentTest extends TestCase
 
         $this->category = Category::create([
             'code' => 'CAT-TEST',
-            'name' => 'Categoría de prueba',
+            'name' => 'Categoria de prueba',
         ]);
 
         $this->instrument = Instrument::create([

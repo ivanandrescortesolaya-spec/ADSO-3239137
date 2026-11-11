@@ -458,7 +458,7 @@ button {
 
 
 @media (max-width: 650px) {
-  /* Menú lateral */
+  /* Menu lateral */
   .sidebar {
     width: 75px;
     padding: 20px 10px;
@@ -534,7 +534,7 @@ button {
   .form-actions {
     flex-direction: column;
   }
-    /* Tablas y acciones en móviles */
+    /* Tablas y acciones en moviles */
   .table-container {
     width: 100%;
     overflow-x: auto;

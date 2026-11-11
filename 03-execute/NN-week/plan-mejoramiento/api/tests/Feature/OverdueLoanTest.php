@@ -23,7 +23,7 @@ class OverdueLoanTest extends TestCase
 
         $this->category = Category::create([
             'code' => 'CAT-TEST',
-            'name' => 'Categoría de prueba',
+            'name' => 'Categoria de prueba',
         ]);
 
         $this->instrument = Instrument::create([
@@ -54,7 +54,7 @@ class OverdueLoanTest extends TestCase
             $this->instrument->id
         );
 
-        // Convertir el préstamo en vencido para la prueba.
+        // Convertir el prestamo en vencido para la prueba.
         $loan->update([
             'due_at' => now('UTC')->subDay(),
         ]);
@@ -82,7 +82,7 @@ class OverdueLoanTest extends TestCase
             'due_at' => now('UTC')->subDay(),
         ]);
 
-        // Registrar la devolución.
+        // Registrar la devolucion.
         app(ReturnService::class)->createReturn($loan->id);
 
         $response = $this->getJson('/api/loans/overdue');

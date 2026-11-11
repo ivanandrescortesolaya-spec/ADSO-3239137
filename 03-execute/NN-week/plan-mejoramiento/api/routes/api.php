@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoanController;
 use App\Http\Controllers\Api\ReturnController;
 
-// Categorías
+// Categorias
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/categories', [CategoryController::class, 'store']);
 // Instrumentos
@@ -23,11 +23,11 @@ Route::get('/students/{id}', [StudentController::class, 'show']);
 Route::post('/students', [StudentController::class, 'store']);
 Route::put('/students/{id}', [StudentController::class, 'update']);
 
-// Préstamos
+// Prestamos
 Route::get('/loans', [LoanController::class, 'index']);
 Route::get('/loans/overdue', [LoanController::class, 'overdue']);
 
-// El identificador del préstamo debe ser numérico.
+// El identificador del prestamo debe ser numerico.
 Route::get('/loans/{id}', [LoanController::class, 'show'])
     ->whereNumber('id');
 
@@ -42,5 +42,5 @@ Route::get(
     [ReportController::class, 'mostRequestedInstruments']
 );
 
-// Historial de préstamos de un estudiante.
+// Historial de prestamos de un estudiante.
 Route::get('/students/{id}/loans', [StudentController::class, 'loans']);

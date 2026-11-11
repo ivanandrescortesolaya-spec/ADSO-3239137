@@ -24,7 +24,7 @@ class StudentLoanHistoryTest extends TestCase
 
         $category = Category::create([
             'code' => 'CAT-TEST',
-            'name' => 'Categoría de prueba',
+            'name' => 'Categoria de prueba',
         ]);
 
         $this->student = Student::create([
@@ -45,7 +45,7 @@ class StudentLoanHistoryTest extends TestCase
         $this->secondInstrument = Instrument::create([
             'category_id' => $category->id,
             'code' => 'INS-TEST-002',
-            'name' => 'Violín de prueba',
+            'name' => 'Violin de prueba',
             'total_units' => 5,
             'available_units' => 5,
             'is_active' => true,
@@ -76,7 +76,7 @@ class StudentLoanHistoryTest extends TestCase
         $loanService = app(LoanService::class);
         $returnService = app(ReturnService::class);
 
-        // Primer préstamo.
+        // Primer prestamo.
         $firstLoan = $loanService->createLoan(
             $this->student->id,
             $this->firstInstrument->id
@@ -85,7 +85,7 @@ class StudentLoanHistoryTest extends TestCase
         // Devolver el primer instrumento.
         $returnService->createReturn($firstLoan->id);
 
-        // Segundo préstamo del mismo estudiante.
+        // Segundo prestamo del mismo estudiante.
         $secondLoan = $loanService->createLoan(
             $this->student->id,
             $this->secondInstrument->id

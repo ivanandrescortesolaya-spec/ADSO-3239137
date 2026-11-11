@@ -28,7 +28,7 @@ class ReturnController extends Controller
         $returnRecord = $returnService->createReturn($loan->id);
 
         return response()->json([
-            'message' => 'Devolución registrada correctamente.',
+            'message' => 'Devolucion registrada correctamente.',
             'data' => $returnRecord->load('loan'),
         ], 201);
     }

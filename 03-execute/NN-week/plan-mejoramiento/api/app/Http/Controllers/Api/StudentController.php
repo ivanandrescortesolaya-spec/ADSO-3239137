@@ -37,7 +37,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Consultar los préstamos de un estudiante.
+     * Consultar los prestamos de un estudiante.
      */
     public function loans(int $id): JsonResponse
     {
@@ -91,7 +91,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Actualizar información del estudiante.
+     * Actualizar informacion del estudiante.
      */
     public function update(Request $request, int $id): JsonResponse
     {

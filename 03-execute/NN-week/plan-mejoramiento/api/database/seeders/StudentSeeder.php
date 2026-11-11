@@ -12,22 +12,22 @@ class StudentSeeder extends Seeder
         $students = [
             [
                 'student_code' => 'EST-001',
-                'full_name' => 'Carlos Ramírez',
+                'full_name' => 'Carlos Ramirez',
                 'email' => 'carlos.ramirez@example.com',
             ],
             [
                 'student_code' => 'EST-002',
-                'full_name' => 'Laura Martínez',
+                'full_name' => 'Laura Martinez',
                 'email' => 'laura.martinez@example.com',
             ],
             [
                 'student_code' => 'EST-003',
-                'full_name' => 'Andrés Gómez',
+                'full_name' => 'Andres Gomez',
                 'email' => 'andres.gomez@example.com',
             ],
             [
                 'student_code' => 'EST-004',
-                'full_name' => 'María Rodríguez',
+                'full_name' => 'Maria Rodriguez',
                 'email' => 'maria.rodriguez@example.com',
             ],
             [

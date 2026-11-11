@@ -25,7 +25,7 @@ function Categories() {
       setCategories(response.data ?? []);
     } catch (err) {
       console.error(err);
-      setError("No fue posible cargar las categorías.");
+      setError("No fue posible cargar las categorias.");
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ function Categories() {
 
       setForm({ code: "", name: "" });
       setShowForm(false);
-      setSuccess("Categoría registrada correctamente.");
+      setSuccess("Categoria registrada correctamente.");
 
       await loadCategories();
     } catch (err) {
@@ -74,7 +74,7 @@ function Categories() {
       } else {
         setError(
           data?.message ||
-          "No fue posible registrar la categoría."
+          "No fue posible registrar la categoria."
         );
       }
     } finally {
@@ -85,8 +85,8 @@ function Categories() {
   return (
     <>
       <div className="page-heading">
-        <h1>Categorías</h1>
-        <p>Administra las categorías de instrumentos musicales.</p>
+        <h1>Categorias</h1>
+        <p>Administra las categorias de instrumentos musicales.</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -95,8 +95,8 @@ function Categories() {
       <section className="panel">
         <div className="panel-heading">
           <div>
-            <h2>Listado de categorías</h2>
-            <p>Consulta y registra las categorías del inventario.</p>
+            <h2>Listado de categorias</h2>
+            <p>Consulta y registra las categorias del inventario.</p>
           </div>
 
           <button
@@ -107,17 +107,17 @@ function Categories() {
               setShowForm(!showForm);
             }}
           >
-            + Nueva categoría
+            + Nueva categoria
           </button>
         </div>
 
         {showForm && (
           <form className="instrument-form" onSubmit={handleSubmit}>
-            <h3>Registrar categoría</h3>
+            <h3>Registrar categoria</h3>
 
             <div className="form-grid">
               <div className="form-field">
-                <label htmlFor="category-code">Código</label>
+                <label htmlFor="category-code">Codigo</label>
                 <input
                   id="category-code"
                   name="code"
@@ -157,28 +157,28 @@ function Categories() {
                 className="primary-button"
                 disabled={saving}
               >
-                {saving ? "Guardando..." : "Guardar categoría"}
+                {saving ? "Guardando..." : "Guardar categoria"}
               </button>
             </div>
           </form>
         )}
 
         {loading ? (
-          <p className="loading-message">Cargando categorías...</p>
+          <p className="loading-message">Cargando categorias...</p>
         ) : (
           <div className="table-container">
             <table className="inventory-table">
               <thead>
                 <tr>
-                  <th>Código</th>
-                  <th>Nombre de categoría</th>
+                  <th>Codigo</th>
+                  <th>Nombre de categoria</th>
                 </tr>
               </thead>
 
               <tbody>
                 {categories.length === 0 ? (
                   <tr>
-                    <td colSpan="2">No hay categorías registradas.</td>
+                    <td colSpan="2">No hay categorias registradas.</td>
                   </tr>
                 ) : (
                   categories.map((category) => (

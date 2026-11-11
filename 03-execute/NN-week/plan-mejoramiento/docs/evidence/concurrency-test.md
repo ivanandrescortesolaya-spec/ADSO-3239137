@@ -2,15 +2,15 @@
 
 ## 1. Objetivo
 
-Verificar que el sistema controle correctamente dos solicitudes simultáneas de préstamo cuando solamente existe una unidad disponible de un instrumento.
+Verificar que el sistema controle correctamente dos solicitudes simultaneas de prestamo cuando solamente existe una unidad disponible de un instrumento.
 
 ## 2. Regla de negocio evaluada
 
 **RN-05 — Control de concurrencia**
 
-Cuando dos operadores intenten entregar simultáneamente la última unidad disponible de un instrumento, solamente una operación podrá completarse. La operación que no consiga la disponibilidad deberá responder con HTTP 409 Conflict.
+Cuando dos operadores intenten entregar simultaneamente la ultima unidad disponible de un instrumento, solamente una operacion podra completarse. La operacion que no consiga la disponibilidad debera responder con HTTP 409 Conflict.
 
-## 3. Configuración de la prueba
+## 3. Configuracion de la prueba
 
 - Instrumento: INS-CONC-001.
 - Unidades totales: 1.
@@ -23,25 +23,25 @@ Cuando dos operadores intenten entregar simultáneamente la última unidad dispo
 
 | Solicitud | Resultado HTTP | Resultado |
 |---|---:|---|
-| Estudiante A | 201 Created | Préstamo registrado correctamente |
+| Estudiante A | 201 Created | Prestamo registrado correctamente |
 | Estudiante B | 409 Conflict | No hay unidades disponibles |
 
-Después de la operación exitosa, la disponibilidad quedó en cero y solamente se registró un nuevo préstamo.
+Despues de la operacion exitosa, la disponibilidad quedo en cero y solamente se registro un nuevo prestamo.
 
-## 5. Mecanismo técnico
+## 5. Mecanismo tecnico
 
 El servicio `LoanService` utiliza:
 
 - Transacciones mediante `DB::transaction()`.
 - Bloqueo de registros mediante `lockForUpdate()`.
-- Verificación de disponibilidad después de obtener el bloqueo.
-- Actualización de inventario dentro de la transacción.
+- Verificacion de disponibilidad despues de obtener el bloqueo.
+- Actualizacion de inventario dentro de la transaccion.
 - Respuesta HTTP 409 cuando no existen unidades disponibles.
 
-## 6. Conclusión
+## 6. Conclusion
 
-La prueba realizada con dos procesos independientes confirmó que, ante las solicitudes efectuadas, solamente una operación pudo registrar el préstamo de la última unidad disponible. La segunda recibió HTTP 409 Conflict.
+La prueba realizada con dos procesos independientes confirmo que, ante las solicitudes efectuadas, solamente una operacion pudo registrar el prestamo de la ultima unidad disponible. La segunda recibio HTTP 409 Conflict.
 
-Esta evidencia respalda la implementación de la regla RN-05 y los criterios de concurrencia de TASK-14.
+Esta evidencia respalda la implementacion de la regla RN-05 y los criterios de concurrencia de TASK-14.
 
-**Nota:** Esta prueba manual comprueba el escenario ejecutado; no reemplaza una prueba de estrés ni verifica por sí sola todas las posibles condiciones de concurrencia.
+**Nota:** Esta prueba manual comprueba el escenario ejecutado; no reemplaza una prueba de estres ni verifica por si sola todas las posibles condiciones de concurrencia.

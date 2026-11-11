@@ -13,13 +13,13 @@ class InstrumentSeeder extends Seeder
             [
                 'category_code' => 'CAT-01',
                 'code' => 'INS-001',
-                'name' => 'Guitarra acústica',
+                'name' => 'Guitarra acustica',
                 'total_units' => 10,
             ],
             [
                 'category_code' => 'CAT-01',
                 'code' => 'INS-002',
-                'name' => 'Violín',
+                'name' => 'Violin',
                 'total_units' => 8,
             ],
             [
@@ -31,19 +31,19 @@ class InstrumentSeeder extends Seeder
             [
                 'category_code' => 'CAT-02',
                 'code' => 'INS-004',
-                'name' => 'Saxofón alto',
+                'name' => 'Saxofon alto',
                 'total_units' => 4,
             ],
             [
                 'category_code' => 'CAT-03',
                 'code' => 'INS-005',
-                'name' => 'Batería acústica',
+                'name' => 'Bateria acustica',
                 'total_units' => 3,
             ],
             [
                 'category_code' => 'CAT-03',
                 'code' => 'INS-006',
-                'name' => 'Bongós',
+                'name' => 'Bongos',
                 'total_units' => 6,
             ],
             [
@@ -55,19 +55,19 @@ class InstrumentSeeder extends Seeder
             [
                 'category_code' => 'CAT-04',
                 'code' => 'INS-008',
-                'name' => 'Teclado electrónico',
+                'name' => 'Teclado electronico',
                 'total_units' => 7,
             ],
             [
                 'category_code' => 'CAT-05',
                 'code' => 'INS-009',
-                'name' => 'Guitarra eléctrica',
+                'name' => 'Guitarra electrica',
                 'total_units' => 5,
             ],
             [
                 'category_code' => 'CAT-05',
                 'code' => 'INS-010',
-                'name' => 'Bajo eléctrico',
+                'name' => 'Bajo electrico',
                 'total_units' => 4,
             ],
         ];
@@ -79,7 +79,7 @@ class InstrumentSeeder extends Seeder
 
             if (!$category) {
                 throw new \RuntimeException(
-                    "No existe la categoría {$instrument['category_code']}."
+                    "No existe la categoria {$instrument['category_code']}."
                 );
             }
 

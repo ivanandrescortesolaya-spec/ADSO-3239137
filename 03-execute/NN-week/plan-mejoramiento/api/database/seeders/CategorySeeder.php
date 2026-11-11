@@ -20,7 +20,7 @@ class CategorySeeder extends Seeder
             ],
             [
                 'code' => 'CAT-03',
-                'name' => 'Percusión',
+                'name' => 'Percusion',
             ],
             [
                 'code' => 'CAT-04',
@@ -28,7 +28,7 @@ class CategorySeeder extends Seeder
             ],
             [
                 'code' => 'CAT-05',
-                'name' => 'Electrónicos',
+                'name' => 'Electronicos',
             ],
         ];
 

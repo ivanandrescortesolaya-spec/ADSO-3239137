@@ -22,7 +22,7 @@ function Loans() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Cargar préstamos, estudiantes e instrumentos
+  // Cargar prestamos, estudiantes e instrumentos
   const loadData = async () => {
     try {
       setError("");
@@ -39,7 +39,7 @@ function Loans() {
       setInstruments(instrumentResponse.data ?? []);
     } catch (err) {
       console.error(err);
-      setError("No fue posible cargar la información de préstamos.");
+      setError("No fue posible cargar la informacion de prestamos.");
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,7 @@ function Loans() {
     });
   };
 
-  // Registrar préstamo
+  // Registrar prestamo
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
@@ -77,7 +77,7 @@ function Loans() {
       });
 
       setSuccess(
-        response.message || "Préstamo registrado correctamente."
+        response.message || "Prestamo registrado correctamente."
       );
 
       setForm({
@@ -97,7 +97,7 @@ function Loans() {
         setError(firstError || "Revisa los datos ingresados.");
       } else {
         setError(
-          data?.message || "No fue posible registrar el préstamo."
+          data?.message || "No fue posible registrar el prestamo."
         );
       }
     } finally {
@@ -105,7 +105,7 @@ function Loans() {
     }
   };
 
-  // Consultar préstamos vencidos
+  // Consultar prestamos vencidos
   const handleOverdue = async () => {
     try {
       setError("");
@@ -116,7 +116,7 @@ function Loans() {
       setLoans(response.data ?? []);
     } catch (err) {
       console.error(err);
-      setError("No fue posible consultar los préstamos vencidos.");
+      setError("No fue posible consultar los prestamos vencidos.");
     } finally {
       setLoading(false);
     }
@@ -149,7 +149,7 @@ function Loans() {
     });
   };
 
-  // Determinar el estado del préstamo
+  // Determinar el estado del prestamo
   const getLoanStatus = (loan) => {
     if (loan.return_record) return "Devuelto";
 
@@ -174,8 +174,8 @@ function Loans() {
   return (
     <>
       <div className="page-heading">
-        <h1>Préstamos</h1>
-        <p>Administra los préstamos de instrumentos musicales.</p>
+        <h1>Prestamos</h1>
+        <p>Administra los prestamos de instrumentos musicales.</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -186,11 +186,11 @@ function Loans() {
           <div>
             <h2>
               {showOverdue
-                ? "Préstamos vencidos"
-                : "Listado de préstamos"}
+                ? "Prestamos vencidos"
+                : "Listado de prestamos"}
             </h2>
             <p>
-              Consulta y registra los préstamos de instrumentos.
+              Consulta y registra los prestamos de instrumentos.
             </p>
           </div>
 
@@ -213,7 +213,7 @@ function Loans() {
                   setShowForm(!showForm);
                 }}
               >
-                + Nuevo préstamo
+                + Nuevo prestamo
               </button>
             )}
           </div>
@@ -221,7 +221,7 @@ function Loans() {
 
         {showForm && (
           <form className="instrument-form" onSubmit={handleSubmit}>
-            <h3>Registrar préstamo</h3>
+            <h3>Registrar prestamo</h3>
 
             <div className="form-grid">
               <div className="form-field">
@@ -292,7 +292,7 @@ function Loans() {
                   saving || availableInstruments.length === 0
                 }
               >
-                {saving ? "Registrando..." : "Registrar préstamo"}
+                {saving ? "Registrando..." : "Registrar prestamo"}
               </button>
             </div>
           </form>
@@ -300,7 +300,7 @@ function Loans() {
 
         {loading ? (
           <p className="loading-message">
-            Cargando préstamos...
+            Cargando prestamos...
           </p>
         ) : (
           <div className="table-container">
@@ -309,7 +309,7 @@ function Loans() {
                 <tr>
                   <th>Estudiante</th>
                   <th>Instrumento</th>
-                  <th>Fecha préstamo</th>
+                  <th>Fecha prestamo</th>
                   <th>Fecha vencimiento</th>
                   <th>Estado</th>
                 </tr>
@@ -319,7 +319,7 @@ function Loans() {
                 {loans.length === 0 ? (
                   <tr>
                     <td colSpan="5">
-                      No hay préstamos para mostrar.
+                      No hay prestamos para mostrar.
                     </td>
                   </tr>
                 ) : (

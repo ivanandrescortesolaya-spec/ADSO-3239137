@@ -39,7 +39,7 @@ class CategoryController extends Controller
         $category = Category::create($validated);
 
         return response()->json([
-            'message' => 'Categoría registrada correctamente.',
+            'message' => 'Categoria registrada correctamente.',
             'data' => $category,
         ], 201);
     }

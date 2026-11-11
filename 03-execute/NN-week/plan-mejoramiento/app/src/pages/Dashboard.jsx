@@ -84,7 +84,7 @@ function Dashboard() {
     } catch (err) {
       console.error("Error al cargar el Dashboard:", err);
       setError(
-        "No fue posible cargar todos los indicadores. Verifica que la API esté funcionando."
+        "No fue posible cargar todos los indicadores. Verifica que la API este funcionando."
       );
     } finally {
       setLoading(false);
@@ -121,7 +121,7 @@ function Dashboard() {
               <span className="stat-icon blue">♫</span>
               <p>Tipos de instrumentos</p>
               <h2>{stats.instruments}</h2>
-              <small>Registrados en el catálogo</small>
+              <small>Registrados en el catalogo</small>
               
             </div>
 
@@ -129,7 +129,7 @@ function Dashboard() {
               <span className="stat-icon green">✓</span>
               <p>Unidades disponibles</p>
               <h2>{stats.availableUnits}</h2>
-              <small>Disponibles para préstamo</small>
+              <small>Disponibles para prestamo</small>
             </div>
 
             <div className="stat-card">
@@ -141,14 +141,14 @@ function Dashboard() {
 
             <div className="stat-card">
               <span className="stat-icon blue">▣</span>
-              <p>Préstamos activos</p>
+              <p>Prestamos activos</p>
               <h2>{stats.activeLoans}</h2>
               <small>Instrumentos sin devolver</small>
             </div>
 
             <div className="stat-card">
               <span className="stat-icon orange">!</span>
-              <p>Préstamos vencidos</p>
+              <p>Prestamos vencidos</p>
               <h2>{stats.overdueLoans}</h2>
               <small>Requieren seguimiento</small>
             </div>
@@ -186,9 +186,9 @@ function Dashboard() {
           <section className="panel dashboard-report">
             <div className="panel-heading">
               <div>
-                <h2>Instrumentos más solicitados</h2>
+                <h2>Instrumentos mas solicitados</h2>
                 <p>
-                  Ranking basado en el historial de préstamos.
+                  Ranking basado en el historial de prestamos.
                 </p>
               </div>
 
@@ -204,9 +204,9 @@ function Dashboard() {
               <table className="inventory-table">
                 <thead>
                   <tr>
-                    <th>Posición</th>
+                    <th>Posicion</th>
                     <th>Instrumento</th>
-                    <th>Total de préstamos</th>
+                    <th>Total de prestamos</th>
                   </tr>
                 </thead>
 
@@ -214,7 +214,7 @@ function Dashboard() {
                   {popularInstruments.length === 0 ? (
                     <tr>
                       <td colSpan="3">
-                        Todavía no hay datos para el reporte.
+                        Todavia no hay datos para el reporte.
                       </td>
                     </tr>
                   ) : (

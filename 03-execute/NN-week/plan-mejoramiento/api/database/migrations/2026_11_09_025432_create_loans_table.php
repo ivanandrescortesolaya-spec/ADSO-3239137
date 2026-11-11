@@ -19,7 +19,7 @@ return new class extends Migration
                 ->constrained('instruments')
                 ->restrictOnDelete();
 
-            // Datos históricos del estudiante y del instrumento.
+            // Datos historicos del estudiante y del instrumento.
             $table->string('student_code', 30);
             $table->string('student_name', 150);
             $table->string('instrument_code', 30);

@@ -11,7 +11,7 @@ function Returns() {
   const [success, setSuccess] = useState("");
   const [search, setSearch] = useState("");
 
-  // Cargar préstamos
+  // Cargar prestamos
   const loadLoans = async () => {
     try {
       setError("");
@@ -20,7 +20,7 @@ function Returns() {
       setLoans(response.data ?? []);
     } catch (err) {
       console.error(err);
-      setError("No fue posible cargar los préstamos.");
+      setError("No fue posible cargar los prestamos.");
     } finally {
       setLoading(false);
     }
@@ -42,10 +42,10 @@ function Returns() {
     });
   };
 
-  // Registrar devolución
+  // Registrar devolucion
   const handleReturn = async (loan) => {
     const confirmed = window.confirm(
-      `¿Confirmas la devolución del instrumento ${loan.instrument_name}?`
+      `¿Confirmas la devolucion del instrumento ${loan.instrument_name}?`
     );
 
     if (!confirmed) return;
@@ -59,7 +59,7 @@ function Returns() {
       const response = await createReturn(loan.id);
 
       setSuccess(
-        response.message || "Devolución registrada correctamente."
+        response.message || "Devolucion registrada correctamente."
       );
 
       await loadLoans();
@@ -73,7 +73,7 @@ function Returns() {
         setError(firstError || "Revisa los datos ingresados.");
       } else {
         setError(
-          data?.message || "No fue posible registrar la devolución."
+          data?.message || "No fue posible registrar la devolucion."
         );
       }
     } finally {
@@ -81,12 +81,12 @@ function Returns() {
     }
   };
 
-  // Préstamos pendientes
+  // Prestamos pendientes
   const pendingLoans = loans.filter(
     (loan) => !loan.return_record
   );
 
-  // Buscar préstamos
+  // Buscar prestamos
   const filteredLoans = pendingLoans.filter((loan) => {
     const searchText = search.toLowerCase();
 
@@ -113,9 +113,9 @@ function Returns() {
       <section className="panel">
         <div className="panel-heading">
           <div>
-            <h2>Préstamos pendientes</h2>
+            <h2>Prestamos pendientes</h2>
             <p>
-              Registra la devolución de los instrumentos prestados.
+              Registra la devolucion de los instrumentos prestados.
             </p>
           </div>
 
@@ -126,7 +126,7 @@ function Returns() {
 
         <div className="form-field student-search">
           <label htmlFor="return-search">
-            Buscar préstamo
+            Buscar prestamo
           </label>
 
           <input
@@ -140,7 +140,7 @@ function Returns() {
 
         {loading ? (
           <p className="loading-message">
-            Cargando préstamos pendientes...
+            Cargando prestamos pendientes...
           </p>
         ) : (
           <div className="table-container">
@@ -149,7 +149,7 @@ function Returns() {
                 <tr>
                   <th>Estudiante</th>
                   <th>Instrumento</th>
-                  <th>Fecha préstamo</th>
+                  <th>Fecha prestamo</th>
                   <th>Fecha vencimiento</th>
                   <th>Acciones</th>
                 </tr>
@@ -159,7 +159,7 @@ function Returns() {
                 {filteredLoans.length === 0 ? (
                   <tr>
                     <td colSpan="5">
-                      No hay préstamos pendientes para mostrar.
+                      No hay prestamos pendientes para mostrar.
                     </td>
                   </tr>
                 ) : (
@@ -189,7 +189,7 @@ function Returns() {
                         >
                           {processingId === loan.id
                             ? "Procesando..."
-                            : "Registrar devolución"}
+                            : "Registrar devolucion"}
                         </button>
                       </td>
                     </tr>

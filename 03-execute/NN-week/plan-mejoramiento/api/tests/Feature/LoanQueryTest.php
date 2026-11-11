@@ -22,7 +22,7 @@ class LoanQueryTest extends TestCase
 
         $category = Category::create([
             'code' => 'CAT-TEST',
-            'name' => 'Categoría de prueba',
+            'name' => 'Categoria de prueba',
         ]);
 
         $this->student = Student::create([

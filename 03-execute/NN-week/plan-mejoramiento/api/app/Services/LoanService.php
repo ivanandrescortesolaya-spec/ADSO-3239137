@@ -24,14 +24,14 @@ class LoanService
                 ->lockForUpdate()
                 ->findOrFail($instrumentId);
 
-            // Verificar que el instrumento esté activo.
+            // Verificar que el instrumento este activo.
             if (!$instrument->is_active) {
                 throw new ConflictHttpException(
-                    'El instrumento no está disponible para préstamos.'
+                    'El instrumento no esta disponible para prestamos.'
                 );
             }
 
-            // Verificar préstamos pendientes o vencidos.
+            // Verificar prestamos pendientes o vencidos.
             $hasPendingLoan = Loan::query()
                 ->where('student_id', $student->id)
                 ->whereDoesntHave('returnRecord')
@@ -39,11 +39,11 @@ class LoanService
 
             if ($hasPendingLoan) {
                 throw new ConflictHttpException(
-                    'El estudiante tiene un préstamo pendiente de devolución.'
+                    'El estudiante tiene un prestamo pendiente de devolucion.'
                 );
             }
 
-            // Verificar disponibilidad después del bloqueo.
+            // Verificar disponibilidad despues del bloqueo.
             if ($instrument->available_units <= 0) {
                 throw new ConflictHttpException(
                     'No hay unidades disponibles de este instrumento.'

@@ -17,7 +17,7 @@ class ReportTest extends TestCase
     {
         $category = Category::create([
             'code' => 'CAT-TEST',
-            'name' => 'Categoría de prueba',
+            'name' => 'Categoria de prueba',
         ]);
 
         $student = Student::create([
@@ -44,7 +44,7 @@ class ReportTest extends TestCase
             'is_active' => true,
         ]);
 
-        // Registrar tres préstamos de guitarra.
+        // Registrar tres prestamos de guitarra.
         for ($i = 0; $i < 3; $i++) {
             Loan::create([
                 'student_id' => $student->id,
@@ -58,7 +58,7 @@ class ReportTest extends TestCase
             ]);
         }
 
-        // Registrar un préstamo de violín.
+        // Registrar un prestamo de violin.
         Loan::create([
             'student_id' => $student->id,
             'instrument_id' => $violin->id,

@@ -109,7 +109,7 @@ function Students() {
     }
   };
 
-  // Preparar edición
+  // Preparar edicion
   const handleEdit = (student) => {
     setForm({
       student_code: student.student_code ?? "",
@@ -138,7 +138,7 @@ function Students() {
     <>
       <div className="page-heading">
         <h1>Estudiantes</h1>
-        <p>Administra la información de los estudiantes registrados.</p>
+        <p>Administra la informacion de los estudiantes registrados.</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -172,7 +172,7 @@ function Students() {
 
             <div className="form-grid">
               <div className="form-field">
-                <label htmlFor="student-code">Código del estudiante</label>
+                <label htmlFor="student-code">Codigo del estudiante</label>
                 <input
                   id="student-code"
                   name="student_code"
@@ -198,7 +198,7 @@ function Students() {
               </div>
 
               <div className="form-field">
-                <label htmlFor="student-email">Correo electrónico</label>
+                <label htmlFor="student-email">Correo electronico</label>
                 <input
                   id="student-email"
                   name="email"
@@ -243,7 +243,7 @@ function Students() {
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por código, nombre o correo..."
+            placeholder="Buscar por codigo, nombre o correo..."
           />
         </div>
 
@@ -254,9 +254,9 @@ function Students() {
             <table className="inventory-table">
               <thead>
                 <tr>
-                  <th>Código</th>
+                  <th>Codigo</th>
                   <th>Nombre completo</th>
-                  <th>Correo electrónico</th>
+                  <th>Correo electronico</th>
                   <th>Acciones</th>
                 </tr>
               </thead>

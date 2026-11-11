@@ -34,14 +34,14 @@ class CategoryTest extends TestCase
     {
         $response = $this->postJson('/api/categories', [
             'code' => 'CAT-TEST',
-            'name' => 'Categoría de prueba',
+            'name' => 'Categoria de prueba',
         ]);
 
         $response->assertCreated();
 
         $this->assertDatabaseHas('categories', [
             'code' => 'CAT-TEST',
-            'name' => 'Categoría de prueba',
+            'name' => 'Categoria de prueba',
         ]);
     }
 
@@ -54,7 +54,7 @@ class CategoryTest extends TestCase
 
         $response = $this->postJson('/api/categories', [
             'code' => 'CAT-01',
-            'name' => 'Otra categoría',
+            'name' => 'Otra categoria',
         ]);
 
         $response->assertUnprocessable();

@@ -117,7 +117,7 @@ class InstrumentController extends Controller
                 ->lockForUpdate()
                 ->findOrFail($id);
 
-            // Calcular cuántas unidades están prestadas.
+            // Calcular cuantas unidades estan prestadas.
             $unitsLoaned = $instrument->total_units
                 - $instrument->available_units;
 
@@ -146,7 +146,7 @@ class InstrumentController extends Controller
     }
 
     /**
-     * Dar de baja un instrumento sin eliminarlo físicamente.
+     * Dar de baja un instrumento sin eliminarlo fisicamente.
      */
     public function deactivate(int $id): JsonResponse
     {

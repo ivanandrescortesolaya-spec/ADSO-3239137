@@ -1,141 +1,141 @@
-# Constitución del proyecto — Music School
+# Constitucion del proyecto — Music School
 
 **Identificador:** music-school  
-**Proyecto:** Sistema de préstamo de instrumentos musicales  
+**Proyecto:** Sistema de prestamo de instrumentos musicales  
 **Ficha:** ADSO 3239137    
-**Versión:** 1.0
-**Codigo del Aprendiz** A12
+**Version:** 1.0
+**Codigo del aprendiz:** A12
 
-## 1. Propósito
+## 1. Proposito
 
-Este documento establece los principios, restricciones y reglas técnicas fundamentales que deben respetarse durante el diseño, desarrollo, implementación y mantenimiento del sistema Music School.
+Este documento establece los principios, restricciones y reglas tecnicas fundamentales que deben respetarse durante el diseño, desarrollo, implementacion y mantenimiento del sistema Music School.
 
-Todo componente, funcionalidad y cambio debe cumplir esta constitución y los requisitos definidos en la especificación del proyecto.
+Todo componente, funcionalidad y cambio debe cumplir esta constitucion y los requisitos definidos en la especificacion del proyecto.
 
 ## 2. Principios fundamentales
 
-### Artículo I. Integridad de las reglas de negocio
+### Articulo I. Integridad de las reglas de negocio
 
 Las reglas de negocio deben implementarse en el backend mediante Laravel.
 
-El frontend no será responsable de garantizar las restricciones del sistema, ya que cualquier operación debe validarse nuevamente en el servidor.
+El frontend no sera responsable de garantizar las restricciones del sistema, ya que cualquier operacion debe validarse nuevamente en el servidor.
 
-**Verificación:** realizar solicitudes directamente a la API para comprobar que las reglas se cumplen incluso cuando no se utiliza la interfaz gráfica.
+**Verificacion:** realizar solicitudes directamente a la API para comprobar que las reglas se cumplen incluso cuando no se utiliza la interfaz grafica.
 
-### Artículo II. Separación de responsabilidades
+### Articulo II. Separacion de responsabilidades
 
 El sistema debe mantener responsabilidades diferenciadas:
 
-- React: presentación e interacción con el usuario.
-- Laravel: lógica de negocio, validaciones y API REST.
+- React: presentacion e interaccion con el usuario.
+- Laravel: logica de negocio, validaciones y API REST.
 - Base de datos: persistencia, relaciones y restricciones.
-- Docker: ejecución y comunicación de los servicios.
+- Docker: ejecucion y comunicacion de los servicios.
 
-**Verificación:** comprobar que el frontend consume la API y que las reglas de negocio no dependen exclusivamente de React.
+**Verificacion:** comprobar que el frontend consume la API y que las reglas de negocio no dependen exclusivamente de React.
 
-### Artículo III. Contrato de comunicación
+### Articulo III. Contrato de comunicacion
 
-La comunicación entre React y Laravel se realizará mediante endpoints HTTP y respuestas JSON.
+La comunicacion entre React y Laravel se realizara mediante endpoints HTTP y respuestas JSON.
 
 Las operaciones deben respetar el contrato definido en `api-contract.md`.
 
-**Verificación:** ejecutar pruebas de los endpoints y comprobar sus solicitudes, respuestas y códigos HTTP.
+**Verificacion:** ejecutar pruebas de los endpoints y comprobar sus solicitudes, respuestas y codigos HTTP.
 
-### Artículo IV. Control de inventario
+### Articulo IV. Control de inventario
 
 Las unidades disponibles de cada instrumento deben permanecer siempre entre cero y el total registrado.
 
-Ningún préstamo puede producir cantidades negativas ni superar las unidades existentes.
+Ningun prestamo puede producir cantidades negativas ni superar las unidades existentes.
 
-**Verificación:** realizar pruebas de préstamo, devolución y actualización de inventario.
+**Verificacion:** realizar pruebas de prestamo, devolucion y actualizacion de inventario.
 
-### Artículo V. Restricciones de préstamos
+### Articulo V. Restricciones de prestamos
 
-Cada estudiante puede tener como máximo un instrumento sin devolver.
+Cada estudiante puede tener como maximo un instrumento sin devolver.
 
-El plazo de devolución será de 21 días.
+El plazo de devolucion sera de 21 dias.
 
-Los estudiantes que tengan préstamos vencidos no podrán recibir nuevos instrumentos hasta realizar la devolución correspondiente.
+Los estudiantes que tengan prestamos vencidos no podran recibir nuevos instrumentos hasta realizar la devolucion correspondiente.
 
-**Verificación:** ejecutar pruebas para estudiantes sin préstamos, con préstamos activos y con préstamos vencidos.
+**Verificacion:** ejecutar pruebas para estudiantes sin prestamos, con prestamos activos y con prestamos vencidos.
 
-### Artículo VI. Protección de la información histórica
+### Articulo VI. Proteccion de la informacion historica
 
-Los préstamos y las devoluciones son registros históricos que no podrán borrarse.
+Los prestamos y las devoluciones son registros historicos que no podran borrarse.
 
-Los datos congelados en cada operación deben conservar la información original registrada al momento de realizarla y no deben modificarse cuando cambien los datos del catálogo.
+Los datos congelados en cada operacion deben conservar la informacion original registrada al momento de realizarla y no deben modificarse cuando cambien los datos del catalogo.
 
-El catálogo de instrumentos utilizará baja lógica en lugar de eliminación física.
+El catalogo de instrumentos utilizara baja logica en lugar de eliminacion fisica.
 
-### Artículo VII. Control de concurrencia
+### Articulo VII. Control de concurrencia
 
-Cuando dos operadores intenten entregar simultáneamente la última unidad disponible de un instrumento, solamente una operación podrá completarse.
+Cuando dos operadores intenten entregar simultaneamente la ultima unidad disponible de un instrumento, solamente una operacion podra completarse.
 
-La operación que pierda la disponibilidad debe recibir una respuesta HTTP `409 Conflict`.
+La operacion que pierda la disponibilidad debe recibir una respuesta HTTP `409 Conflict`.
 
-**Verificación:** ejecutar una prueba automatizada de concurrencia con dos solicitudes simultáneas.
+**Verificacion:** ejecutar una prueba automatizada de concurrencia con dos solicitudes simultaneas.
 
-### Artículo VIII. Manejo del tiempo
+### Articulo VIII. Manejo del tiempo
 
-Las fechas y horas de las operaciones se almacenarán y procesarán en UTC.
+Las fechas y horas de las operaciones se almacenaran y procesaran en UTC.
 
-El plazo de devolución se calculará a partir del instante de registro del préstamo.
+El plazo de devolucion se calculara a partir del instante de registro del prestamo.
 
-**Verificación:** comprobar las fechas almacenadas, las fechas de vencimiento y su representación en las respuestas de la API.
+**Verificacion:** comprobar las fechas almacenadas, las fechas de vencimiento y su representacion en las respuestas de la API.
 
-### Artículo IX. Seguridad y protección de secretos
+### Articulo IX. Seguridad y proteccion de secretos
 
-Las credenciales y los secretos de configuración no deben almacenarse directamente en el repositorio.
+Las credenciales y los secretos de configuracion no deben almacenarse directamente en el repositorio.
 
-Se utilizarán variables de entorno y un archivo `.env.example` sin información sensible.
+Se utilizaran variables de entorno y un archivo `.env.example` sin informacion sensible.
 
 Las contraseñas deben almacenarse mediante mecanismos seguros de hash.
 
-**Verificación:** revisar los archivos versionados, las respuestas HTTP y los registros de ejecución para comprobar que no se exponen secretos.
+**Verificacion:** revisar los archivos versionados, las respuestas HTTP y los registros de ejecucion para comprobar que no se exponen secretos.
 
-### Artículo X. Responsabilidad de las migraciones
+### Articulo X. Responsabilidad de las migraciones
 
 La estructura de la base de datos debe mantenerse mediante migraciones versionadas de Laravel.
 
-Las relaciones, claves, índices y restricciones deben corresponder al modelo definido en `data-model.md`.
+Las relaciones, claves, indices y restricciones deben corresponder al modelo definido en `data-model.md`.
 
-**Verificación:** ejecutar las migraciones desde una base de datos vacía y comprobar que se construye el esquema esperado.
+**Verificacion:** ejecutar las migraciones desde una base de datos vacia y comprobar que se construye el esquema esperado.
 
-### Artículo XI. Convenciones de idioma
+### Articulo XI. Convenciones de idioma
 
-Los identificadores del código, variables, clases, métodos, tablas y columnas se escribirán en inglés.
+Los identificadores del codigo, variables, clases, metodos, tablas y columnas se escribiran en ingles.
 
-Los mensajes, notificaciones y textos visibles para el usuario estarán en español.
+Los mensajes, las notificaciones y los textos visibles para el usuario estaran en espanol, sin tildes en las vocales y conservando la letra `ñ`.
 
-**Verificación:** revisar el código fuente y la interfaz de usuario.
+**Verificacion:** revisar el codigo fuente y la interfaz de usuario.
 
-### Artículo XII. Desarrollo guiado por especificación
+### Articulo XII. Desarrollo guiado por especificacion
 
 Ninguna funcionalidad debe desarrollarse sin estar relacionada con un requisito, historia de usuario o tarea documentada.
 
 No se deben agregar funcionalidades fuera del alcance definido.
 
-Cada tarea se considerará terminada cuando exista evidencia verificable de su implementación.
+Cada tarea se considerara terminada cuando exista evidencia verificable de su implementacion.
 
-**Verificación:** relacionar las tareas de `tasks.md` con los requisitos, pruebas y resultados correspondientes.
+**Verificacion:** relacionar las tareas de `tasks.md` con los requisitos, pruebas y resultados correspondientes.
 
-### Artículo XIII. Generación de reportes
+### Articulo XIII. Generacion de reportes
 
 El sistema debe permitir generar un reporte de los
-instrumentos más solicitados, utilizando la información
-histórica de los préstamos registrados.
+instrumentos mas solicitados, utilizando la informacion
+historica de los prestamos registrados.
 
-**Verificación:** realizar préstamos de diferentes
+**Verificacion:** realizar prestamos de diferentes
 instrumentos y comprobar que el reporte refleje
 correctamente su frecuencia de solicitud.
 
-## 3. Tecnologías obligatorias
+## 3. Tecnologias obligatorias
 
-| Componente | Tecnología |
+| Componente | Tecnologia |
 |---|---|
 | Frontend | React |
 | Backend | PHP con Laravel |
-| Comunicación | API REST |
+| Comunicacion | API REST |
 | Formato de intercambio | JSON |
 | Contenedores | Docker |
 | Base de datos | MySQL |
@@ -144,34 +144,33 @@ correctamente su frecuencia de solicitud.
 
 El sistema debe respetar las siguientes condiciones:
 
-1. Máximo un instrumento sin devolver por estudiante.
-2. Plazo de préstamo de 21 días.
-3. Bloqueo de nuevos préstamos cuando existan instrumentos vencidos sin devolver.
+1. Maximo un instrumento sin devolver por estudiante.
+2. Plazo de prestamo de 21 dias.
+3. Bloqueo de nuevos prestamos cuando existan instrumentos vencidos sin devolver.
 4. Control permanente de unidades disponibles y unidades totales.
-5. Conservación de los datos históricos de cada operación.
-6. Baja lógica de los instrumentos.
+5. Conservacion de los datos historicos de cada operacion.
+6. Baja logica de los instrumentos.
 7. Almacenamiento de fechas en UTC.
 8. Mensajes de usuario en español.
-9. Reporte de instrumentos más solicitados.
-10. Control de concurrencia para evitar prestar dos veces la última unidad.
+9. Reporte de instrumentos mas solicitados.
+10. Control de concurrencia para evitar prestar dos veces la ultima unidad.
 
-## 5. Cumplimiento de la constitución
+## 5. Cumplimiento de la constitucion
 
 Todos los integrantes o responsables del desarrollo deben respetar estos principios.
 
-Cualquier cambio que modifique una regla, una decisión técnica o el alcance del sistema debe quedar documentado y justificado.
+Cualquier cambio que modifique una regla, una decision tecnica o el alcance del sistema debe quedar documentado y justificado.
 
-Las decisiones arquitectónicas importantes se registrarán en documentos ADR.
+Las decisiones arquitectonicas importantes se registraran en documentos ADR.
 
-## 6. Criterio de aceptación
+## 6. Criterio de aceptacion
 
-La constitución se considerará aplicada cuando:
+La constitucion se considerara aplicada cuando:
 
-- Las reglas de negocio estén implementadas en el backend.
-- La arquitectura respete la separación de responsabilidades.
-- El modelo de datos mantenga la integridad de la información.
-- La concurrencia esté controlada.
-- Los secretos estén protegidos.
+- Las reglas de negocio esten implementadas en el backend.
+- La arquitectura respete la separacion de responsabilidades.
+- El modelo de datos mantenga la integridad de la informacion.
+- La concurrencia este controlada.
+- Los secretos esten protegidos.
 - Las pruebas automatizadas demuestren el cumplimiento de los principios.
-- Las funcionalidades correspondan a la especificación aprobada.
-
+- Las funcionalidades correspondan a la especificacion aprobada.

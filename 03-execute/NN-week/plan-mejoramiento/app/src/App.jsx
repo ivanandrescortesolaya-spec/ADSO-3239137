@@ -54,7 +54,7 @@ function App() {
       setCategories(categoryList);
     } catch (err) {
       console.error(err);
-      setError("No fue posible cargar la información del sistema.");
+      setError("No fue posible cargar la informacion del sistema.");
     } finally {
       setLoading(false);
     }
@@ -92,7 +92,7 @@ function App() {
     const totalUnits = Number(form.total_units);
 
     if (!Number.isInteger(totalUnits) || totalUnits < 0) {
-      setError("Las unidades deben ser un número entero igual o mayor que cero.");
+      setError("Las unidades deben ser un numero entero igual o mayor que cero.");
       return;
     }
 
@@ -163,9 +163,9 @@ function App() {
   const menuItems = [
     { name: "Dashboard", icon: "▦" },
     { name: "Instrumentos", icon: "♫" },
-    { name: "Categorías", icon: "▤" },
+    { name: "Categorias", icon: "▤" },
     { name: "Estudiantes", icon: "♙" },
-    { name: "Préstamos", icon: "▣" },
+    { name: "Prestamos", icon: "▣" },
     { name: "Devoluciones", icon: "↩" },
   ];
 
@@ -176,11 +176,11 @@ function App() {
           <div className="brand-icon">♫</div>
           <div>
             <h2>Music School</h2>
-            <span>ADMINISTRACIÓN</span>
+            <span>ADMINISTRACION</span>
           </div>
         </div>
 
-        <p className="menu-label">MENÚ PRINCIPAL</p>
+        <p className="menu-label">MENU PRINCIPAL</p>
 
         <nav className="navigation">
           {menuItems.map((item) => (
@@ -205,7 +205,7 @@ function App() {
 
         <div className="sidebar-footer">
           <span>Music School</span>
-          <small>Sistema de préstamo de instrumentos</small>
+          <small>Sistema de prestamo de instrumentos</small>
         </div>
       </aside>
 
@@ -265,7 +265,7 @@ function App() {
 
                     <div className="form-grid">
                       <div className="form-field">
-                        <label htmlFor="category_id">Categoría</label>
+                        <label htmlFor="category_id">Categoria</label>
                         <select
                           id="category_id"
                           name="category_id"
@@ -273,7 +273,7 @@ function App() {
                           onChange={handleChange}
                           required
                         >
-                          <option value="">Selecciona una categoría</option>
+                          <option value="">Selecciona una categoria</option>
 
                           {categories.map((category) => (
                             <option key={category.id} value={category.id}>
@@ -284,7 +284,7 @@ function App() {
                       </div>
 
                       <div className="form-field">
-                        <label htmlFor="code">Código</label>
+                        <label htmlFor="code">Codigo</label>
                         <input
                           id="code"
                           name="code"
@@ -303,7 +303,7 @@ function App() {
                           name="name"
                           value={form.name}
                           onChange={handleChange}
-                          placeholder="Ej. Guitarra acústica"
+                          placeholder="Ej. Guitarra acustica"
                           required
                         />
                       </div>
@@ -347,7 +347,7 @@ function App() {
                 <div className="search-container">
                   <input
                     type="search"
-                    placeholder="Buscar por código o nombre..."
+                    placeholder="Buscar por codigo o nombre..."
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                   />
@@ -362,11 +362,11 @@ function App() {
             </>
           )}
 
-            {activePage === "Categorías" && <Categories />}
+            {activePage === "Categorias" && <Categories />}
 
             {activePage === "Estudiantes" && <Students />}
 
-            {activePage === "Préstamos" && <Loans />}
+            {activePage === "Prestamos" && <Loans />}
 
             {activePage === "Devoluciones" && <Returns />}
         </section>
@@ -381,7 +381,7 @@ function InstrumentTable({ instruments }) {
       <table className="inventory-table">
         <thead>
           <tr>
-            <th>Código</th>
+            <th>Codigo</th>
             <th>Instrumento</th>
             <th>Total</th>
             <th>Disponibles</th>
