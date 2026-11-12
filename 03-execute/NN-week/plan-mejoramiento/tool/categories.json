@@ -1,0 +1,23 @@
+
+[
+  {
+    "code": "CAT-01",
+    "name": "Cuerdas"
+  },
+  {
+    "code": "CAT-02",
+    "name": "Vientos"
+  },
+  {
+    "code": "CAT-03",
+    "name": "Percusion"
+  },
+  {
+    "code": "CAT-04",
+    "name": "Teclados"
+  },
+  {
+    "code": "CAT-05",
+    "name": "Electronicos"
+  }
+]
