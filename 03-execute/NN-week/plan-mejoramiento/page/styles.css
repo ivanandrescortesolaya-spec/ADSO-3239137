@@ -1,0 +1,282 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #17243a;
+    background: #ffffff;
+}
+
+.header {
+    min-height: 78px;
+    padding: 15px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: white;
+    border-bottom: 1px solid #e5eaf1;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #17243a;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.logo-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    background: #2563eb;
+    color: white;
+    border-radius: 10px;
+    font-size: 24px;
+}
+
+.navigation {
+    display: flex;
+    gap: 25px;
+}
+
+.navigation a {
+    text-decoration: none;
+    color: #536176;
+    font-size: 14px;
+}
+
+.navigation a:hover {
+    color: #2563eb;
+}
+
+.header-button,
+.primary-button {
+    display: inline-block;
+    padding: 13px 20px;
+    border-radius: 7px;
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.hero {
+    min-height: 490px;
+    padding: 75px 10%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 50px;
+    background: #f1f5fb;
+}
+
+.eyebrow {
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.hero h1 {
+    max-width: 570px;
+    margin: 20px 0;
+    font-size: clamp(36px, 5vw, 55px);
+    line-height: 1.12;
+}
+
+.hero-content p {
+    max-width: 500px;
+    margin-bottom: 28px;
+    color: #64748b;
+    line-height: 1.8;
+}
+
+.hero-image {
+    min-height: 310px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #17243a, #315b91);
+    color: white;
+}
+
+.music-symbol {
+    font-size: 130px;
+}
+
+.hero-image span {
+    letter-spacing: 4px;
+    font-size: 12px;
+}
+
+.section {
+    padding: 85px 10%;
+}
+
+.about,
+.contact {
+    text-align: center;
+}
+
+.section h2 {
+    margin: 15px 0;
+    font-size: 34px;
+}
+
+.about p,
+.contact p,
+.section-description {
+    max-width: 720px;
+    margin: 15px auto 0;
+    color: #64748b;
+    line-height: 1.8;
+}
+
+.catalog {
+    background: #f8fafc;
+    text-align: center;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    margin-top: 40px;
+}
+
+.category-card {
+    padding: 25px 18px;
+    background: white;
+    border: 1px solid #e5eaf1;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.category-card span {
+    font-size: 38px;
+}
+
+.category-card h3 {
+    margin: 15px 0 10px;
+}
+
+.category-card p {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.loan-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+    background: #17243a;
+    color: white;
+}
+
+.loan-section .eyebrow {
+    color: #93c5fd;
+}
+
+.loan-section p {
+    color: #cbd5e1;
+    line-height: 1.8;
+    margin-top: 15px;
+}
+
+.requirements {
+    padding: 30px;
+    background: #263d60;
+    border-radius: 12px;
+}
+
+.requirements h3 {
+    margin-bottom: 20px;
+}
+
+.requirements ul {
+    padding-left: 20px;
+    color: #e2e8f0;
+    line-height: 2.2;
+    font-size: 14px;
+}
+
+.footer {
+    padding: 35px 10%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: #101b2d;
+    color: #cbd5e1;
+}
+
+.footer .logo {
+    color: white;
+}
+
+.footer p {
+    font-size: 12px;
+}
+
+@media (max-width: 900px) {
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .navigation {
+        gap: 12px;
+    }
+
+    .hero {
+        padding: 55px 7%;
+    }
+}
+
+@media (max-width: 650px) {
+    .header {
+        flex-wrap: wrap;
+    }
+
+    .navigation {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .hero,
+    .loan-section {
+        grid-template-columns: 1fr;
+    }
+
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 55px 7%;
+    }
+
+    .footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
