@@ -54,7 +54,7 @@ class OverdueLoanTest extends TestCase
             $this->instrument->id
         );
 
-        // Convertir el prestamo en vencido para la prueba.
+        // Make the loan overdue for the test.
         $loan->update([
             'due_at' => now('UTC')->subDay(),
         ]);
@@ -82,7 +82,7 @@ class OverdueLoanTest extends TestCase
             'due_at' => now('UTC')->subDay(),
         ]);
 
-        // Registrar la devolucion.
+        // Record the return.
         app(ReturnService::class)->createReturn($loan->id);
 
         $response = $this->getJson('/api/loans/overdue');

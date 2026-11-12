@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 class InstrumentController extends Controller
 {
     /**
-     * Listar instrumentos.
+     * List instruments.
      */
     public function index(): JsonResponse
     {
@@ -29,7 +29,7 @@ class InstrumentController extends Controller
     }
 
     /**
-     * Consultar un instrumento.
+     * Fetch an instrument.
      */
     public function show(int $id): JsonResponse
     {
@@ -41,7 +41,7 @@ class InstrumentController extends Controller
     }
 
     /**
-     * Registrar un instrumento.
+     * Create an instrument.
      */
     public function store(Request $request): JsonResponse
     {
@@ -87,8 +87,8 @@ class InstrumentController extends Controller
     }
 
     /**
-     * Actualizar un instrumento sin alterar
-     * incorrectamente las unidades prestadas.
+     * Update an instrument without incorrectly
+     * changing the units currently on loan.
      */
     public function update(Request $request, int $id): JsonResponse
     {
@@ -123,11 +123,11 @@ class InstrumentController extends Controller
                 ->lockForUpdate()
                 ->findOrFail($id);
 
-            // Calcular cuantas unidades estan prestadas.
+            // Calculate how many units are on loan.
             $unitsLoaned = $instrument->total_units
                 - $instrument->available_units;
 
-            // No permitir un total inferior a las unidades prestadas.
+            // Do not allow a total lower than the units currently on loan.
             if ($validated['total_units'] < $unitsLoaned) {
                 throw new ConflictHttpException(
                     'El total de unidades no puede ser inferior a las unidades actualmente prestadas.'
@@ -152,7 +152,7 @@ class InstrumentController extends Controller
     }
 
     /**
-     * Dar de baja un instrumento sin eliminarlo fisicamente.
+     * Deactivate an instrument without physically deleting it.
      */
     public function deactivate(int $id): JsonResponse
     {

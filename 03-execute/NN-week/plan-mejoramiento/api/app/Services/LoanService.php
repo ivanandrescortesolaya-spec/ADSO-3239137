@@ -15,17 +15,17 @@ class LoanService
     {
         return DB::transaction(function () use ($studentId, $instrumentId) {
 
-            // Bloquear al estudiante.
+            // Lock the student.
             $student = Student::query()
                 ->lockForUpdate()
                 ->findOrFail($studentId);
 
-            // Bloquear el instrumento.
+            // Lock the instrument.
             $instrument = Instrument::query()
                 ->lockForUpdate()
                 ->findOrFail($instrumentId);
 
-            // Verificar que el instrumento este activo.
+            // Check that the instrument is active.
             if (!$instrument->is_active) {
                 throw new ConflictHttpException(
                     'El instrumento no esta disponible para prestamos.'
@@ -38,7 +38,7 @@ class LoanService
                 ]);
             }
 
-            // Verificar prestamos pendientes o vencidos.
+            // Check for pending or overdue loans.
             $hasPendingLoan = Loan::query()
                 ->where('student_id', $student->id)
                 ->whereDoesntHave('returnRecord')
@@ -50,14 +50,14 @@ class LoanService
                 );
             }
 
-            // Verificar disponibilidad despues del bloqueo.
+            // Check availability after locking.
             if ($instrument->available_units <= 0) {
                 throw new ConflictHttpException(
                     'No hay unidades disponibles de este instrumento.'
                 );
             }
 
-            // Registrar fechas UTC.
+            // Record dates in UTC.
             $loanedAt = now('UTC');
 
             $loan = Loan::create([
@@ -71,7 +71,7 @@ class LoanService
                 'due_at' => $loanedAt->copy()->addDays(21),
             ]);
 
-            // Descontar una unidad disponible.
+            // Deduct one available unit.
             $instrument->decrement('available_units');
 
             return $loan;

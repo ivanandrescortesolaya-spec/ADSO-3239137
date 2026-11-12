@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class StudentController extends Controller
 {
     /**
-     * Listar estudiantes.
+     * List students.
      */
     public function index(): JsonResponse
     {
@@ -24,7 +24,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Consultar un estudiante.
+     * Fetch a student.
      */
     public function show(int $id): JsonResponse
     {
@@ -37,7 +37,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Consultar los prestamos de un estudiante.
+     * Fetch a student's loans.
      */
     public function loans(int $id): JsonResponse
     {
@@ -58,7 +58,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Registrar un estudiante.
+     * Create a student.
      */
     public function store(Request $request): JsonResponse
     {
@@ -91,7 +91,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Actualizar informacion del estudiante.
+     * Update student information.
      */
     public function update(Request $request, int $id): JsonResponse
     {

@@ -8,41 +8,41 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoanController;
 use App\Http\Controllers\Api\ReturnController;
 
-// Categorias
+// Categories
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/categories', [CategoryController::class, 'store']);
 Route::patch('/categories/{id}/deactivate', [CategoryController::class, 'deactivate'])->whereNumber('id');
 Route::patch('/categories/{id}/activate', [CategoryController::class, 'activate'])->whereNumber('id');
-// Instrumentos
+// Instruments
 Route::get('/instruments', [InstrumentController::class, 'index']);
 Route::get('/instruments/{id}', [InstrumentController::class, 'show']);
 Route::post('/instruments', [InstrumentController::class, 'store']);
 Route::put('/instruments/{id}', [InstrumentController::class, 'update']);
 Route::patch('/instruments/{id}/deactivate', [InstrumentController::class, 'deactivate']);
-// Estudiantes
+// Students
 Route::get('/students', [StudentController::class, 'index']);
 Route::get('/students/{id}', [StudentController::class, 'show']);
 Route::post('/students', [StudentController::class, 'store']);
 Route::put('/students/{id}', [StudentController::class, 'update']);
 
-// Prestamos
+// Loans
 Route::get('/loans', [LoanController::class, 'index']);
 Route::get('/loans/overdue', [LoanController::class, 'overdue']);
 
-// El identificador del prestamo debe ser numerico.
+// The loan identifier must be numeric.
 Route::get('/loans/{id}', [LoanController::class, 'show'])
     ->whereNumber('id');
 
 Route::post('/loans', [LoanController::class, 'store']);
 
-// Devoluciones
+// Returns
 Route::post('/loans/{loanId}/returns', [ReturnController::class, 'store']);
 
-// Reportes
+// Reports
 Route::get(
     '/reports/most-requested-instruments',
     [ReportController::class, 'mostRequestedInstruments']
 );
 
-// Historial de prestamos de un estudiante.
+// A student's loan history.
 Route::get('/students/{id}/loans', [StudentController::class, 'loans']);

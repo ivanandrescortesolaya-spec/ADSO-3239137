@@ -69,7 +69,7 @@ class LoanController extends Controller
     }
 
     /**
-     * Consultar prestamos vencidos que no tienen devolucion.
+     * Fetch overdue loans that have not been returned.
      */
     public function overdue(): JsonResponse
     {

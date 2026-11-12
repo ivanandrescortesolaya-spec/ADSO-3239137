@@ -44,7 +44,7 @@ class ReportTest extends TestCase
             'is_active' => true,
         ]);
 
-        // Registrar tres prestamos de guitarra.
+        // Record three guitar loans.
         for ($i = 0; $i < 3; $i++) {
             Loan::create([
                 'student_id' => $student->id,
@@ -58,7 +58,7 @@ class ReportTest extends TestCase
             ]);
         }
 
-        // Registrar un prestamo de violin.
+        // Record one violin loan.
         Loan::create([
             'student_id' => $student->id,
             'instrument_id' => $violin->id,

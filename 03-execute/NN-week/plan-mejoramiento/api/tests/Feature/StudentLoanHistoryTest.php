@@ -76,16 +76,16 @@ class StudentLoanHistoryTest extends TestCase
         $loanService = app(LoanService::class);
         $returnService = app(ReturnService::class);
 
-        // Primer prestamo.
+        // First loan.
         $firstLoan = $loanService->createLoan(
             $this->student->id,
             $this->firstInstrument->id
         );
 
-        // Devolver el primer instrumento.
+        // Return the first instrument.
         $returnService->createReturn($firstLoan->id);
 
-        // Segundo prestamo del mismo estudiante.
+        // Second loan for the same student.
         $secondLoan = $loanService->createLoan(
             $this->student->id,
             $this->secondInstrument->id

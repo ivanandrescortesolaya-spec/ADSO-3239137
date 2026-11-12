@@ -14,30 +14,30 @@ class ReturnService
     {
         return DB::transaction(function () use ($loanId) {
 
-            // Bloquear el prestamo.
+            // Lock the loan.
             $loan = Loan::query()
                 ->lockForUpdate()
                 ->findOrFail($loanId);
 
-            // Comprobar que el prestamo no haya sido devuelto.
+            // Check that the loan has not been returned.
             if ($loan->returnRecord()->exists()) {
                 throw new ConflictHttpException(
                     'Este prestamo ya tiene registrada una devolucion.'
                 );
             }
 
-            // Bloquear el instrumento asociado.
+            // Lock the associated instrument.
             $instrument = Instrument::query()
                 ->lockForUpdate()
                 ->findOrFail($loan->instrument_id);
 
-            // Registrar la devolucion en UTC.
+            // Record the return in UTC.
             $returnRecord = ReturnRecord::create([
                 'loan_id' => $loan->id,
                 'returned_at' => now('UTC'),
             ]);
 
-            // Recuperar una unidad del inventario.
+            // Restore one unit to the inventory.
             if ($instrument->available_units >= $instrument->total_units) {
                 throw new ConflictHttpException(
                     'No es posible devolver esta unidad porque el inventario alcanzaria un valor invalido.'
