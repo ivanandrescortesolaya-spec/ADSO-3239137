@@ -38,15 +38,14 @@ class StudentSeeder extends Seeder
         ];
 
         foreach ($students as $student) {
-            DB::table('students')->updateOrInsert(
-                ['student_code' => $student['student_code']],
-                [
-                    'full_name' => $student['full_name'],
-                    'email' => $student['email'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            );
+            // Preserve existing student information and timestamps.
+            DB::table('students')->insertOrIgnore([
+                'student_code' => $student['student_code'],
+                'full_name' => $student['full_name'],
+                'email' => $student['email'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }

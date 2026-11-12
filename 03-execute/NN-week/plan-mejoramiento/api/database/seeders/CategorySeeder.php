@@ -33,14 +33,13 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            DB::table('categories')->updateOrInsert(
-                ['code' => $category['code']],
-                [
-                    'name' => $category['name'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            );
+            // Insert only if the category does not already exist.
+            DB::table('categories')->insertOrIgnore([
+                'code' => $category['code'],
+                'name' => $category['name'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }

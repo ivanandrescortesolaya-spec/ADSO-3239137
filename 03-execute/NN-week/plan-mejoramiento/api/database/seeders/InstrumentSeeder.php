@@ -73,6 +73,7 @@ class InstrumentSeeder extends Seeder
         ];
 
         foreach ($instruments as $instrument) {
+            // Find the category using its unique code.
             $category = DB::table('categories')
                 ->where('code', $instrument['category_code'])
                 ->first();
@@ -83,18 +84,17 @@ class InstrumentSeeder extends Seeder
                 );
             }
 
-            DB::table('instruments')->updateOrInsert(
-                ['code' => $instrument['code']],
-                [
-                    'category_id' => $category->id,
-                    'name' => $instrument['name'],
-                    'total_units' => $instrument['total_units'],
-                    'available_units' => $instrument['total_units'],
-                    'is_active' => true,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            );
+            // Preserve existing inventory, status, and timestamps.
+            DB::table('instruments')->insertOrIgnore([
+                'category_id' => $category->id,
+                'code' => $instrument['code'],
+                'name' => $instrument['name'],
+                'total_units' => $instrument['total_units'],
+                'available_units' => $instrument['total_units'],
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }
