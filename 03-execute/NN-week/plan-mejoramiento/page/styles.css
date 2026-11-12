@@ -280,3 +280,14 @@ body {
         align-items: flex-start;
     }
 }
+/* Responsive improvements for mobile devices */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
