@@ -1,0 +1,14 @@
+
+{
+  "name": "music-school-seed-tool",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Herramienta de inicializacion de datos mediante la API de Music School",
+  "type": "module",
+  "scripts": {
+    "seed": "node --env-file=.env src/seed.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
