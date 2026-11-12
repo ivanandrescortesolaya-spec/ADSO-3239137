@@ -145,4 +145,31 @@ class InstrumentManagementTest extends TestCase
 
         $response->assertNotFound();
     }
+
+public function test_total_units_cannot_be_lower_than_units_on_loan(): void
+{
+    // The instrument has five total units and four available.
+    // Therefore, one unit is currently on loan.
+
+    $response = $this->putJson(
+        '/api/instruments/' . $this->instrument->id,
+        [
+            'category_id' => $this->category->id,
+            'code' => 'INS-TEST-001',
+            'name' => 'Guitarra de prueba',
+            'total_units' => 0,
+        ]
+    );
+
+    // The update must be rejected.
+    $response->assertStatus(409);
+
+    // The original inventory must remain unchanged.
+    $this->assertDatabaseHas('instruments', [
+        'id' => $this->instrument->id,
+        'total_units' => 5,
+        'available_units' => 4,
+    ]);
+}
+
 }
