@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getInstruments } from "../services/instrumentService";
 import { getStudents } from "../services/studentService";
 import { getLoans, getOverdueLoans } from "../services/loanService";
@@ -24,77 +24,100 @@ function Dashboard() {
   });
 
   const [popularInstruments, setPopularInstruments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [requestStatus, setRequestStatus] = useState({
+    instruments: "loading",
+    students: "loading",
+    loans: "loading",
+    overdue: "loading",
+    report: "loading",
+  });
   const [error, setError] = useState("");
+  const requestId = useRef(0);
 
   const availabilityPercentage =
     stats.totalUnits > 0
-      ? Number(
-          ((stats.availableUnits / stats.totalUnits) * 100).toFixed(2)
-        )
+      ? Number(((stats.availableUnits / stats.totalUnits) * 100).toFixed(2))
       : 0;
 
-  const loadDashboard = async () => {
-    try {
-      setError("");
+  // Update each section as soon as its API response arrives.
+  const loadDashboard = useCallback(() => {
+    const currentRequest = ++requestId.current;
+    const isCurrent = () => requestId.current === currentRequest;
 
-      const [
-        instrumentResponse,
-        studentResponse,
-        loanResponse,
-        overdueResponse,
-        reportResponse,
-      ] = await Promise.all([
-        getInstruments(),
-        getStudents(),
-        getLoans(),
-        getOverdueLoans(),
-        getMostRequestedInstruments(),
-      ]);
+    setError("");
+    setRequestStatus({
+      instruments: "loading",
+      students: "loading",
+      loans: "loading",
+      overdue: "loading",
+      report: "loading",
+    });
 
-      const instruments = getList(instrumentResponse);
-      const students = getList(studentResponse);
-      const loans = getList(loanResponse);
-      const overdueLoans = getList(overdueResponse);
-      const report = getList(reportResponse);
+    const loadSection = (key, fetchData, onSuccess) => {
+      Promise.resolve()
+        .then(fetchData)
+        .then((response) => {
+          if (!isCurrent()) return;
+          onSuccess(getList(response));
+          setRequestStatus((previous) => ({ ...previous, [key]: "done" }));
+        })
+        .catch((err) => {
+          if (!isCurrent()) return;
+          console.error(`Error loading dashboard ${key}:`, err);
+          setRequestStatus((previous) => ({ ...previous, [key]: "error" }));
+          setError("No fue posible cargar algunos indicadores. Verifica que la API esté funcionando.");
+        });
+    };
 
-      const activeLoans = loans.filter(
-        (loan) => !loan.return_record && !loan.returnRecord
-      );
-
+    loadSection("instruments", getInstruments, (instruments) => {
       const totalUnits = instruments.reduce(
         (total, item) => total + Number(item.total_units || 0),
         0
       );
-
       const availableUnits = instruments.reduce(
         (total, item) => total + Number(item.available_units || 0),
         0
       );
-
-      setStats({
+      setStats((previous) => ({
+        ...previous,
         instruments: instruments.length,
-        students: students.length,
-        activeLoans: activeLoans.length,
-        overdueLoans: overdueLoans.length,
         totalUnits,
         availableUnits,
-      });
+      }));
+    });
 
-      setPopularInstruments(report);
-    } catch (err) {
-      console.error("Error al cargar el Dashboard:", err);
-      setError(
-        "No fue posible cargar los indicadores. Verifica que la API esté funcionando."
+    loadSection("students", getStudents, (students) => {
+      setStats((previous) => ({ ...previous, students: students.length }));
+    });
+
+    loadSection("loans", getLoans, (loans) => {
+      const activeLoans = loans.filter(
+        (loan) => !loan.return_record && !loan.returnRecord
       );
-    } finally {
-      setLoading(false);
-    }
-  };
+      setStats((previous) => ({ ...previous, activeLoans: activeLoans.length }));
+    });
+
+    loadSection("overdue", getOverdueLoans, (overdueLoans) => {
+      setStats((previous) => ({ ...previous, overdueLoans: overdueLoans.length }));
+    });
+
+    loadSection("report", getMostRequestedInstruments, setPopularInstruments);
+  }, []);
 
   useEffect(() => {
     loadDashboard();
-  }, []);
+    // Ignore responses from a previous mount or refresh.
+    return () => {
+      requestId.current += 1;
+    };
+  }, [loadDashboard]);
+
+  const displayValue = (key, value) =>
+    requestStatus[key] === "done"
+      ? value
+      : requestStatus[key] === "error"
+        ? "—"
+        : "...";
 
   const maxLoans = Math.max(
     1,
@@ -106,7 +129,7 @@ function Dashboard() {
   const cards = [
     {
       title: "Tipos de instrumentos",
-      value: stats.instruments,
+      value: displayValue("instruments", stats.instruments),
       description: "Registrados en el catálogo",
       icon: "♫",
       illustration: "🎸",
@@ -114,7 +137,7 @@ function Dashboard() {
     },
     {
       title: "Unidades disponibles",
-      value: stats.availableUnits,
+      value: displayValue("instruments", stats.availableUnits),
       description: "Disponibles para préstamo",
       icon: "✓",
       illustration: "📦",
@@ -122,7 +145,7 @@ function Dashboard() {
     },
     {
       title: "Estudiantes",
-      value: stats.students,
+      value: displayValue("students", stats.students),
       description: "Registrados en el sistema",
       icon: "♟",
       illustration: "👨‍🎓",
@@ -130,7 +153,7 @@ function Dashboard() {
     },
     {
       title: "Préstamos activos",
-      value: stats.activeLoans,
+      value: displayValue("loans", stats.activeLoans),
       description: "Instrumentos sin devolver",
       icon: "▣",
       illustration: "📋",
@@ -138,7 +161,7 @@ function Dashboard() {
     },
     {
       title: "Préstamos vencidos",
-      value: stats.overdueLoans,
+      value: displayValue("overdue", stats.overdueLoans),
       description: "Requieren seguimiento",
       icon: "!",
       illustration: "📅",
@@ -146,7 +169,7 @@ function Dashboard() {
     },
     {
       title: "Unidades totales",
-      value: stats.totalUnits,
+      value: displayValue("instruments", stats.totalUnits),
       description: "En el inventario",
       icon: "▤",
       illustration: "📦",
@@ -154,29 +177,17 @@ function Dashboard() {
     },
   ];
 
-  if (loading) {
-    return (
-      <div className="dashboard-loading">
-        <div className="dashboard-spinner" />
-        <p>Cargando indicadores...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="dashboard-error">
-        <span>!</span>
-        <p>{error}</p>
-        <button className="dashboard-retry" onClick={loadDashboard}>
-          Reintentar
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="dashboard-page">
+      {error && (
+        <div className="dashboard-error" role="alert">
+          <span>!</span>
+          <p>{error}</p>
+          <button className="dashboard-retry" onClick={loadDashboard}>
+            Reintentar
+          </button>
+        </div>
+      )}
       {/* Main banner */}
       <section className="dashboard-hero">
         <div className="hero-content">
@@ -240,20 +251,20 @@ function Dashboard() {
           <span className="dashboard-stat-icon">%</span>
           <div className="dashboard-stat-info">
             <p>Disponibilidad del inventario</p>
-            <h3>{availabilityPercentage}%</h3>
+            <h3>{displayValue("instruments", `${availabilityPercentage}%`)}</h3>
 
             <div
               className="availability-progress"
               role="progressbar"
               aria-label="Disponibilidad del inventario"
-              aria-valuenow={availabilityPercentage}
+              aria-valuenow={requestStatus.instruments === "done" ? availabilityPercentage : 0}
               aria-valuemin="0"
               aria-valuemax="100"
             >
               <div
                 className="availability-progress-fill"
                 style={{
-                  width: `${Math.min(100, availabilityPercentage)}%`,
+                  width: requestStatus.instruments === "done" ? `${Math.min(100, availabilityPercentage)}%` : "0%",
                 }}
               />
             </div>
@@ -297,7 +308,15 @@ function Dashboard() {
             </thead>
 
             <tbody>
-              {popularInstruments.length === 0 ? (
+              {requestStatus.report !== "done" ? (
+                <tr>
+                  <td colSpan="4" className="empty-report">
+                    {requestStatus.report === "error"
+                      ? "No fue posible cargar el reporte."
+                      : "Cargando reporte..."}
+                  </td>
+                </tr>
+              ) : popularInstruments.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="empty-report">
                     Todavía no hay datos para el reporte.
