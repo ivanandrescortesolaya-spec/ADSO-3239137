@@ -2,237 +2,217 @@ Este proyecto es la solución del plan de mejoramiento del aprendiz A12, ficha 3
 
 # Music School
 
-**Sistema de préstamo de instrumentos musicales**
+Sistema para administrar instrumentos, estudiantes, prestamos y devoluciones. Este README describe archivos y comportamientos que existen en el repositorio; no declara que todos los requisitos del plan esten terminados.
 
-| Información | Descripción |
+## Tecnologias verificadas
+
+| Componente | Version o requisito comprobable |
 |---|---|
-| Proyecto | Music School |
-| Ficha | ADSO 3239137 |
-| Identificador del aprendiz | A12 |
-| Tipo de proyecto | Sistema de gestión de préstamos |
-| Estado | En desarrollo |
-| Versión de documentación | 1.1 |
+| PHP | `^8.3`, declarado en `api/composer.json` |
+| Laravel | `^13.17`, declarado en `api/composer.json` |
+| React | `^19.3.1`, declarado en `app/package.json` |
+| Vite | `^8.3.6`, declarado en `app/package.json` |
+| MySQL | Imagen `mysql:8.4` en `infra/docker-compose.yml` |
+| Node.js para la herramienta de datos | `>=20`, declarado en `tool/package.json` |
+| Comunicacion | API HTTP con JSON |
 
----
+Composer y npm instalan las dependencias declaradas en sus manifiestos. `api/` y `app/` tambien incluyen archivos de bloqueo. El archivo Compose solo inicia MySQL; Laravel y React se ejecutan por separado.
 
-## 1. Descripción del proyecto
-
-Music School es un sistema de gestión de préstamos de instrumentos musicales, diseñado para administrar el catálogo de instrumentos, controlar las unidades disponibles, registrar estudiantes, gestionar préstamos y devoluciones, y consultar el historial de operaciones.
-
-El sistema busca mantener la integridad de la información, controlar los plazos de devolución y evitar inconsistencias cuando varios operadores realizan préstamos simultáneamente.
-
-## 2. Objetivo
-
-Desarrollar una solución de software que permita gestionar de manera organizada y segura el préstamo de instrumentos musicales, aplicando las reglas de negocio y los requisitos establecidos en la especificación del proyecto.
-
-## 3. Alcance funcional
-
-El sistema contempla las siguientes funcionalidades:
-
-- Registro y consulta de modelos de instrumentos.
-- Organización de instrumentos en cinco categorías.
-- Registro y consulta de estudiantes.
-- Registro de préstamos.
-- Registro de devoluciones.
-- Control de fechas de vencimiento.
-- Identificación de préstamos vencidos.
-- Control de unidades totales y disponibles.
-- Conservación del historial de préstamos y devoluciones.
-- Baja lógica de instrumentos retirados del catálogo.
-- Reporte de instrumentos más solicitados.
-- Control de operaciones simultáneas sobre la última unidad disponible.
-
-## 4. Categorías de instrumentos
-
-El catálogo inicial contempla cinco categorías:
-
-| Código | Categoría |
-|---|---|
-| CAT-01 | Cuerdas |
-| CAT-02 | Vientos |
-| CAT-03 | Percusión |
-| CAT-04 | Teclados |
-| CAT-05 | Electrónicos |
-
-## 5. Reglas de negocio
-
-El funcionamiento de Music School debe respetar las siguientes reglas:
-
-1. **Límite de préstamos:** cada estudiante puede tener como máximo un instrumento sin devolver.
-2. **Plazo de devolución:** cada préstamo tiene un plazo de 21 días.
-3. **Préstamos vencidos:** un estudiante con un préstamo vencido y pendiente de devolución no puede recibir otro instrumento hasta realizar la devolución.
-4. **Integridad del inventario:** las unidades disponibles deben permanecer entre cero y las unidades totales.
-5. **Conservación del historial:** los préstamos y las devoluciones no se eliminan físicamente. Los datos históricos deben conservar la información original de las operaciones.
-6. **Concurrencia:** cuando dos operadores intenten entregar simultáneamente la última unidad disponible, solamente una operación podrá completarse. La otra recibirá HTTP 409 Conflict.
-7. **Fechas y comunicación:** las fechas y horas se almacenan y procesan en UTC. Los mensajes visibles para el usuario deben estar en español.
-
-## 6. Tecnologías
-
-| Componente | Tecnología |
-|---|---|
-| Frontend | React |
-| Backend | PHP con Laravel |
-| Base de datos | MySQL |
-| Comunicación | API REST |
-| Intercambio de datos | JSON |
-| Infraestructura | Docker |
-
-## 7. Estructura del proyecto
-
-La organización del repositorio contempla la siguiente estructura:
+## Estructura del repositorio
 
 ```text
-plan-mejoramiento/
-│
-├── README.md
-│
-├── docs/
-│   ├── constitution.md
-│   ├── spec.md
-│   ├── plan.md
-│   ├── architecture.md
-│   ├── data-model.md
-│   ├── api-contract.md
-│   ├── tasks.md
-│   └── adr/
-│       ├── ADR-001-backend-framework.md
-│       ├── ADR-002-database.md
-│       └── ADR-003-architecture.md
-│
-├── api/
-│   └── Backend Laravel
-│
-├── app/
-│   └── Aplicación React
-│
-├── page/
-│   └── Sitio público de presentación del producto
-│
-├── infra/
-│   └── Configuración de infraestructura y Docker
-│
-└── tool/
-    └── Herramientas y sembrador de datos por API
+.
+|-- README.md
+|-- api/
+|   |-- app/Http/Controllers/Api/
+|   |-- app/Models/
+|   |-- app/Services/
+|   |-- bootstrap/  config/  public/  resources/  routes/
+|   |-- database/factories/  migrations/  seeders/
+|   |-- tests/
+|   |   |-- Feature/    (14 archivos *Test.php)
+|   |   `-- Unit/       (1 archivo *Test.php)
+|   |-- .env.example
+|   |-- artisan
+|   |-- composer.json  composer.lock
+|   `-- phpunit.xml
+|-- app/
+|   |-- public/
+|   |-- src/pages/
+|   |-- src/services/
+|   |-- package.json  package-lock.json
+|   `-- vite.config.js
+|-- docs/
+|   |-- adr/           (ADR-001.md a ADR-003.md)
+|   |-- evidence/       (concurrency-test.md)
+|   |-- api-contract.md  architecture.md  constitution.md
+|   |-- data-model.md  evidence.md  plan.md  spec.md  tasks.md
+|-- infra/
+|   |-- docker-compose.yml
+|   `-- .env.example
+|-- page/
+|   |-- index.html  script.js  styles.css
+`-- tool/
+    |-- src/  categories.json  instruments.json
+    |-- .env.example  package.json  README.md
 ```
 
-La estructura representa la organización prevista del proyecto. Los archivos y directorios se incorporarán conforme avance la implementación.
+El frontend contiene paginas para dashboard, categorias, estudiantes, prestamos y devoluciones. En `api/database/migrations/` se encuentran las migraciones de usuarios, cache, trabajos, categorias, instrumentos, estudiantes, prestamos, devoluciones, roles y estado de categoria.
 
-## 8. Arquitectura general
+## Reglas de negocio de la especificacion
 
-La solución estará organizada en componentes con responsabilidades separadas:
+`docs/spec.md` presenta seis reglas agrupadas. La implementacion actual aplica, entre otras, estas validaciones en Laravel:
 
-- **Frontend:** interfaz de usuario desarrollada con React.
-- **Backend:** lógica de negocio y servicios API implementados con Laravel.
-- **Base de datos:** almacenamiento persistente mediante MySQL.
-- **Infraestructura:** ejecución de los servicios mediante contenedores Docker.
-- **Sitio público:** presentación del producto Music School.
-- **Herramientas:** utilidades para facilitar la configuración y el sembrado de datos mediante la API.
+- Un estudiante no puede mantener mas de un prestamo pendiente.
+- El vencimiento se calcula a 21 dias y se consultan prestamos vencidos sin devolucion.
+- El prestamo y la devolucion actualizan el inventario dentro de transacciones; el servicio de prestamos bloquea el estudiante y el instrumento.
+- Los prestamos y devoluciones se conservan en tablas separadas; un prestamo esta pendiente cuando no tiene un registro relacionado en `returns`.
+- La disponibilidad se verifica antes de registrar el prestamo; el conflicto por falta de unidades responde HTTP 409.
+- Las fechas de las operaciones se registran en UTC.
 
-La comunicación entre el frontend y el backend se realizará mediante una API REST utilizando JSON.
+Los instrumentos cuentan con `is_active` y un endpoint de desactivacion. La API tambien incluye un reporte agrupado por prestamos registrados. Estas referencias describen implementaciones presentes, no certifican por si solas todos los criterios de aceptacion de `docs/spec.md`.
 
-## 9. Ejecución del proyecto
+### Comportamiento adicional de categorias
 
-El proyecto debe poder ejecutarse mediante contenedores Docker utilizando un solo comando.
+El codigo tambien incorpora estado activo para categorias. La interfaz administrativa permite activarlas y desactivarlas; el backend impide crear o actualizar instrumentos usando una categoria inactiva y rechaza nuevos prestamos de instrumentos asociados a categorias inactivas. La desactivacion se rechaza si hay prestamos sin devolucion. Estas reglas son comportamiento adicional de la implementacion y no se presentan como requisitos textuales del documento original `docs/spec.md`.
 
-Cuando la configuración de infraestructura esté implementada, el procedimiento previsto será:
+## Requisitos locales
 
-```bash
-docker compose up --build
+- PHP que cumpla `^8.3` y Composer para Laravel.
+- Node.js y npm para React. `tool/package.json` requiere Node.js `>=20`.
+- Docker con el complemento `docker compose`, o una instancia MySQL compatible. La configuracion del contenedor usa la imagen MySQL 8.4.
+- Para ejecutar las pruebas: una base MySQL accesible y una base `music_school_test`, segun `api/phpunit.xml`.
+
+## Configurar y ejecutar
+
+Los siguientes pasos usan PowerShell desde la raiz del repositorio. Los archivos `.env` locales estan ignorados por Git. No publiques sus valores.
+
+### 1. Iniciar MySQL con Docker
+
+Crear la configuracion local a partir de la plantilla y asignar valores privados a las variables solicitadas:
+
+```powershell
+Copy-Item infra/.env.example infra/.env
 ```
 
-Antes de ejecutar el proyecto:
+Edita `infra/.env` y establece valores locales para `DB_PASSWORD` y `DB_ROOT_PASSWORD`. Luego inicia el servicio:
 
-1. Instalar Docker Desktop.
-2. Verificar que Docker esté iniciado.
-3. Configurar las variables de entorno necesarias a partir de los archivos de ejemplo.
-4. Ejecutar el comando de Docker Compose desde la ubicación correspondiente.
+```powershell
+docker compose --env-file infra/.env -f infra/docker-compose.yml up -d
+```
 
-**Nota:** los servicios, puertos, variables de entorno y comandos específicos se documentarán cuando la infraestructura esté implementada y verificada.
+Compose crea el contenedor `music-school-db`, publica MySQL en el puerto `3306` y crea la base `music_school`. No crea contenedores para Laravel ni React.
 
-## 10. Pruebas automatizadas
+### 2. Instalar y ejecutar Laravel
 
-El proyecto debe contar con al menos 15 archivos de pruebas automatizadas.
+En otra terminal, copia la plantilla de Laravel:
 
-Las pruebas deberán verificar:
+```powershell
+Copy-Item api/.env.example api/.env
+Set-Location api
+composer install
+php artisan key:generate
+```
 
-- Las diez historias de usuario.
-- Las seis reglas de negocio.
-- Las validaciones de datos.
-- El registro de préstamos y devoluciones.
-- La integridad del inventario.
-- El control de préstamos vencidos.
-- La conservación del historial.
-- El comportamiento ante operaciones simultáneas.
-- Las respuestas de error de la API.
+En `api/.env`, configura la conexion MySQL local. Usa la base `music_school`, el usuario configurado en `infra/docker-compose.yml`, `127.0.0.1` y el mismo valor local de `DB_PASSWORD` definido para Compose. Ejecuta las migraciones y los seeders disponibles:
 
-La ejecución y los resultados de las pruebas se documentarán durante la implementación.
+```powershell
+php artisan migrate --seed
+```
 
-## 11. Documentación técnica
+Inicia la API:
 
-La documentación del proyecto se encuentra organizada en `docs/`:
+```powershell
+php artisan serve --host=0.0.0.0 --port=8000
+```
 
-| Documento | Descripción |
+La API queda disponible en `http://localhost:8000/api`. El endpoint de salud de Laravel esta en `/up`.
+
+### 3. Instalar y ejecutar React
+
+En una terminal separada:
+
+```powershell
+Set-Location app
+npm install
+npm run dev
+```
+
+Vite muestra en la terminal la direccion local de la interfaz. El cliente API actual usa `http://localhost:8000/api`; no existe un `app/.env.example` ni una variable de entorno configurada para cambiar esa direccion.
+
+Para compilar la aplicacion:
+
+```powershell
+npm run build
+```
+
+Para ejecutar el linter definido en `app/package.json`:
+
+```powershell
+npm run lint
+```
+
+### 4. Ejecutar la herramienta opcional de datos
+
+La herramienta `tool/` envia solicitudes HTTP a la API; no conecta directamente con MySQL. Copia su plantilla, confirma que `API_BASE_URL` apunte a la API iniciada y ejecuta desde esa carpeta:
+
+```powershell
+Set-Location tool
+Copy-Item .env.example .env
+npm run seed
+```
+
+## Pruebas automatizadas
+
+Hay **15 archivos de pruebas `*Test.php`**: 14 en `api/tests/Feature/` y 1 en `api/tests/Unit/`. La cantidad de archivos no es la cantidad de casos de prueba. En una ejecucion verificada de `php artisan test` se reportaron 54 casos y 135 aserciones.
+
+`api/phpunit.xml` configura las pruebas para MySQL en `127.0.0.1:3306`, base `music_school_test` y usuario `music_school_user`. El Compose de desarrollo crea `music_school`, no la base de pruebas. Crea `music_school_test` y concede acceso al usuario de pruebas antes de ejecutar la suite. Por ejemplo, con el cliente MySQL dentro del contenedor:
+
+```powershell
+docker exec -it music-school-db mysql -u root -p
+```
+
+Ingresa la contrasena local de root cuando el cliente la solicite y ejecuta en el prompt SQL:
+
+```sql
+CREATE DATABASE music_school_test;
+GRANT ALL PRIVILEGES ON music_school_test.* TO 'music_school_user'@'%';
+```
+
+Configura `DB_PASSWORD` en el entorno local de pruebas para que coincida con la clave asignada a `music_school_user`. Desde `api/`, ejecuta cualquiera de los comandos definidos para las pruebas:
+
+```powershell
+php artisan test
+```
+
+O usa el script de Composer, que limpia la configuracion antes de lanzar Artisan:
+
+```powershell
+composer test
+```
+
+Las pruebas usan `RefreshDatabase`; ejecutalas contra la base dedicada `music_school_test`, nunca contra datos que quieras conservar.
+
+## Documentacion y evidencias disponibles
+
+| Ruta | Contenido |
 |---|---|
-| constitution.md | Principios y restricciones del proyecto. |
-| spec.md | Especificación de requisitos. |
-| plan.md | Planificación de actividades. |
-| architecture.md | Diseño de arquitectura. |
-| data-model.md | Modelo de datos. |
-| api-contract.md | Contrato de la API REST. |
-| tasks.md | Descomposición del trabajo en 23 tareas. |
-| adr/ | Registro de decisiones arquitectónicas. |
+| `docs/spec.md` | Historias de usuario, requisitos y reglas de negocio. |
+| `docs/constitution.md` | Principios y restricciones del proyecto. |
+| `docs/plan.md` y `docs/tasks.md` | Plan de trabajo y seguimiento de tareas. |
+| `docs/architecture.md` | Arquitectura descrita para el sistema. |
+| `docs/data-model.md` | Entidades, relaciones y reglas de persistencia. |
+| `docs/api-contract.md` | Contrato documentado de la API. |
+| `docs/adr/ADR-001.md` a `ADR-003.md` | Decisiones arquitectonicas. |
+| `docs/evidence.md` | Registro de evidencias del proyecto. |
+| `docs/evidence/concurrency-test.md` | Evidencia escrita de una prueba manual de concurrencia. |
+| `api/README.md`, `app/README.md`, `tool/README.md` | README presentes en cada componente. |
 
-## 12. Convenciones de desarrollo
+La evidencia de concurrencia es un documento del repositorio; no debe interpretarse como una ejecucion automatizada de concurrencia.
 
-Para mantener la organización y calidad del código se establecen las siguientes convenciones:
+## Seguridad de configuracion
 
-- Los identificadores de clases, métodos, variables y demás elementos del código estarán en inglés.
-- Los mensajes visibles para el usuario estarán en español.
-- Las fechas y horas se manejarán en UTC.
-- Se mantendrá la separación de responsabilidades entre frontend, backend y persistencia.
-- Los cambios se registrarán mediante commits pequeños y descriptivos.
-- Se utilizará una convención de mensajes basada en Conventional Commits.
-- No se incorporarán funcionalidades fuera del alcance establecido en la especificación.
-
-## 13. Control de versiones
-
-El desarrollo se gestionará mediante Git y GitHub.
-
-Los mensajes de commit seguirán una estructura descriptiva:
-
-```text
-tipo(área): descripción breve del cambio
-```
-
-Ejemplos:
-
-```text
-docs(spec): complete requirements specification
-feat(api): implement instrument registration
-feat(app): create instrument catalog interface
-test(api): add loan validation tests
-fix(inventory): prevent negative available units
-```
-
-Se conservará el historial de cambios para evidenciar la evolución del proyecto.
-
-## 14. Seguridad de la información
-
-- Los archivos que contengan credenciales o secretos no deben publicarse en el repositorio.
-- El archivo `.env` debe mantenerse fuera del control de versiones.
-- No se deben subir directorios de dependencias como `node_modules`.
-- Las contraseñas, cuando existan, deben almacenarse mediante mecanismos seguros de hash.
-- Las validaciones de las operaciones deben ejecutarse en el backend.
-
-## 15. Estado del proyecto
-
-Music School se encuentra en proceso de desarrollo conforme al plan de mejoramiento.
-
-La implementación, las pruebas automatizadas, la infraestructura y la documentación técnica se completarán progresivamente, verificando su correspondencia con los requisitos establecidos.
-
----
-
-**Proyecto:** Music School  
-**Ficha:** ADSO 3239137  
-**Identificador:** A12  
-**Dominio:** music-school
+- Usa `api/.env.example`, `infra/.env.example` y `tool/.env.example` como plantillas para los archivos locales `.env`.
+- No copies contrasenas ni claves reales al README, al codigo o a archivos versionados.
+- No hay plantilla `app/.env.example`; la URL de la API esta actualmente escrita en `app/src/services/api.js`.
+- Los archivos `.env` estan incluidos en las reglas de `.gitignore`.
