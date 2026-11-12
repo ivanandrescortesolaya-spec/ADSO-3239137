@@ -1,3 +1,4 @@
+
 services:
   mysql:
     image: mysql:8.4
@@ -7,11 +8,11 @@ services:
     environment:
       MYSQL_DATABASE: music_school
       MYSQL_USER: music_school_user
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD is required}
 
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3308:3306"
 
     volumes:
       - music_school_data:/var/lib/mysql
@@ -24,6 +25,81 @@ services:
       timeout: 5s
       retries: 10
       start_period: 40s
+
+  api:
+    build:
+      context: ../api
+      dockerfile: ../infra/Dockerfile.api
+    container_name: music-school-api
+    restart: unless-stopped
+
+    env_file:
+      - ../api/.env
+
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: music_school
+      DB_USERNAME: music_school_user
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+
+    ports:
+      - "127.0.0.1:8000:80"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # Isolated API for HTTP concurrency tests.
+  api-test:
+    build:
+      context: ../api
+      dockerfile: ../infra/Dockerfile.api
+    container_name: music-school-api-test
+    profiles:
+      - testing
+    restart: "no"
+
+    env_file:
+      - ../api/.env.testing
+
+    environment:
+      APP_ENV: testing
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8001
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: music_school_test
+      DB_USERNAME: music_school_user
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+
+    ports:
+      - "127.0.0.1:8001:80"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  app:
+    build:
+      context: ../app
+      dockerfile: ../infra/Dockerfile.app
+    container_name: music-school-app
+    restart: unless-stopped
+
+    environment:
+      VITE_API_URL: http://localhost:8000/api
+
+    ports:
+      - "127.0.0.1:5173:5173"
+
+    depends_on:
+      - api
 
 volumes:
   music_school_data:
