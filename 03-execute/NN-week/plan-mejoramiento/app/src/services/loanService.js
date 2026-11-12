@@ -1,25 +1,25 @@
 
 import api from "./api";
 
-// Consultar todos los prestamos
+// Fetch all loans
 export const getLoans = async () => {
   const response = await api.get("/loans");
   return response.data;
 };
 
-// Registrar un prestamo
+// Create a loan
 export const createLoan = async (loan) => {
   const response = await api.post("/loans", loan);
   return response.data;
 };
 
-// Consultar prestamos vencidos
+// Fetch overdue loans
 export const getOverdueLoans = async () => {
   const response = await api.get("/loans/overdue");
   return response.data;
 };
 
-// Consultar un prestamo por su ID
+// Fetch a loan by ID
 export const getLoan = async (id) => {
   const response = await api.get(`/loans/${id}`);
   return response.data;

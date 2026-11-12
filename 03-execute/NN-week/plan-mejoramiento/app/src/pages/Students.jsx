@@ -5,6 +5,7 @@ import {
   createStudent,
   updateStudent,
 } from "../services/studentService";
+import "./Students.css";
 
 function Students() {
   const [students, setStudents] = useState([]);
@@ -24,12 +25,15 @@ function Students() {
 
   const [form, setForm] = useState(initialForm);
 
-  // Consultar estudiantes
+  // Load students from the API
   const loadStudents = async () => {
     try {
       setError("");
       const response = await getStudents();
-      setStudents(response.data ?? []);
+
+      setStudents(
+        Array.isArray(response) ? response : response.data ?? []
+      );
     } catch (err) {
       console.error(err);
       setError("No fue posible cargar los estudiantes.");
@@ -42,7 +46,7 @@ function Students() {
     loadStudents();
   }, []);
 
-  // Manejar cambios del formulario
+  // Handle form input changes
   const handleChange = (event) => {
     setForm({
       ...form,
@@ -50,14 +54,14 @@ function Students() {
     });
   };
 
-  // Limpiar formulario
+  // Reset the form and editing state
   const resetForm = () => {
     setForm(initialForm);
     setEditingId(null);
     setShowForm(false);
   };
 
-  // Registrar o actualizar estudiante
+  // Create or update a student
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
@@ -109,7 +113,7 @@ function Students() {
     }
   };
 
-  // Preparar edicion
+  // Load student information into the editing form
   const handleEdit = (student) => {
     setForm({
       student_code: student.student_code ?? "",
@@ -123,7 +127,7 @@ function Students() {
     setSuccess("");
   };
 
-  // Buscar estudiantes
+  // Filter students by code, name, or email
   const filteredStudents = students.filter((student) => {
     const searchText = search.toLowerCase();
 
@@ -134,25 +138,86 @@ function Students() {
     );
   });
 
-  return (
-    <>
-      <div className="page-heading">
-        <h1>Estudiantes</h1>
-        <p>Administra la informacion de los estudiantes registrados.</p>
-      </div>
+  // Generate student initials
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("");
+  };
 
+  return (
+    <div className="students-page">
+      {/* Main banner */}
+      <section className="students-hero">
+        <div className="students-hero-content">
+          <span className="students-hero-label">
+            GESTIÓN ACADÉMICA
+          </span>
+          <h1>Estudiantes</h1>
+          <p>
+            Administra la información de los estudiantes,
+            consulta sus registros y mantén actualizados sus datos.
+          </p>
+        </div>
+
+        <div className="students-hero-art">
+          <span className="students-hero-symbol">♙</span>
+          <span className="students-hero-note note-one">♪</span>
+          <span className="students-hero-note note-two">♫</span>
+          <span className="students-hero-note note-three">♬</span>
+        </div>
+      </section>
+
+      {/* Statistics cards */}
+      <section className="students-stats">
+        <article className="students-stat-card stat-students-blue">
+          <div className="students-stat-icon">♙</div>
+          <div>
+            <p>Total de estudiantes</p>
+            <h2>{students.length}</h2>
+            <small>Estudiantes registrados</small>
+          </div>
+        </article>
+
+        <article className="students-stat-card stat-students-green">
+          <div className="students-stat-icon">✓</div>
+          <div>
+            <p>Resultados encontrados</p>
+            <h2>{filteredStudents.length}</h2>
+            <small>Coincidencias de búsqueda</small>
+          </div>
+        </article>
+
+        <article className="students-stat-card stat-students-purple">
+          <div className="students-stat-icon">✎</div>
+          <div>
+            <p>Gestión de estudiantes</p>
+            <h2>CRUD</h2>
+            <small>Registro y actualización</small>
+          </div>
+        </article>
+      </section>
+
+      {/* Feedback messages */}
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
 
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <h2>Listado de estudiantes</h2>
-            <p>Consulta, registra y actualiza estudiantes.</p>
+      {/* Main students panel */}
+      <section className="students-panel">
+        <div className="students-panel-heading">
+          <div className="students-panel-title">
+            <div className="students-list-icon">☷</div>
+            <div>
+              <h2>Directorio de estudiantes</h2>
+              <p>Consulta, registra y actualiza estudiantes.</p>
+            </div>
           </div>
 
           <button
-            className="primary-button"
+            className="students-primary-button"
             onClick={() => {
               resetForm();
               setError("");
@@ -160,19 +225,24 @@ function Students() {
               setShowForm(true);
             }}
           >
-            + Nuevo estudiante
+            <span>+</span> Nuevo estudiante
           </button>
         </div>
 
+        {/* Student registration and editing form */}
         {showForm && (
-          <form className="instrument-form" onSubmit={handleSubmit}>
+          <form className="students-form" onSubmit={handleSubmit}>
             <h3>
-              {editingId ? "Actualizar estudiante" : "Registrar estudiante"}
+              {editingId
+                ? "Actualizar estudiante"
+                : "Registrar estudiante"}
             </h3>
 
-            <div className="form-grid">
-              <div className="form-field">
-                <label htmlFor="student-code">Codigo del estudiante</label>
+            <div className="students-form-grid">
+              <div className="students-form-field">
+                <label htmlFor="student-code">
+                  Código del estudiante
+                </label>
                 <input
                   id="student-code"
                   name="student_code"
@@ -184,8 +254,10 @@ function Students() {
                 />
               </div>
 
-              <div className="form-field">
-                <label htmlFor="student-name">Nombre completo</label>
+              <div className="students-form-field">
+                <label htmlFor="student-name">
+                  Nombre completo
+                </label>
                 <input
                   id="student-name"
                   name="full_name"
@@ -197,8 +269,10 @@ function Students() {
                 />
               </div>
 
-              <div className="form-field">
-                <label htmlFor="student-email">Correo electronico</label>
+              <div className="students-form-field">
+                <label htmlFor="student-email">
+                  Correo electrónico
+                </label>
                 <input
                   id="student-email"
                   name="email"
@@ -212,10 +286,10 @@ function Students() {
               </div>
             </div>
 
-            <div className="form-actions">
+            <div className="students-form-actions">
               <button
                 type="button"
-                className="secondary-button"
+                className="students-cancel-button"
                 onClick={resetForm}
               >
                 Cancelar
@@ -223,7 +297,7 @@ function Students() {
 
               <button
                 type="submit"
-                className="primary-button"
+                className="students-primary-button"
                 disabled={saving}
               >
                 {saving
@@ -236,27 +310,38 @@ function Students() {
           </form>
         )}
 
-        <div className="form-field student-search">
-          <label htmlFor="student-search">Buscar estudiante</label>
-          <input
-            id="student-search"
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por codigo, nombre o correo..."
-          />
+        {/* Search toolbar */}
+        <div className="students-toolbar">
+          <div className="students-search">
+            <span>⌕</span>
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Buscar por código, nombre o correo electrónico..."
+              aria-label="Buscar estudiantes"
+            />
+          </div>
+
+          <div className="students-filter">
+            <span>Estudiantes:</span>
+            <strong>{filteredStudents.length} encontrados</strong>
+          </div>
         </div>
 
+        {/* Students table */}
         {loading ? (
-          <p className="loading-message">Cargando estudiantes...</p>
+          <p className="loading-message">
+            Cargando estudiantes...
+          </p>
         ) : (
-          <div className="table-container">
-            <table className="inventory-table">
+          <div className="students-table-wrapper">
+            <table className="students-table">
               <thead>
                 <tr>
-                  <th>Codigo</th>
+                  <th>Código</th>
                   <th>Nombre completo</th>
-                  <th>Correo electronico</th>
+                  <th>Correo electrónico</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -264,22 +349,45 @@ function Students() {
               <tbody>
                 {filteredStudents.length === 0 ? (
                   <tr>
-                    <td colSpan="4">
+                    <td colSpan="4" className="students-empty">
                       No se encontraron estudiantes.
                     </td>
                   </tr>
                 ) : (
-                  filteredStudents.map((student) => (
+                  filteredStudents.map((student, index) => (
                     <tr key={student.id}>
-                      <td>{student.student_code}</td>
-                      <td>{student.full_name}</td>
-                      <td>{student.email}</td>
+                      <td>
+                        <span className="students-code">
+                          {student.student_code}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="students-person">
+                          <div
+                            className={`students-avatar avatar-color-${index % 5}`}
+                          >
+                            {getInitials(student.full_name || "ES")}
+                          </div>
+                          <span>{student.full_name}</span>
+                        </div>
+                      </td>
+
+                      <td>
+                        <div className="students-email">
+                          <span>✉</span>
+                          {student.email}
+                        </div>
+                      </td>
+
                       <td>
                         <button
-                          className="secondary-button"
+                          className="students-action-button"
                           onClick={() => handleEdit(student)}
+                          title="Editar estudiante"
+                          aria-label={`Editar ${student.full_name}`}
                         >
-                          Editar
+                          ✎
                         </button>
                       </td>
                     </tr>
@@ -289,8 +397,12 @@ function Students() {
             </table>
           </div>
         )}
+
+        <div className="students-panel-footer">
+          Mostrando {filteredStudents.length} de {students.length} estudiantes
+        </div>
       </section>
-    </>
+    </div>
   );
 }
 

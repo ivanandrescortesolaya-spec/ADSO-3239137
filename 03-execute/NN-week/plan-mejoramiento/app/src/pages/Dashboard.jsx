@@ -4,6 +4,7 @@ import { getInstruments } from "../services/instrumentService";
 import { getStudents } from "../services/studentService";
 import { getLoans, getOverdueLoans } from "../services/loanService";
 import { getMostRequestedInstruments } from "../services/reportService";
+import "./Dashboard.css";
 
 function getList(response) {
   if (Array.isArray(response)) return response;
@@ -25,13 +26,13 @@ function Dashboard() {
   const [popularInstruments, setPopularInstruments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  // Calcular porcentaje de disponibilidad
+
   const availabilityPercentage =
-  stats.totalUnits > 0
-     ? Number(
-    ((stats.availableUnits / stats.totalUnits) * 100).toFixed(2)
+    stats.totalUnits > 0
+      ? Number(
+          ((stats.availableUnits / stats.totalUnits) * 100).toFixed(2)
         )
-        : 0;
+      : 0;
 
   const loadDashboard = async () => {
     try {
@@ -84,7 +85,7 @@ function Dashboard() {
     } catch (err) {
       console.error("Error al cargar el Dashboard:", err);
       setError(
-        "No fue posible cargar todos los indicadores. Verifica que la API este funcionando."
+        "No fue posible cargar los indicadores. Verifica que la API esté funcionando."
       );
     } finally {
       setLoading(false);
@@ -95,152 +96,260 @@ function Dashboard() {
     loadDashboard();
   }, []);
 
+  const maxLoans = Math.max(
+    1,
+    ...popularInstruments.map((item) =>
+      Number(item.total_loans ?? item.total_requests ?? 0)
+    )
+  );
+
+  const cards = [
+    {
+      title: "Tipos de instrumentos",
+      value: stats.instruments,
+      description: "Registrados en el catálogo",
+      icon: "♫",
+      illustration: "🎸",
+      color: "blue",
+    },
+    {
+      title: "Unidades disponibles",
+      value: stats.availableUnits,
+      description: "Disponibles para préstamo",
+      icon: "✓",
+      illustration: "📦",
+      color: "green",
+    },
+    {
+      title: "Estudiantes",
+      value: stats.students,
+      description: "Registrados en el sistema",
+      icon: "♟",
+      illustration: "👨‍🎓",
+      color: "purple",
+    },
+    {
+      title: "Préstamos activos",
+      value: stats.activeLoans,
+      description: "Instrumentos sin devolver",
+      icon: "▣",
+      illustration: "📋",
+      color: "blue",
+    },
+    {
+      title: "Préstamos vencidos",
+      value: stats.overdueLoans,
+      description: "Requieren seguimiento",
+      icon: "!",
+      illustration: "📅",
+      color: "orange",
+    },
+    {
+      title: "Unidades totales",
+      value: stats.totalUnits,
+      description: "En el inventario",
+      icon: "▤",
+      illustration: "📦",
+      color: "purple",
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="dashboard-loading">
+        <div className="dashboard-spinner" />
+        <p>Cargando indicadores...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-error">
+        <span>!</span>
+        <p>{error}</p>
+        <button className="dashboard-retry" onClick={loadDashboard}>
+          Reintentar
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <div className="page-heading">
-        <h1>Dashboard</h1>
+    <div className="dashboard-page">
+      {/* Main banner */}
+      <section className="dashboard-hero">
+        <div className="hero-content">
+          <span className="hero-eyebrow">Bienvenido al sistema</span>
+          <h1>Music School</h1>
+          <p>Gestión de instrumentos, estudiantes y préstamos.</p>
+        </div>
+
+        <div className="hero-decoration" aria-hidden="true">
+          <span className="hero-note">♫</span>
+          <span className="hero-drum">🥁</span>
+          <span className="hero-guitar">🎸</span>
+          <span className="hero-piano">🎹</span>
+        </div>
+      </section>
+
+      {/* Header */}
+      <div className="dashboard-heading">
+        <h2>Dashboard</h2>
         <p>Resumen general del sistema Music School.</p>
       </div>
 
-      {loading ? (
-        <p className="loading-message">Cargando indicadores...</p>
-      ) : error ? (
-        <div className="error-message">
-          {error}
-          <button
-            className="secondary-button"
-            onClick={loadDashboard}
+      {/* Metrics */}
+      <section className="dashboard-stats">
+        {cards.slice(0, 4).map((card) => (
+          <article
+            className={`dashboard-stat-card ${card.color}`}
+            key={card.title}
           >
-            Reintentar
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="stats-grid">
-            <div className="stat-card">
-              <span className="stat-icon blue">♫</span>
-              <p>Tipos de instrumentos</p>
-              <h2>{stats.instruments}</h2>
-              <small>Registrados en el catalogo</small>
-              
+            <span className="dashboard-stat-icon">{card.icon}</span>
+            <div className="dashboard-stat-info">
+              <p>{card.title}</p>
+              <h3>{card.value}</h3>
+              <small>{card.description}</small>
             </div>
+            <span className="dashboard-illustration" aria-hidden="true">
+              {card.illustration}
+            </span>
+          </article>
+        ))}
 
-            <div className="stat-card">
-              <span className="stat-icon green">✓</span>
-              <p>Unidades disponibles</p>
-              <h2>{stats.availableUnits}</h2>
-              <small>Disponibles para prestamo</small>
+        {cards.slice(4).map((card) => (
+          <article
+            className={`dashboard-stat-card ${card.color} secondary-stat`}
+            key={card.title}
+          >
+            <span className="dashboard-stat-icon">{card.icon}</span>
+            <div className="dashboard-stat-info">
+              <p>{card.title}</p>
+              <h3>{card.value}</h3>
+              <small>{card.description}</small>
             </div>
+            <span className="dashboard-illustration" aria-hidden="true">
+              {card.illustration}
+            </span>
+          </article>
+        ))}
 
-            <div className="stat-card">
-              <span className="stat-icon purple">♙</span>
-              <p>Estudiantes</p>
-              <h2>{stats.students}</h2>
-              <small>Registrados en el sistema</small>
-            </div>
-
-            <div className="stat-card">
-              <span className="stat-icon blue">▣</span>
-              <p>Prestamos activos</p>
-              <h2>{stats.activeLoans}</h2>
-              <small>Instrumentos sin devolver</small>
-            </div>
-
-            <div className="stat-card">
-              <span className="stat-icon orange">!</span>
-              <p>Prestamos vencidos</p>
-              <h2>{stats.overdueLoans}</h2>
-              <small>Requieren seguimiento</small>
-            </div>
-
-            <div className="stat-card">
-              <span className="stat-icon purple">▤</span>
-              <p>Unidades totales</p>
-              <h2>{stats.totalUnits}</h2>
-              <small>En el inventario</small>
-            </div>
-            
-            <div className="stat-card">
-            <span className="stat-icon green">%</span>
-
+        {/* Availability */}
+        <article className="dashboard-stat-card availability-card">
+          <span className="dashboard-stat-icon">%</span>
+          <div className="dashboard-stat-info">
             <p>Disponibilidad del inventario</p>
+            <h3>{availabilityPercentage}%</h3>
 
-            <h2>{availabilityPercentage}%</h2>
-
-            <div className="availability-progress">
-                <div
+            <div
+              className="availability-progress"
+              role="progressbar"
+              aria-label="Disponibilidad del inventario"
+              aria-valuenow={availabilityPercentage}
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div
                 className="availability-progress-fill"
                 style={{
-                    width: `${availabilityPercentage}%`,
+                  width: `${Math.min(100, availabilityPercentage)}%`,
                 }}
-                />
+              />
             </div>
 
-            <small>
-                Porcentaje de unidades disponibles
-            </small>
-            </div>
+            <small>Porcentaje de unidades disponibles</small>
+          </div>
+          <span className="dashboard-illustration" aria-hidden="true">
+            ✓
+          </span>
+        </article>
+      </section>
 
+      {/* Most requested instruments */}
+      <section className="dashboard-report">
+        <div className="dashboard-report-heading">
+          <div className="report-title">
+            <span className="report-icon">▥</span>
+            <div>
+              <h2>Instrumentos más solicitados</h2>
+              <p>Ranking basado en el historial de préstamos.</p>
+            </div>
           </div>
 
-          <section className="panel dashboard-report">
-            <div className="panel-heading">
-              <div>
-                <h2>Instrumentos mas solicitados</h2>
-                <p>
-                  Ranking basado en el historial de prestamos.
-                </p>
-              </div>
+          <button
+            className="dashboard-refresh"
+            onClick={loadDashboard}
+          >
+            <span>⟳</span> Actualizar
+          </button>
+        </div>
 
-              <button
-                className="secondary-button"
-                onClick={loadDashboard}
-              >
-                Actualizar
-              </button>
-            </div>
+        <div className="dashboard-table-wrapper">
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>Posición</th>
+                <th>Instrumento</th>
+                <th>Total de préstamos</th>
+                <th>Popularidad</th>
+              </tr>
+            </thead>
 
-            <div className="table-container">
-              <table className="inventory-table">
-                <thead>
-                  <tr>
-                    <th>Posicion</th>
-                    <th>Instrumento</th>
-                    <th>Total de prestamos</th>
-                  </tr>
-                </thead>
+            <tbody>
+              {popularInstruments.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="empty-report">
+                    Todavía no hay datos para el reporte.
+                  </td>
+                </tr>
+              ) : (
+                popularInstruments.map((item, index) => {
+                  const totalLoans = Number(
+                    item.total_loans ?? item.total_requests ?? 0
+                  );
 
-                <tbody>
-                  {popularInstruments.length === 0 ? (
-                    <tr>
-                      <td colSpan="3">
-                        Todavia no hay datos para el reporte.
+                  const percentage = (totalLoans / maxLoans) * 100;
+
+                  return (
+                    <tr key={item.instrument_id ?? item.id ?? index}>
+                      <td>
+                        <span className={`ranking-position rank-${index + 1}`}>
+                          {index === 0
+                            ? "🥇"
+                            : index === 1
+                              ? "🥈"
+                              : index === 2
+                                ? "🥉"
+                                : `#${index + 1}`}
+                        </span>
+                      </td>
+
+                      <td className="instrument-name">
+                        {item.instrument_name ??
+                          item.name ??
+                          "Instrumento sin nombre"}
+                      </td>
+
+                      <td className="loan-count">{totalLoans}</td>
+
+                      <td>
+                        <div className="ranking-progress">
+                          <div
+                            className="ranking-progress-fill"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
                       </td>
                     </tr>
-                  ) : (
-                    popularInstruments.map((item, index) => (
-                      <tr key={item.instrument_id ?? item.id ?? index}>
-                        <td>#{index + 1}</td>
-                        <td>
-                          {item.instrument_name ??
-                            item.name ??
-                            "Instrumento sin nombre"}
-                        </td>
-                        <td>
-                          {item.total_loans ??
-                            item.total_requests ??
-                            0}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </>
-      )}
-    </>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   );
 }
 

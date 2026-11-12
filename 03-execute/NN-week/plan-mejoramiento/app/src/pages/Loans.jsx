@@ -1,8 +1,13 @@
 
-import { useEffect, useState } from "react";
-import { getLoans, createLoan, getOverdueLoans } from "../services/loanService";
+import { useEffect, useMemo, useState } from "react";
+import {
+  getLoans,
+  createLoan,
+  getOverdueLoans,
+} from "../services/loanService";
 import { getStudents } from "../services/studentService";
 import { getInstruments } from "../services/instrumentService";
+import "./Loans.css";
 
 function Loans() {
   const [loans, setLoans] = useState([]);
@@ -14,6 +19,13 @@ function Loans() {
   const [showForm, setShowForm] = useState(false);
   const [showOverdue, setShowOverdue] = useState(false);
 
+  const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 6;
+
   const [form, setForm] = useState({
     student_id: "",
     instrument_id: "",
@@ -22,7 +34,7 @@ function Loans() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Cargar prestamos, estudiantes e instrumentos
+  // Load loans, students, and instruments
   const loadData = async () => {
     try {
       setError("");
@@ -49,7 +61,7 @@ function Loans() {
     loadData();
   }, []);
 
-  // Cambiar los campos del formulario
+  // Update form fields
   const handleChange = (event) => {
     setForm({
       ...form,
@@ -57,7 +69,7 @@ function Loans() {
     });
   };
 
-  // Registrar prestamo
+  // Record a loan
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
@@ -105,7 +117,7 @@ function Loans() {
     }
   };
 
-  // Consultar prestamos vencidos
+  // Fetch overdue loans
   const handleOverdue = async () => {
     try {
       setError("");
@@ -114,6 +126,7 @@ function Loans() {
 
       const response = await getOverdueLoans();
       setLoans(response.data ?? []);
+      setCurrentPage(1);
     } catch (err) {
       console.error(err);
       setError("No fue posible consultar los prestamos vencidos.");
@@ -122,13 +135,14 @@ function Loans() {
     }
   };
 
-  // Volver al listado general
+  // Return to the full list
   const handleAllLoans = async () => {
     setShowOverdue(false);
+    setCurrentPage(1);
     await loadData();
   };
 
-  // Cancelar formulario
+  // Cancel the form
   const resetForm = () => {
     setForm({
       student_id: "",
@@ -137,7 +151,7 @@ function Loans() {
     setShowForm(false);
   };
 
-  // Formatear fechas
+  // Format dates
   const formatDate = (date) => {
     if (!date) return "No disponible";
 
@@ -149,7 +163,7 @@ function Loans() {
     });
   };
 
-  // Determinar el estado del prestamo
+  // Determine the loan status
   const getLoanStatus = (loan) => {
     if (loan.return_record) return "Devuelto";
 
@@ -158,77 +172,198 @@ function Loans() {
     return "Pendiente";
   };
 
+  // Get the status style
   const getStatusClass = (status) => {
-    if (status === "Devuelto") return "status-returned";
-    if (status === "Vencido") return "status-overdue";
-    return "status-pending";
+    if (status === "Devuelto") return "loan-status returned";
+    if (status === "Vencido") return "loan-status overdue";
+    return "loan-status pending";
   };
 
-  // Instrumentos disponibles
+  // Available instruments
   const availableInstruments = instruments.filter(
     (instrument) =>
       instrument.is_active !== false &&
       instrument.available_units > 0
   );
 
+  // Calculate loan summary
+  const summary = useMemo(() => {
+    const returned = loans.filter(
+      (loan) => getLoanStatus(loan) === "Devuelto"
+    ).length;
+
+    const overdue = loans.filter(
+      (loan) => getLoanStatus(loan) === "Vencido"
+    ).length;
+
+    const pending = loans.filter(
+      (loan) => getLoanStatus(loan) === "Pendiente"
+    ).length;
+
+    return {
+      total: loans.length,
+      returned,
+      overdue,
+      pending,
+    };
+  }, [loans]);
+
+  // Filter loans by search text and date range
+  const filteredLoans = useMemo(() => {
+    const searchText = search.toLowerCase().trim();
+
+    return loans.filter((loan) => {
+      const matchesSearch = [
+        loan.student_name,
+        loan.student_code,
+        loan.instrument_name,
+        loan.instrument_code,
+      ].some((value) =>
+        String(value ?? "").toLowerCase().includes(searchText)
+      );
+
+      const loanDate = loan.loaned_at
+        ? new Date(loan.loaned_at).toISOString().slice(0, 10)
+        : "";
+
+      const matchesStartDate =
+        !startDate || (loanDate && loanDate >= startDate);
+
+      const matchesEndDate =
+        !endDate || (loanDate && loanDate <= endDate);
+
+      return matchesSearch && matchesStartDate && matchesEndDate;
+    });
+  }, [loans, search, startDate, endDate]);
+
+  // Calculate pagination
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredLoans.length / itemsPerPage)
+  );
+
+  const paginatedLoans = filteredLoans.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset pagination when filters change
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    setCurrentPage(1);
+  };
+
+  const handleDateChange = (setter) => (event) => {
+    setter(event.target.value);
+    setCurrentPage(1);
+  };
+
   return (
-    <>
-      <div className="page-heading">
-        <h1>Prestamos</h1>
-        <p>Administra los prestamos de instrumentos musicales.</p>
+    <div className="loans-page">
+      <div className="loans-hero">
+        <div className="loans-hero-content">
+          <span className="loans-hero-label">GESTIÓN DE PRÉSTAMOS</span>
+          <h1>Préstamos</h1>
+          <p>
+            Administra los préstamos de instrumentos musicales,
+            consulta su estado y controla los vencimientos.
+          </p>
+        </div>
+
+        <div className="loans-hero-decoration" aria-hidden="true">
+          <span>♫</span>
+          <span>♬</span>
+          <span>🎸</span>
+        </div>
       </div>
 
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
 
-      <section className="panel">
-        <div className="panel-heading">
+      <div className="loans-stats-grid">
+        <article className="loan-stat-card blue">
+          <div className="loan-stat-icon">▣</div>
           <div>
-            <h2>
-              {showOverdue
-                ? "Prestamos vencidos"
-                : "Listado de prestamos"}
-            </h2>
-            <p>
-              Consulta y registra los prestamos de instrumentos.
-            </p>
+            <span>Total de préstamos</span>
+            <strong>{summary.total}</strong>
+            <small>Registrados en el sistema</small>
+          </div>
+        </article>
+
+        <article className="loan-stat-card green">
+          <div className="loan-stat-icon">✓</div>
+          <div>
+            <span>Devueltos</span>
+            <strong>{summary.returned}</strong>
+            <small>Instrumentos regresados</small>
+          </div>
+        </article>
+
+        <article className="loan-stat-card orange">
+          <div className="loan-stat-icon">◷</div>
+          <div>
+            <span>En curso</span>
+            <strong>{summary.pending}</strong>
+            <small>Préstamos pendientes</small>
+          </div>
+        </article>
+
+        <article className="loan-stat-card red">
+          <div className="loan-stat-icon">!</div>
+          <div>
+            <span>Vencidos</span>
+            <strong>{summary.overdue}</strong>
+            <small>Fuera de la fecha límite</small>
+          </div>
+        </article>
+      </div>
+
+      <section className="loans-panel">
+        <div className="loans-panel-heading">
+          <div className="loans-panel-title">
+            <div className="loans-list-icon">☷</div>
+            <div>
+              <h2>
+                {showOverdue
+                  ? "Listado de préstamos vencidos"
+                  : "Listado de préstamos"}
+              </h2>
+              <p>Consulta y registra los préstamos de instrumentos.</p>
+            </div>
           </div>
 
-          <div className="form-actions">
+          <div className="loans-actions">
             <button
-              className="secondary-button"
+              className="loans-filter-button"
               onClick={showOverdue ? handleAllLoans : handleOverdue}
+              type="button"
             >
-              {showOverdue
-                ? "Ver todos"
-                : "Ver vencidos"}
+              {showOverdue ? "Ver todos" : "Ver vencidos"}
             </button>
 
             {!showOverdue && (
               <button
-                className="primary-button"
+                className="loans-primary-button"
                 onClick={() => {
                   setError("");
                   setSuccess("");
                   setShowForm(!showForm);
                 }}
+                type="button"
               >
-                + Nuevo prestamo
+                + Nuevo préstamo
               </button>
             )}
           </div>
         </div>
 
         {showForm && (
-          <form className="instrument-form" onSubmit={handleSubmit}>
-            <h3>Registrar prestamo</h3>
+          <form className="loans-form" onSubmit={handleSubmit}>
+            <h3>Registrar préstamo</h3>
 
-            <div className="form-grid">
+            <div className="loans-form-grid">
               <div className="form-field">
-                <label htmlFor="loan-student">
-                  Estudiante
-                </label>
-
+                <label htmlFor="loan-student">Estudiante</label>
                 <select
                   id="loan-student"
                   name="student_id"
@@ -247,10 +382,7 @@ function Loans() {
               </div>
 
               <div className="form-field">
-                <label htmlFor="loan-instrument">
-                  Instrumento
-                </label>
-
+                <label htmlFor="loan-instrument">Instrumento</label>
                 <select
                   id="loan-instrument"
                   name="instrument_id"
@@ -276,10 +408,10 @@ function Loans() {
               </p>
             )}
 
-            <div className="form-actions">
+            <div className="loans-form-actions">
               <button
                 type="button"
-                className="secondary-button"
+                className="loans-filter-button"
                 onClick={resetForm}
               >
                 Cancelar
@@ -287,77 +419,158 @@ function Loans() {
 
               <button
                 type="submit"
-                className="primary-button"
-                disabled={
-                  saving || availableInstruments.length === 0
-                }
+                className="loans-primary-button"
+                disabled={saving || availableInstruments.length === 0}
               >
-                {saving ? "Registrando..." : "Registrar prestamo"}
+                {saving ? "Registrando..." : "Registrar préstamo"}
               </button>
             </div>
           </form>
         )}
 
-        {loading ? (
-          <p className="loading-message">
-            Cargando prestamos...
-          </p>
-        ) : (
-          <div className="table-container">
-            <table className="inventory-table">
-              <thead>
-                <tr>
-                  <th>Estudiante</th>
-                  <th>Instrumento</th>
-                  <th>Fecha prestamo</th>
-                  <th>Fecha vencimiento</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {loans.length === 0 ? (
-                  <tr>
-                    <td colSpan="5">
-                      No hay prestamos para mostrar.
-                    </td>
-                  </tr>
-                ) : (
-                  loans.map((loan) => {
-                    const status = getLoanStatus(loan);
-
-                    return (
-                      <tr key={loan.id}>
-                        <td>
-                          {loan.student_name}
-                          <br />
-                          <small>{loan.student_code}</small>
-                        </td>
-
-                        <td>
-                          {loan.instrument_name}
-                          <br />
-                          <small>{loan.instrument_code}</small>
-                        </td>
-
-                        <td>{formatDate(loan.loaned_at)}</td>
-                        <td>{formatDate(loan.due_at)}</td>
-
-                        <td>
-                          <span className={getStatusClass(status)}>
-                            {status}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+        <div className="loans-toolbar">
+          <div className="loans-search">
+            <span>⌕</span>
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => handleSearchChange(event.target.value)}
+              placeholder="Buscar por estudiante, instrumento o código..."
+              aria-label="Buscar préstamos"
+            />
           </div>
+
+          <div className="loans-date-filters">
+            <span>Filtrar por fecha:</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={handleDateChange(setStartDate)}
+              aria-label="Fecha inicial"
+            />
+            <span className="date-separator">→</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={handleDateChange(setEndDate)}
+              aria-label="Fecha final"
+              min={startDate || undefined}
+            />
+          </div>
+        </div>
+
+        {loading ? (
+          <p className="loading-message">Cargando préstamos...</p>
+        ) : (
+          <>
+            <div className="table-container loans-table-container">
+              <table className="inventory-table loans-table">
+                <thead>
+                  <tr>
+                    <th>Estudiante</th>
+                    <th>Instrumento</th>
+                    <th>Fecha préstamo</th>
+                    <th>Fecha vencimiento</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {paginatedLoans.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="loans-empty">
+                        No se encontraron préstamos.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedLoans.map((loan) => {
+                      const status = getLoanStatus(loan);
+
+                      return (
+                        <tr key={loan.id}>
+                          <td>
+                            <div className="loan-person">
+                              <div className="loan-avatar">
+                                {(loan.student_name || "E")
+                                  .charAt(0)
+                                  .toUpperCase()}
+                              </div>
+                              <div>
+                                <strong>{loan.student_name}</strong>
+                                <small>{loan.student_code}</small>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td>
+                            <div className="loan-instrument">
+                              <div className="loan-instrument-icon">♫</div>
+                              <div>
+                                <strong>{loan.instrument_name}</strong>
+                                <small>{loan.instrument_code}</small>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td>{formatDate(loan.loaned_at)}</td>
+                          <td>{formatDate(loan.due_at)}</td>
+
+                          <td>
+                            <span className={getStatusClass(status)}>
+                              {status === "Devuelto" && "✓ "}
+                              {status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="loans-pagination">
+              <span>
+                Mostrando {filteredLoans.length === 0
+                  ? 0
+                  : (currentPage - 1) * itemsPerPage + 1}
+                {" "}a{" "}
+                {Math.min(currentPage * itemsPerPage, filteredLoans.length)}
+                {" "}de {filteredLoans.length} préstamos
+              </span>
+
+              <div className="pagination-buttons">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCurrentPage((page) => Math.max(1, page - 1))
+                  }
+                  disabled={currentPage === 1}
+                  aria-label="Página anterior"
+                >
+                  ‹
+                </button>
+
+                <span>
+                  {currentPage} / {totalPages}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCurrentPage((page) => Math.min(totalPages, page + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  aria-label="Página siguiente"
+                >
+                  ›
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </section>
-    </>
+    </div>
   );
 }
 

@@ -1,0 +1,684 @@
+/* Returns page layout */
+.returns-page {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Hero banner: match the Loans page layout */
+.returns-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 183px;
+  padding: 28px 40px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 21px;
+  background: linear-gradient(110deg, #174293 0%, #0755d3 52%, #1980f7 100%);
+  box-shadow: 0 10px 25px rgba(22, 65, 130, 0.08);
+}
+
+/* Left-aligned hero content */
+.returns-hero-content {
+  position: relative;
+  z-index: 2;
+  width: 60%;
+  max-width: 590px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.returns-hero-label {
+  display: inline-block;
+  margin-bottom: 9px;
+  padding: 5px 13px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.17);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  line-height: 1.2;
+}
+
+.returns-hero h1 {
+  margin: 0 0 9px;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+}
+
+.returns-hero p {
+  max-width: 590px;
+  margin: 0;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Right-aligned hero decorations */
+.returns-hero-decoration {
+  position: absolute;
+  top: 0;
+  right: 30px;
+  bottom: auto;
+  left: auto;
+  z-index: 1;
+  display: block;
+  width: 40%;
+  height: 100%;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.returns-hero-decoration .returns-music-note,
+.returns-hero-decoration .returns-back-arrow,
+.returns-hero-decoration .returns-guitar,
+.returns-hero-decoration .returns-box {
+  position: absolute;
+  display: block;
+  margin: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Musical notes */
+.returns-music-note { color: rgba(255, 255, 255, 0.75); }
+.returns-hero-decoration .note-one { top: 33%; left: 15%; font-size: 43px; }
+.returns-hero-decoration .note-two { top: 35%; left: 47%; font-size: 40px; }
+.returns-hero-decoration .note-three { top: 65%; left: 61%; font-size: 28px; }
+
+/* Return arrow, guitar, and box */
+.returns-hero-decoration .returns-back-arrow {
+  top: 15%;
+  left: 69%;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.returns-hero-decoration .returns-guitar {
+  top: 31%;
+  right: 7%;
+  left: auto;
+  font-size: 75px;
+  transform: rotate(-12deg);
+}
+
+.returns-hero-decoration .returns-box {
+  right: 32%;
+  bottom: 9%;
+  font-size: 31px;
+  opacity: 0.45;
+}
+
+/* Statistics */
+.returns-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 18px 0 20px;
+}
+
+.returns-stat-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  min-width: 0;
+  min-height: 122px;
+  padding: 20px 22px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 19px;
+  box-shadow: 0 5px 18px rgba(30, 55, 90, 0.05);
+}
+
+.pending-stat { background: #dceeff; border-color: #b8dcff; }
+.returned-stat { background: #ddf8ec; border-color: #b8efd6; }
+.total-stat { background: #ece5ff; border-color: #d9caff; }
+
+.returns-stat-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.pending-stat .returns-stat-icon { color: #1768ed; }
+.returned-stat .returns-stat-icon { color: #079b50; }
+.total-stat .returns-stat-icon { color: #8247f5; }
+.returns-stat-info { min-width: 0; }
+
+.returns-stat-info span {
+  display: block;
+  margin-bottom: 5px;
+  color: #526681;
+  font-size: 14px;
+}
+
+.returns-stat-info strong {
+  display: block;
+  color: #102b50;
+  font-size: 32px;
+  line-height: 1.1;
+}
+
+.returns-stat-info small {
+  display: block;
+  margin-top: 7px;
+  color: #7185a2;
+  font-size: 12px;
+}
+
+.returns-stat-decoration {
+  margin-left: auto;
+  color: rgba(35, 113, 220, 0.45);
+  font-size: 25px;
+}
+
+/* Main panel */
+.returns-panel {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #dce6f5;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(30, 55, 90, 0.06);
+}
+
+.returns-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 22px 24px;
+  border-bottom: 1px solid #edf2fa;
+}
+
+.returns-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.returns-panel-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  color: #1264ed;
+  background: #e2edff;
+  border: 1px solid #c8dcff;
+  border-radius: 15px;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.returns-panel-header h2 {
+  margin: 0 0 5px;
+  color: #142d50;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.returns-panel-header p {
+  margin: 0;
+  color: #7184a2;
+  font-size: 14px;
+}
+
+.returns-counter {
+  padding: 11px 17px;
+  color: #075be4;
+  background: #e4efff;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Search */
+.returns-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  height: 46px;
+  margin: 14px 22px 20px;
+  padding: 0 16px;
+  background: #fbfdff;
+  border: 1px solid #cbd9ee;
+  border-radius: 13px;
+}
+
+.returns-search-icon {
+  color: #173b6b;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.returns-search-wrapper input {
+  width: 100%;
+  height: 100%;
+  color: #26364f;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.returns-search-wrapper input::placeholder { color: #8291a9; }
+
+/* Pending loans table */
+.returns-table-container {
+  width: calc(100% - 44px);
+  margin: 0 22px 22px;
+  overflow-x: auto;
+  border: 1px solid #e0e9f7;
+  border-radius: 13px;
+}
+
+.returns-table {
+  width: 100%;
+  min-width: 850px;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.returns-table thead { background: #e1edff; }
+
+.returns-table th {
+  padding: 15px 19px;
+  color: #173454;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.returns-table td {
+  padding: 14px 19px;
+  color: #34445e;
+  border-top: 1px solid #e9eff8;
+  font-size: 13px;
+}
+
+.returns-table tbody tr { transition: background 0.2s ease; }
+.returns-table tbody tr:hover { background: #f7faff; }
+
+/* Student and instrument cells */
+.returns-person-cell,
+.returns-instrument-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.returns-avatar,
+.returns-instrument-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.returns-avatar { color: #6735d7; background: #eee4ff; }
+.returns-instrument-icon { background: #fff2cc; font-size: 25px; }
+
+.returns-person-cell strong,
+.returns-instrument-cell strong {
+  display: block;
+  color: #203652;
+  font-size: 13px;
+}
+
+.returns-person-cell small,
+.returns-instrument-cell small {
+  display: block;
+  margin-top: 5px;
+  color: #7586a0;
+  font-size: 12px;
+}
+
+/* Dates */
+.returns-date-cell {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #34445e;
+  font-size: 13px;
+}
+
+.returns-date-cell > span { color: #2877ef; font-size: 20px; }
+
+.returns-overdue-tag {
+  padding: 4px 8px;
+  color: #c34b25;
+  background: #ffebe5;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Return action */
+.returns-action-button {
+  padding: 12px 15px;
+  color: #ffffff;
+  background: #0862ed;
+  border: none;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.returns-action-button:hover:not(:disabled) {
+  background: #064dc2;
+  transform: translateY(-1px);
+}
+
+.returns-action-button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Empty, loading, and feedback states */
+.returns-empty {
+  padding: 35px 20px !important;
+  color: #8290a5 !important;
+  text-align: center;
+}
+
+.loading-message { padding: 30px 22px; color: #7184a2; font-size: 14px; }
+
+.returns-alert {
+  margin-top: 15px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.error-message { color: #b42318; background: #feeceb; border: 1px solid #f7c7c3; }
+.success-message { color: #137a43; background: #e1f8eb; border: 1px solid #b9edce; }
+
+.returns-overdue-notice {
+  margin-top: 15px;
+  padding: 12px 16px;
+  color: #a84c19;
+  background: #fff1df;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+/* Tablet layout */
+@media (max-width: 1000px) {
+  .returns-stats { grid-template-columns: 1fr; }
+  .returns-hero { padding: 26px 30px; }
+  .returns-hero-content { width: 65%; }
+  .returns-hero-decoration { right: 10px; width: 35%; opacity: 0.7; }
+  .returns-hero h1 { font-size: 32px; }
+}
+
+/* Mobile layout */
+@media (max-width: 650px) {
+  .returns-hero {
+    min-height: 175px;
+    padding: 23px 20px;
+    border-radius: 17px;
+  }
+
+  .returns-hero-content { width: 100%; max-width: 100%; }
+  .returns-hero-label { font-size: 10px; }
+  .returns-hero h1 { font-size: 28px; }
+  .returns-hero p { max-width: 100%; font-size: 12px; line-height: 1.5; }
+  .returns-desktop-break { display: none; }
+  .returns-hero-decoration { right: -20px; width: 55%; opacity: 0.12; }
+  .returns-hero-decoration .returns-guitar { font-size: 65px; }
+  .returns-hero-decoration .returns-back-arrow,
+  .returns-hero-decoration .returns-box { display: none; }
+
+  .returns-panel-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .returns-panel-header h2 { font-size: 18px; }
+  .returns-panel-header p { font-size: 12px; }
+  .returns-search-wrapper { margin: 12px 15px 16px; }
+  .returns-table-container { width: calc(100% - 30px); margin: 0 15px 16px; }
+  .returns-stat-card { min-height: 105px; padding: 16px; }
+}
+
+/* =========================================================
+   HERO BANNER FIX - PREVENT SHARED STYLE CONFLICTS
+   Append to the end of Returns.css.
+   ========================================================= */
+
+/* Keep the hero and text in separate visual areas. */
+.returns-page .returns-hero {
+  position: relative !important;
+  display: flex !important;
+  align-items: center;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(110deg, #174293 0%, #0755d3 52%, #1980f7 100%) !important;
+}
+
+/* Remove decorative pseudo-elements introduced by shared CSS. */
+.returns-page .returns-hero::before,
+.returns-page .returns-hero::after {
+  content: none !important;
+}
+
+/* Reserve the left part of the banner for readable copy. */
+.returns-page .returns-hero > .returns-hero-content {
+  position: relative !important;
+  z-index: 3 !important;
+  width: 60%;
+  max-width: 590px;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+/* Prevent the eyebrow label from stretching across the banner. */
+/* Keep the hero label compact */
+.returns-page .returns-hero .returns-hero-content > .returns-hero-label {
+  display: inline-flex !important;
+  align-items: center;
+  width: fit-content !important;
+  max-width: 100%;
+  flex: none !important;
+  padding: 2px 10px !important;
+  font-size: 12px !important;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+/* Anchor the entire decoration group to the right edge. */
+.returns-page .returns-hero > .returns-hero-decoration {
+  position: absolute !important;
+  inset: auto 25px auto auto !important;
+  top: 0 !important;
+  right: 25px !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 40% !important;
+  height: 100% !important;
+  display: block !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 1 !important;
+  pointer-events: none;
+}
+
+/* Position each illustration inside the right-side group. */
+.returns-page .returns-hero > .returns-hero-decoration > span {
+  position: absolute !important;
+  display: block !important;
+  flex: none !important;
+  margin: 0 !important;
+  line-height: 1;
+}
+
+/* Musical notes. */
+.returns-page .returns-hero-decoration > .note-one {
+  top: 32% !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 12% !important;
+}
+
+.returns-page .returns-hero-decoration > .note-two {
+  top: 35% !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 44% !important;
+}
+
+.returns-page .returns-hero-decoration > .note-three {
+  top: 64% !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 61% !important;
+}
+
+/* Return arrow. */
+.returns-page .returns-hero-decoration > .returns-back-arrow {
+  top: 12% !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 66% !important;
+}
+
+/* Guitar illustration. */
+.returns-page .returns-hero-decoration > .returns-guitar {
+  top: 30% !important;
+  right: 5% !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: rotate(-12deg) !important;
+}
+
+/* Return box illustration. */
+.returns-page .returns-hero-decoration > .returns-box {
+  top: auto !important;
+  right: 35% !important;
+  bottom: 9% !important;
+  left: auto !important;
+}
+
+/* Keep illustrations subtle when the screen becomes narrow. */
+@media (max-width: 1000px) {
+  .returns-page .returns-hero > .returns-hero-decoration {
+    width: 35% !important;
+    right: 10px !important;
+    opacity: 0.65;
+  }
+}
+
+@media (max-width: 650px) {
+  .returns-page .returns-hero > .returns-hero-content {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .returns-page .returns-hero > .returns-hero-decoration {
+    width: 55% !important;
+    right: -20px !important;
+    opacity: 0.12;
+  }
+}
+
+/* Match the Loans page hero design */
+.returns-page .returns-hero {
+  min-height: 176px;
+  padding: 28px 38px;
+  background: linear-gradient(
+    110deg,
+    #174293 0%,
+    #0755d3 52%,
+    #1980f7 100%
+  );
+  border-radius: 21px;
+}
+
+/* Match the Loans page text layout */
+.returns-page .returns-hero-content {
+  width: 60%;
+  max-width: 590px;
+  z-index: 3;
+}
+
+/* Match the compact section label */
+.returns-page .returns-hero .returns-hero-label {
+  display: inline-flex !important;
+  width: fit-content !important;
+  flex: none !important;
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  border-radius: 30px;
+}
+
+/* Match the Loans page title */
+.returns-page .returns-hero h1 {
+  margin: 0 0 9px;
+  font-size: 30px;
+  line-height: 1.15;
+}
+
+/* Match the description */
+.returns-page .returns-hero p {
+  max-width: 590px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Position the decorations on the right */
+.returns-page .returns-hero-decoration {
+  position: absolute !important;
+  inset: 0 25px 0 auto !important;
+  display: block !important;
+  width: 40%;
+  height: 100%;
+  opacity: 1;
+  pointer-events: none;
+}
+
+/* Musical note positions */
+.returns-page .note-one {
+  top: 36% !important;
+  left: 15% !important;
+}
+
+.returns-page .note-two {
+  top: 36% !important;
+  left: 47% !important;
+}
+
+/* Hide extra decorations */
+.returns-page .note-three,
+.returns-page .returns-back-arrow,
+.returns-page .returns-box {
+  display: none !important;
+}
+
+/* Match the guitar position */
+.returns-page .returns-hero-decoration .returns-guitar {
+  top: 33% !important;
+  right: 10% !important;
+  left: auto !important;
+  font-size: 75px;
+  transform: rotate(-12deg);
+}

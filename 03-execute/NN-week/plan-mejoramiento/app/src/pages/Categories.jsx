@@ -1,10 +1,11 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   getCategories,
   createCategory,
   updateCategoryStatus,
 } from "../services/categoryService";
+import "./Categories.css";
 
 function Categories() {
   const [categories, setCategories] = useState([]);
@@ -14,6 +15,8 @@ function Categories() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [changingCategoryId, setChangingCategoryId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const [form, setForm] = useState({
     code: "",
@@ -24,10 +27,10 @@ function Categories() {
     try {
       setError("");
       const response = await getCategories();
-      setCategories(response.data ?? []);
+      setCategories(Array.isArray(response) ? response : response.data ?? []);
     } catch (err) {
       console.error(err);
-      setError("No fue posible cargar las categorias.");
+      setError("No fue posible cargar las categorías.");
     } finally {
       setLoading(false);
     }
@@ -38,10 +41,10 @@ function Categories() {
   }, []);
 
   const handleChange = (event) => {
-    setForm({
-      ...form,
+    setForm((previous) => ({
+      ...previous,
       [event.target.name]: event.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (event) => {
@@ -64,8 +67,7 @@ function Categories() {
 
       setForm({ code: "", name: "" });
       setShowForm(false);
-      setSuccess("Categoria registrada correctamente.");
-
+      setSuccess("Categoría registrada correctamente.");
       await loadCategories();
     } catch (err) {
       const data = err.response?.data;
@@ -74,10 +76,7 @@ function Categories() {
         const firstError = Object.values(data.errors).flat()[0];
         setError(firstError || "Revisa los datos ingresados.");
       } else {
-        setError(
-          data?.message ||
-          "No fue posible registrar la categoria."
-        );
+        setError(data?.message || "No fue posible registrar la categoría.");
       }
     } finally {
       setSaving(false);
@@ -88,7 +87,7 @@ function Categories() {
     const nextActive = !category.is_active;
     const action = nextActive ? "activar" : "desactivar";
 
-    if (!window.confirm(`Deseas ${action} la categoria ${category.name}?`)) {
+    if (!window.confirm(`¿Deseas ${action} la categoría ${category.name}?`)) {
       return;
     }
 
@@ -98,64 +97,167 @@ function Categories() {
 
     try {
       await updateCategoryStatus(category.id, nextActive);
-      setSuccess(`Categoria ${nextActive ? "activada" : "desactivada"} correctamente.`);
+      setSuccess(
+        `Categoría ${nextActive ? "activada" : "desactivada"} correctamente.`
+      );
       await loadCategories();
     } catch (err) {
-      setError(err.response?.data?.message || "No fue posible actualizar el estado de la categoria.");
+      setError(
+        err.response?.data?.message ||
+          "No fue posible actualizar el estado de la categoría."
+      );
     } finally {
       setChangingCategoryId(null);
     }
   };
 
+  const totalCategories = categories.length;
+  const activeCategories = categories.filter(
+    (category) => category.is_active
+  ).length;
+  const inactiveCategories = totalCategories - activeCategories;
+
+  // Se usa el contador de Laravel si está disponible.
+  // Si no, se intenta contar la relación incluida en la respuesta.
+  const categoriesWithInstruments = categories.filter((category) => {
+    const count =
+      category.instruments_count ?? category.instruments?.length ?? 0;
+    return Number(count) > 0;
+  }).length;
+
+  const filteredCategories = useMemo(() => {
+    const term = search.trim().toLowerCase();
+
+    return categories.filter((category) => {
+      const matchesSearch =
+        String(category.code ?? "").toLowerCase().includes(term) ||
+        String(category.name ?? "").toLowerCase().includes(term);
+
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" && Boolean(category.is_active)) ||
+        (statusFilter === "inactive" && !category.is_active);
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [categories, search, statusFilter]);
+
+  const getCategoryIcon = (name = "") => {
+    const value = name.toLowerCase();
+
+    if (value.includes("cuerda")) return "♬";
+    if (value.includes("viento")) return "♬";
+    if (value.includes("percusión") || value.includes("percusion")) return "◉";
+    if (value.includes("teclado")) return "▤";
+    if (value.includes("electr")) return "≋";
+    return "♫";
+  };
+
   return (
-    <>
-      <div className="page-heading">
-        <h1>Categorias</h1>
-        <p>Administra las categorias de instrumentos musicales.</p>
-      </div>
+    <div className="categories-page">
+      <section className="categories-hero">
+        <div className="categories-hero-content">
+          <span className="categories-hero-eyebrow">
+            GESTIÓN DEL CATÁLOGO
+          </span>
+          <h1>Categorías</h1>
+          <p>
+            Administra las categorías de instrumentos musicales,
+            manteniendo el inventario organizado y actualizado.
+          </p>
+        </div>
+
+        <div className="categories-hero-art" aria-hidden="true">
+          <span className="category-note note-a">♫</span>
+          <span className="category-note note-b">♪</span>
+          <span className="category-note note-c">♬</span>
+          <span className="category-music-symbol">♫</span>
+        </div>
+      </section>
 
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
 
-      <section className="panel">
-        <div className="panel-heading">
+      <section className="categories-stats">
+        <article className="category-stat-card stat-blue">
+          <div className="category-stat-icon">▱</div>
           <div>
-            <h2>Listado de categorias</h2>
-            <p>Consulta y registra las categorias del inventario.</p>
+            <p>Total de categorías</p>
+            <h2>{loading ? "—" : totalCategories}</h2>
+            <small>Registradas en el sistema</small>
+          </div>
+        </article>
+
+        <article className="category-stat-card stat-green">
+          <div className="category-stat-icon">✓</div>
+          <div>
+            <p>Categorías activas</p>
+            <h2>{loading ? "—" : activeCategories}</h2>
+            <small>Disponibles para su uso</small>
+          </div>
+        </article>
+
+        <article className="category-stat-card stat-red">
+          <div className="category-stat-icon">×</div>
+          <div>
+            <p>Categorías inactivas</p>
+            <h2>{loading ? "—" : inactiveCategories}</h2>
+            <small>No disponibles en el inventario</small>
+          </div>
+        </article>
+
+        <article className="category-stat-card stat-purple">
+          <div className="category-stat-icon">♫</div>
+          <div>
+            <p>Con instrumentos</p>
+            <h2>{loading ? "—" : categoriesWithInstruments}</h2>
+            <small>Tienen instrumentos asociados</small>
+          </div>
+        </article>
+      </section>
+
+      <section className="categories-panel">
+        <div className="categories-panel-heading">
+          <div className="categories-panel-title">
+            <span className="categories-list-icon">▤</span>
+            <div>
+              <h2>Listado de categorías</h2>
+              <p>Consulta, registra y gestiona las categorías del inventario.</p>
+            </div>
           </div>
 
           <button
-            className="primary-button"
+            className="categories-primary-button"
             onClick={() => {
               setError("");
               setSuccess("");
-              setShowForm(!showForm);
+              setShowForm((previous) => !previous);
             }}
           >
-            + Nueva categoria
+            <span>＋</span> Nueva categoría
           </button>
         </div>
 
         {showForm && (
-          <form className="instrument-form" onSubmit={handleSubmit}>
-            <h3>Registrar categoria</h3>
+          <form className="categories-form" onSubmit={handleSubmit}>
+            <h3>Registrar categoría</h3>
 
-            <div className="form-grid">
+            <div className="categories-form-grid">
               <div className="form-field">
-                <label htmlFor="category-code">Codigo</label>
+                <label htmlFor="category-code">Código</label>
                 <input
                   id="category-code"
                   name="code"
                   value={form.code}
                   onChange={handleChange}
-                  placeholder="Ej. CAT-06"
+                  placeholder="Ej. CAT-07"
                   maxLength={20}
                   required
                 />
               </div>
 
               <div className="form-field">
-                <label htmlFor="category-name">Nombre</label>
+                <label htmlFor="category-name">Nombre de categoría</label>
                 <input
                   id="category-name"
                   name="name"
@@ -168,10 +270,10 @@ function Categories() {
               </div>
             </div>
 
-            <div className="form-actions">
+            <div className="categories-form-actions">
               <button
                 type="button"
-                className="secondary-button"
+                className="categories-cancel-button"
                 onClick={() => setShowForm(false)}
               >
                 Cancelar
@@ -179,60 +281,119 @@ function Categories() {
 
               <button
                 type="submit"
-                className="primary-button"
+                className="categories-primary-button"
                 disabled={saving}
               >
-                {saving ? "Guardando..." : "Guardar categoria"}
+                {saving ? "Guardando..." : "Guardar categoría"}
               </button>
             </div>
           </form>
         )}
 
-        {loading ? (
-          <p className="loading-message">Cargando categorias...</p>
-        ) : (
-          <div className="table-container">
-            <table className="inventory-table">
-              <thead>
-                <tr>
-                  <th>Codigo</th>
-                  <th>Nombre de categoria</th>
-                  <th>Estado</th>
-                  <th>Accion</th>
-                </tr>
-              </thead>
+        <div className="categories-toolbar">
+          <div className="categories-search">
+            <span>⌕</span>
+            <input
+              type="search"
+              placeholder="Buscar por código o nombre..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
 
-              <tbody>
-                {categories.length === 0 ? (
+          <label className="categories-filter">
+            <span>Estado:</span>
+            <select
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <option value="all">Todos</option>
+              <option value="active">Activas</option>
+              <option value="inactive">Inactivas</option>
+            </select>
+          </label>
+        </div>
+
+        {loading ? (
+          <p className="loading-message">Cargando categorías...</p>
+        ) : (
+          <>
+            <div className="categories-table-wrapper">
+              <table className="categories-table">
+                <thead>
                   <tr>
-                    <td colSpan="4">No hay categorias registradas.</td>
+                    <th></th>
+                    <th>CÓDIGO</th>
+                    <th>NOMBRE DE CATEGORÍA</th>
+                    <th>ESTADO</th>
+                    <th>ACCIÓN</th>
                   </tr>
-                ) : (
-                  categories.map((category) => (
-                    <tr key={category.id}>
-                      <td>{category.code}</td>
-                      <td>{category.name}</td>
-                      <td>{category.is_active ? "Activa" : "Inactiva"}</td>
-                      <td>
-                        <button
-                          className={category.is_active ? "secondary-button" : "primary-button"}
-                          onClick={() => handleStatusChange(category)}
-                          disabled={changingCategoryId === category.id}
-                        >
-                          {changingCategoryId === category.id
-                            ? "Actualizando..."
-                            : category.is_active ? "Desactivar" : "Activar"}
-                        </button>
+                </thead>
+
+                <tbody>
+                  {filteredCategories.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="categories-empty">
+                        No se encontraron categorías.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    filteredCategories.map((category) => (
+                      <tr key={category.id}>
+                        <td>
+                          <span className="categories-row-icon">
+                            {getCategoryIcon(category.name)}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="categories-code">
+                            {category.code}
+                          </span>
+                        </td>
+                        <td className="categories-name">{category.name}</td>
+                        <td>
+                          <span
+                            className={
+                              category.is_active
+                                ? "category-status status-active"
+                                : "category-status status-inactive"
+                            }
+                          >
+                            <span className="category-status-dot"></span>
+                            {category.is_active ? "Activa" : "Inactiva"}
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            className={
+                              category.is_active
+                                ? "category-status-button"
+                                : "category-status-button activate"
+                            }
+                            onClick={() => handleStatusChange(category)}
+                            disabled={changingCategoryId === category.id}
+                          >
+                            {changingCategoryId === category.id
+                              ? "Actualizando..."
+                              : category.is_active
+                                ? "⏻  Desactivar"
+                                : "✓  Activar"}
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="categories-footer">
+              Mostrando {filteredCategories.length} de {totalCategories} categorías
+            </div>
+          </>
         )}
       </section>
-    </>
+    </div>
   );
 }
 

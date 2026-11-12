@@ -1,7 +1,7 @@
 
 import api from "./api";
 
-// Registrar la devolucion de un prestamo
+// Record a loan return
 export const createReturn = async (loanId) => {
   const response = await api.post(`/loans/${loanId}/returns`);
   return response.data;
