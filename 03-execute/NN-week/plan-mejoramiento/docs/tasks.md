@@ -4,9 +4,9 @@
 **Proyecto:** Sistema de prestamo de instrumentos musicales  
 **Ficha:** 3239137  
 **Identificacion del aprendiz:** A12  
-**Version:** 1.1
-**Estado:** En ejecucion y seguimiento
-**Fecha de actualizacion:** 09/11/2026
+**Version:** 1.3
+**Estado:** Completado
+**Fecha de actualizacion:** 13/11/2026
 
 ---
 
@@ -453,37 +453,35 @@ La siguiente matriz permite realizar el seguimiento de las actividades del proye
 | Indicador | Cantidad |
 |:---|---:|
 | Total de tareas | 23 |
-| Completadas | 4 |
-| Pendientes | 19 |
+| Completadas | 23 |
+| Pendientes | 0 |
 
 **Detalle de actividades**
-
 | ID | Actividad | Estado | Evidencia |
 |:---|:---|:---:|:---|
 | TASK-01 | Preparacion de la estructura del proyecto | Completada | `docs/` |
-| TASK-02 | Configuracion del entorno | Pendiente | — |
-| TASK-03 | Diseño del modelo de datos | Pendiente | — |
-| TASK-04 | Creacion de migraciones | Pendiente | — |
-| TASK-05 | Conexion con MySQL | Pendiente | — |
-| TASK-06 | API de categorias | Pendiente | — |
-| TASK-07 | API de instrumentos | Pendiente | — |
-| TASK-08 | Control de inventario | Pendiente | — |
-| TASK-09 | API de estudiantes | Pendiente | — |
-| TASK-10 | Registro de prestamos | Pendiente | — |
-| TASK-11 | Consultas de prestamos | Pendiente | — |
-| TASK-12 | Consulta de prestamos vencidos | Pendiente | — |
-| TASK-13 | Registro de devoluciones | Pendiente | — |
-| TASK-14 | Control de concurrencia | Pendiente | — |
-| TASK-15 | Reporte de instrumentos solicitados | Pendiente | — |
-| TASK-16 | Validaciones y manejo de errores | Pendiente | — |
+| TASK-02 | Configuracion del entorno | Completada | `infra/, api/, app/` |
+| TASK-03 | Diseño del modelo de datos | Completada | `docs/data-model.md` |
+| TASK-04 | Creacion de migraciones | Completada | `api/database/migrations/` |
+| TASK-05 | Conexion con MySQL | Completada | `infra/docker-compose.yml` |
+| TASK-06 | API de categorias | Completada | `api/tests/Feature/CategoryTest.php` |
+| TASK-07 | API de instrumentos | Completada | `api/tests/Feature/InstrumentTest.php` |
+| TASK-08 | Control de inventario | Completada | `api/tests/Feature/InstrumentManagementTest.php` |
+| TASK-09 | API de estudiantes | Completada | `api/tests/Feature/StudentTest.php` |
+| TASK-10 | Registro de prestamos | Completada | `api/tests/Feature/LoanTest.php` |
+| TASK-11 | Consultas de prestamos | Completada | `api/tests/Feature/LoanQueryTest.php, api/tests/Feature/StudentLoanHistoryTest.php` |
+| TASK-12 | Consulta de prestamos vencidos | Completada | `api/tests/Feature/OverdueLoanTest.php` |
+| TASK-13 | Registro de devoluciones | Completada | `api/tests/Feature/ReturnEndpointTest.php` |
+| TASK-14 | Control de concurrencia | Completada | `docs/tasks.md, docs/evidence.md` |
+| TASK-15 | Reporte de instrumentos solicitados | Completada | `api/tests/Feature/ReportTest.php` |
+| TASK-16 | Validaciones y manejo de errores | Completada | `api/tests/Feature/, docs/api-contract.md` |
 | TASK-17 | Desarrollo del frontend React | Completada | `app/` |
 | TASK-18 | Vistas administrativas | Completada | `app/` |
 | TASK-19 | Gestion visual de prestamos y devoluciones | Completada | `app/` |
-| TASK-20 | Sitio web publico | Pendiente | — |
-| TASK-21 | Herramienta de inicializacion de datos | Pendiente | — |
-| TASK-22 | Integracion con Docker Compose | Pendiente | — |
-| TASK-23 | Pruebas, documentacion y entrega | Pendiente | — |
-
+| TASK-20 | Sitio web publico | Completada | `page/, infra/docker-compose.yml` |
+| TASK-21 | Herramienta de inicializacion de datos | Completada | `tool/, docs/evidence.md` |
+| TASK-22 | Integracion con Docker Compose | Completada | `infra/docker-compose.yml` |
+| TASK-23 | Pruebas, documentacion y entrega | Completada | `api/tests/, docs/evidence.md` |
 **Responsable:** Aprendiz A12.
 
 **Criterio de actualizacion:** una tarea cambiara a Completada cuando sus archivos y entregables correspondientes hayan sido publicados en GitHub y se haya verificado su contenido.
@@ -538,6 +536,10 @@ La organizacion propuesta permite avanzar desde la preparacion del repositorio y
 |---|---|---|
 | 1.0 | 08/11/2026 | Creacion inicial del plan de tareas con 23 actividades y sus criterios de aceptacion. |
 | 1.2 | 09/11/2026 | Actualizacion de la estructura real del repositorio y del diagrama de arquitectura logica, incluyendo Dashboard, servicios y herramienta de inicializacion.	En revision. |
+
+---
+
+| 1.3 | 13/11/2026 | Cierre de las 23 tareas, validacion de pruebas automatizadas y actualizacion de evidencias. |
 
 ---
 

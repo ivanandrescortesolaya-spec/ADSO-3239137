@@ -58,3 +58,48 @@ Registrar y organizar las evidencias que permiten verificar los entregables desa
 ---
 
 **Fin del documento.**
+## Validacion final - 13/11/2026
+
+### TASK-23 - Pruebas automatizadas
+
+- Entorno: Docker Compose, servicio api-test.
+- Base de datos de pruebas: music_school_test.
+- Resultado PHPUnit: 56 pruebas aprobadas.
+- Aserciones: 138.
+- Archivos de pruebas automatizadas: 16.
+- Errores: 0.
+- Comando: docker compose --env-file infra/.env -f infra/docker-compose.yml --profile testing run --rm api-test php artisan test
+
+### Validacion del frontend
+
+- Framework: React y Vite.
+- Comando: npm run build.
+- Resultado: compilacion de produccion exitosa.
+
+### Validacion de infraestructura
+
+- API Laravel: puerto 8000.
+- Frontend React: puerto 5173.
+- MySQL: puerto 3308.
+- Sitio publico: puerto 8080.
+- Sitio publico: respuesta HTTP 200.
+
+### Validacion de inicializacion de datos
+
+- Categorias existentes: 5.
+- Instrumentos existentes: 10.
+- Registros nuevos en segunda ejecucion: 0.
+- Errores: 0.
+- Resultado: inicializacion idempotente mediante API.
+
+### Validacion funcional
+
+- Registro y consulta de categorias, instrumentos y estudiantes.
+- Registro y consulta de prestamos.
+- Control de disponibilidad e inventario.
+- Consulta de prestamos vencidos.
+- Registro de devoluciones y rechazo de duplicados.
+- Historial de prestamos.
+- Reporte de instrumentos mas solicitados.
+- Validaciones y respuestas HTTP de error.
+- Aislamiento de la base de datos de pruebas.
