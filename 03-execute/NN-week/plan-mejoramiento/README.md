@@ -1,22 +1,28 @@
+
 Este proyecto es la solución del plan de mejoramiento del aprendiz A12, ficha 3239137, dominio music-school
 
 # Music School
 
-Sistema para administrar instrumentos, estudiantes, prestamos y devoluciones. Este README describe archivos y comportamientos que existen en el repositorio; no declara que todos los requisitos del plan esten terminados.
+Sistema para administrar instrumentos musicales, categorías, estudiantes, préstamos y devoluciones.
 
-## Tecnologias verificadas
+El proyecto cuenta con **23 tareas documentadas como completadas**, integración mediante Docker Compose, pruebas automatizadas aprobadas y evidencias técnicas registradas en `docs/evidence.md`.
 
-| Componente | Version o requisito comprobable |
+## Tecnologías verificadas
+
+| Componente | Versión o requisito |
 |---|---|
 | PHP | `^8.3`, declarado en `api/composer.json` |
 | Laravel | `^13.17`, declarado en `api/composer.json` |
 | React | `^19.3.1`, declarado en `app/package.json` |
 | Vite | `^8.3.6`, declarado en `app/package.json` |
-| MySQL | Imagen `mysql:8.4` en `infra/docker-compose.yml` |
-| Node.js para la herramienta de datos | `>=20`, declarado en `tool/package.json` |
-| Comunicacion | API HTTP con JSON |
+| MySQL | Imagen `mysql:8.4` |
+| Node.js | `>=20`, requerido por `tool/package.json` |
+| Docker | Docker Compose |
+| Comunicación | API HTTP con JSON |
 
-Composer y npm instalan las dependencias declaradas en sus manifiestos. `api/` y `app/` tambien incluyen archivos de bloqueo. El archivo Compose solo inicia MySQL; Laravel y React se ejecutan por separado.
+Composer y npm administran las dependencias declaradas en sus manifiestos. Los componentes `api/` y `app/` incluyen archivos de bloqueo.
+
+Docker Compose integra MySQL, Laravel, React y el sitio público estático.
 
 ## Estructura del repositorio
 
@@ -24,195 +30,466 @@ Composer y npm instalan las dependencias declaradas en sus manifiestos. `api/` y
 .
 |-- README.md
 |-- api/
-|   |-- app/Http/Controllers/Api/
-|   |-- app/Models/
-|   |-- app/Services/
-|   |-- bootstrap/  config/  public/  resources/  routes/
-|   |-- database/factories/  migrations/  seeders/
+|   |-- app/
+|   |   |-- Http/Controllers/Api/
+|   |   |-- Models/
+|   |   `-- Services/
+|   |-- bootstrap/
+|   |-- config/
+|   |-- database/
+|   |   |-- factories/
+|   |   |-- migrations/
+|   |   `-- seeders/
+|   |-- public/
+|   |-- resources/
+|   |-- routes/
 |   |-- tests/
-|   |   |-- Feature/    (14 archivos *Test.php)
-|   |   `-- Unit/       (1 archivo *Test.php)
+|   |   |-- Feature/
+|   |   `-- Unit/
 |   |-- .env.example
 |   |-- artisan
-|   |-- composer.json  composer.lock
+|   |-- composer.json
+|   |-- composer.lock
 |   `-- phpunit.xml
 |-- app/
 |   |-- public/
-|   |-- src/pages/
-|   |-- src/services/
-|   |-- package.json  package-lock.json
+|   |-- src/
+|   |   |-- pages/
+|   |   `-- services/
+|   |-- package.json
+|   |-- package-lock.json
 |   `-- vite.config.js
 |-- docs/
-|   |-- adr/           (ADR-001.md a ADR-003.md)
-|   |-- evidence/       (concurrency-test.md)
-|   |-- api-contract.md  architecture.md  constitution.md
-|   |-- data-model.md  evidence.md  plan.md  spec.md  tasks.md
+|   |-- adr/
+|   |   |-- ADR-001.md
+|   |   |-- ADR-002.md
+|   |   `-- ADR-003.md
+|   |-- evidence/
+|   |   `-- concurrency-test.md
+|   |-- api-contract.md
+|   |-- architecture.md
+|   |-- constitution.md
+|   |-- data-model.md
+|   |-- evidence.md
+|   |-- plan.md
+|   |-- spec.md
+|   `-- tasks.md
 |-- infra/
 |   |-- docker-compose.yml
+|   |-- Dockerfile.api
+|   |-- Dockerfile.app
 |   `-- .env.example
 |-- page/
-|   |-- index.html  script.js  styles.css
+|   |-- index.html
+|   |-- script.js
+|   `-- styles.css
 `-- tool/
-    |-- src/  categories.json  instruments.json
-    |-- .env.example  package.json  README.md
+    |-- src/
+    |-- categories.json
+    |-- instruments.json
+    |-- .env.example
+    |-- package.json
+    `-- README.md
 ```
 
-El frontend contiene paginas para dashboard, categorias, estudiantes, prestamos y devoluciones. En `api/database/migrations/` se encuentran las migraciones de usuarios, cache, trabajos, categorias, instrumentos, estudiantes, prestamos, devoluciones, roles y estado de categoria.
+## Funcionalidades implementadas
 
-## Reglas de negocio de la especificacion
+El sistema permite:
 
-`docs/spec.md` presenta seis reglas agrupadas. La implementacion actual aplica, entre otras, estas validaciones en Laravel:
+- Consultar y administrar categorías de instrumentos.
+- Registrar, consultar, actualizar y desactivar instrumentos.
+- Controlar las unidades disponibles del inventario.
+- Registrar y consultar estudiantes.
+- Registrar préstamos de instrumentos.
+- Consultar préstamos activos, vencidos e históricos.
+- Registrar devoluciones.
+- Consultar los instrumentos más solicitados.
+- Administrar las operaciones desde una interfaz React.
+- Presentar información general mediante un sitio público independiente.
+- Inicializar categorías e instrumentos mediante una herramienta que consume la API.
 
-- Un estudiante no puede mantener mas de un prestamo pendiente.
-- El vencimiento se calcula a 21 dias y se consultan prestamos vencidos sin devolucion.
-- El prestamo y la devolucion actualizan el inventario dentro de transacciones; el servicio de prestamos bloquea el estudiante y el instrumento.
-- Los prestamos y devoluciones se conservan en tablas separadas; un prestamo esta pendiente cuando no tiene un registro relacionado en `returns`.
-- La disponibilidad se verifica antes de registrar el prestamo; el conflicto por falta de unidades responde HTTP 409.
-- Las fechas de las operaciones se registran en UTC.
+## Reglas de negocio
 
-Los instrumentos cuentan con `is_active` y un endpoint de desactivacion. La API tambien incluye un reporte agrupado por prestamos registrados. Estas referencias describen implementaciones presentes, no certifican por si solas todos los criterios de aceptacion de `docs/spec.md`.
+Las reglas del sistema están documentadas en `docs/spec.md`.
 
-### Comportamiento adicional de categorias
+### Préstamos
 
-El codigo tambien incorpora estado activo para categorias. La interfaz administrativa permite activarlas y desactivarlas; el backend impide crear o actualizar instrumentos usando una categoria inactiva y rechaza nuevos prestamos de instrumentos asociados a categorias inactivas. La desactivacion se rechaza si hay prestamos sin devolucion. Estas reglas son comportamiento adicional de la implementacion y no se presentan como requisitos textuales del documento original `docs/spec.md`.
+- Un estudiante no puede mantener más de un préstamo pendiente de devolución.
+- El plazo de devolución es de **21 días**.
+- No se permiten préstamos de instrumentos inactivos.
+- No se permiten préstamos cuando no existen unidades disponibles.
+- Los préstamos vencidos se identifican mediante la fecha límite y la ausencia de una devolución.
+- Las fechas de las operaciones se gestionan en UTC.
 
-## Requisitos locales
+### Inventario
 
-- PHP que cumpla `^8.3` y Composer para Laravel.
-- Node.js y npm para React. `tool/package.json` requiere Node.js `>=20`.
-- Docker con el complemento `docker compose`, o una instancia MySQL compatible. La configuracion del contenedor usa la imagen MySQL 8.4.
-- Para ejecutar las pruebas: una base MySQL accesible y una base `music_school_test`, segun `api/phpunit.xml`.
+- Las unidades disponibles no pueden ser negativas.
+- Las unidades disponibles no pueden superar el total registrado.
+- El inventario se actualiza cuando se registra un préstamo o una devolución.
+- Las operaciones críticas utilizan transacciones de base de datos.
 
-## Configurar y ejecutar
+### Concurrencia
 
-Los siguientes pasos usan PowerShell desde la raiz del repositorio. Los archivos `.env` locales estan ignorados por Git. No publiques sus valores.
+El backend utiliza transacciones y bloqueos mediante `lockForUpdate()` para proteger las operaciones de inventario.
 
-### 1. Iniciar MySQL con Docker
+En la prueba manual de concurrencia documentada:
 
-Crear la configuracion local a partir de la plantilla y asignar valores privados a las variables solicitadas:
+- Primera solicitud: HTTP `201 Created`.
+- Segunda solicitud: HTTP `409 Conflict`.
+- Disponibilidad final: `0` unidades.
+
+La evidencia se encuentra en `docs/evidence/concurrency-test.md` y `docs/tasks.md`.
+
+### Historial
+
+Los préstamos y las devoluciones se conservan en registros separados para mantener el historial de las operaciones.
+
+### Categorías
+
+La implementación también incorpora activación y desactivación de categorías.
+
+El backend impide utilizar categorías inactivas para registrar nuevos instrumentos o préstamos y rechaza su desactivación cuando existen préstamos pendientes asociados.
+
+Este comportamiento adicional se distingue de los requisitos originales documentados en `docs/spec.md`.
+
+## Requisitos de ejecución
+
+Para ejecutar el proyecto mediante Docker se necesita:
+
+- Docker Desktop o Docker Engine.
+- Docker Compose.
+- Puertos locales disponibles: `8000`, `5173`, `3308` y `8080`.
+
+Para ejecutar componentes manualmente se necesita:
+
+- PHP compatible con `^8.3`.
+- Composer.
+- Node.js y npm.
+- Una instancia de MySQL compatible.
+
+## Configuración y ejecución con Docker Compose
+
+Los comandos siguientes están preparados para PowerShell y deben ejecutarse desde la raíz del proyecto.
+
+### 1. Configurar variables de entorno
+
+Crear el archivo local de infraestructura:
 
 ```powershell
 Copy-Item infra/.env.example infra/.env
 ```
 
-Edita `infra/.env` y establece valores locales para `DB_PASSWORD` y `DB_ROOT_PASSWORD`. Luego inicia el servicio:
+Editar `infra/.env` y establecer contraseñas privadas para las variables de base de datos, incluyendo:
+
+- `DB_PASSWORD`
+- `DB_ROOT_PASSWORD`
+
+Los archivos `.env` contienen configuración privada y no deben publicarse en GitHub.
+
+### 2. Iniciar los servicios
 
 ```powershell
 docker compose --env-file infra/.env -f infra/docker-compose.yml up -d
 ```
 
-Compose crea el contenedor `music-school-db`, publica MySQL en el puerto `3306` y crea la base `music_school`. No crea contenedores para Laravel ni React.
+Docker Compose integra cuatro servicios principales:
 
-### 2. Instalar y ejecutar Laravel
+| Servicio | Dirección local |
+|---|---|
+| API Laravel | `http://localhost:8000/api` |
+| Frontend React | `http://localhost:5173` |
+| Sitio público | `http://localhost:8080` |
+| MySQL | `127.0.0.1:3308` |
 
-En otra terminal, copia la plantilla de Laravel:
+La base de datos principal se denomina `music_school`.
+
+### 3. Comprobar los contenedores
+
+```powershell
+docker compose --env-file infra/.env -f infra/docker-compose.yml ps
+```
+
+Los servicios esperados son:
+
+- `music-school-api`
+- `music-school-app`
+- `music-school-db`
+- `music-school-page`
+
+### 4. Ejecutar migraciones
+
+Con los servicios iniciados y la configuración de Laravel preparada:
+
+```powershell
+docker compose --env-file infra/.env -f infra/docker-compose.yml exec -T api php artisan migrate --force
+```
+
+Para comprobar el estado de las migraciones:
+
+```powershell
+docker compose --env-file infra/.env -f infra/docker-compose.yml exec -T api php artisan migrate:status
+```
+
+### 5. Comprobar la API
+
+La API se encuentra disponible en:
+
+`http://localhost:8000/api`
+
+El endpoint de salud de Laravel se encuentra en:
+
+`http://localhost:8000/up`
+
+Para comprobarlo desde PowerShell:
+
+```powershell
+curl.exe -I http://localhost:8000/up
+```
+
+### 6. Detener los servicios
+
+```powershell
+docker compose --env-file infra/.env -f infra/docker-compose.yml down
+```
+
+Este comando detiene los servicios sin solicitar la eliminación de los volúmenes persistentes.
+
+## Ejecución manual de Laravel
+
+Esta opción es alternativa a la ejecución del backend mediante Docker.
+
+### 1. Preparar Laravel
 
 ```powershell
 Copy-Item api/.env.example api/.env
+
 Set-Location api
+
 composer install
+
 php artisan key:generate
 ```
 
-En `api/.env`, configura la conexion MySQL local. Usa la base `music_school`, el usuario configurado en `infra/docker-compose.yml`, `127.0.0.1` y el mismo valor local de `DB_PASSWORD` definido para Compose. Ejecuta las migraciones y los seeders disponibles:
+Configurar en `api/.env` los datos de conexión a MySQL.
+
+Si se utiliza MySQL publicado por Docker desde Windows:
+
+- Host: `127.0.0.1`
+- Puerto: `3308`
+- Base de datos: `music_school`
+- Usuario: el configurado en Docker Compose.
+- Contraseña: la definida localmente.
+
+### 2. Ejecutar migraciones
 
 ```powershell
-php artisan migrate --seed
+php artisan migrate
 ```
 
-Inicia la API:
+### 3. Iniciar Laravel
 
 ```powershell
 php artisan serve --host=0.0.0.0 --port=8000
 ```
 
-La API queda disponible en `http://localhost:8000/api`. El endpoint de salud de Laravel esta en `/up`.
+API:
 
-### 3. Instalar y ejecutar React
+`http://localhost:8000/api`
 
-En una terminal separada:
+## Ejecución manual de React
+
+Esta opción es alternativa a ejecutar React mediante Docker.
+
+Desde la raíz del proyecto:
 
 ```powershell
 Set-Location app
+
 npm install
+
 npm run dev
 ```
 
-Vite muestra en la terminal la direccion local de la interfaz. El cliente API actual usa `http://localhost:8000/api`; no existe un `app/.env.example` ni una variable de entorno configurada para cambiar esa direccion.
+El frontend utiliza la API disponible en:
 
-Para compilar la aplicacion:
+`http://localhost:8000/api`
+
+Para generar la compilación de producción:
 
 ```powershell
 npm run build
 ```
 
-Para ejecutar el linter definido en `app/package.json`:
+Para ejecutar el linter:
 
 ```powershell
 npm run lint
 ```
 
-### 4. Ejecutar la herramienta opcional de datos
+## Herramienta de inicialización de datos
 
-La herramienta `tool/` envia solicitudes HTTP a la API; no conecta directamente con MySQL. Copia su plantilla, confirma que `API_BASE_URL` apunte a la API iniciada y ejecuta desde esa carpeta:
+La herramienta ubicada en `tool/` registra información inicial mediante solicitudes HTTP a la API.
+
+No ejecuta consultas SQL directas contra MySQL.
+
+### Datos iniciales
+
+Las categorías definidas son:
+
+| Código | Categoría |
+|---|---|
+| CAT-01 | Cuerdas |
+| CAT-02 | Vientos |
+| CAT-03 | Percusión |
+| CAT-04 | Teclados |
+| CAT-05 | Electrónicos |
+
+También se dispone de **10 instrumentos iniciales** definidos en `tool/instruments.json`.
+
+### Ejecución
+
+Con la API iniciada, desde la raíz del repositorio:
 
 ```powershell
 Set-Location tool
+
 Copy-Item .env.example .env
+
+npm install
+
 npm run seed
 ```
 
+Verificar que `API_BASE_URL` en `tool/.env` corresponda a la dirección de la API.
+
+La herramienta evita duplicar los registros existentes.
+
+En una ejecución repetida verificada se obtuvo:
+
+```text
+CATEGORIAS:
+Creadas: 0
+Existentes: 5
+Errores: 0
+
+INSTRUMENTOS:
+Creados: 0
+Existentes: 10
+Errores: 0
+```
+
+La evidencia de ejecución está registrada en `docs/evidence.md`.
+
 ## Pruebas automatizadas
 
-Hay **15 archivos de pruebas `*Test.php`**: 14 en `api/tests/Feature/` y 1 en `api/tests/Unit/`. La cantidad de archivos no es la cantidad de casos de prueba. En una ejecucion verificada de `php artisan test` se reportaron 54 casos y 135 aserciones.
+El backend cuenta con **16 archivos de pruebas automatizadas**.
 
-`api/phpunit.xml` configura las pruebas para MySQL en `127.0.0.1:3306`, base `music_school_test` y usuario `music_school_user`. El Compose de desarrollo crea `music_school`, no la base de pruebas. Crea `music_school_test` y concede acceso al usuario de pruebas antes de ejecutar la suite. Por ejemplo, con el cliente MySQL dentro del contenedor:
+La última ejecución verificada obtuvo:
 
-```powershell
-docker exec -it music-school-db mysql -u root -p
-```
+| Indicador | Resultado |
+|---|---:|
+| Pruebas aprobadas | 56 |
+| Aserciones | 138 |
+| Errores | 0 |
+| Archivos de pruebas | 16 |
 
-Ingresa la contrasena local de root cuando el cliente la solicite y ejecuta en el prompt SQL:
+### Ejecutar pruebas mediante Docker
 
-```sql
-CREATE DATABASE music_school_test;
-GRANT ALL PRIVILEGES ON music_school_test.* TO 'music_school_user'@'%';
-```
-
-Configura `DB_PASSWORD` en el entorno local de pruebas para que coincida con la clave asignada a `music_school_user`. Desde `api/`, ejecuta cualquiera de los comandos definidos para las pruebas:
+Desde la raíz del proyecto:
 
 ```powershell
-php artisan test
+docker compose --env-file infra/.env -f infra/docker-compose.yml --profile testing run --rm api-test php artisan test
 ```
 
-O usa el script de Composer, que limpia la configuracion antes de lanzar Artisan:
+El servicio `api-test` utiliza la base de datos:
+
+`music_school_test`
+
+La API principal utiliza:
+
+`music_school`
+
+**Importante:** las pruebas utilizan operaciones que pueden reinicializar tablas mediante `RefreshDatabase`. No deben ejecutarse contra la base de datos principal ni contra información que se necesite conservar.
+
+### Verificar la compilación de React
 
 ```powershell
-composer test
+docker compose --env-file infra/.env -f infra/docker-compose.yml exec -T app npm run build
 ```
 
-Las pruebas usan `RefreshDatabase`; ejecutalas contra la base dedicada `music_school_test`, nunca contra datos que quieras conservar.
+La compilación de producción fue verificada correctamente.
 
-## Documentacion y evidencias disponibles
+### Prueba de concurrencia
 
-| Ruta | Contenido |
+La evidencia manual de concurrencia se encuentra en:
+
+`docs/evidence/concurrency-test.md`
+
+Esta prueba verifica que dos solicitudes simultáneas no puedan prestar la misma última unidad disponible.
+
+La prueba manual no se presenta como una prueba automatizada.
+
+## Documentación técnica
+
+| Archivo | Contenido |
 |---|---|
-| `docs/spec.md` | Historias de usuario, requisitos y reglas de negocio. |
 | `docs/constitution.md` | Principios y restricciones del proyecto. |
-| `docs/plan.md` y `docs/tasks.md` | Plan de trabajo y seguimiento de tareas. |
-| `docs/architecture.md` | Arquitectura descrita para el sistema. |
-| `docs/data-model.md` | Entidades, relaciones y reglas de persistencia. |
-| `docs/api-contract.md` | Contrato documentado de la API. |
-| `docs/adr/ADR-001.md` a `ADR-003.md` | Decisiones arquitectonicas. |
-| `docs/evidence.md` | Registro de evidencias del proyecto. |
-| `docs/evidence/concurrency-test.md` | Evidencia escrita de una prueba manual de concurrencia. |
-| `api/README.md`, `app/README.md`, `tool/README.md` | README presentes en cada componente. |
+| `docs/spec.md` | Historias de usuario, requisitos y reglas de negocio. |
+| `docs/plan.md` | Plan de implementación. |
+| `docs/tasks.md` | Seguimiento de las 23 tareas. |
+| `docs/architecture.md` | Arquitectura del sistema. |
+| `docs/data-model.md` | Modelo de datos y relaciones. |
+| `docs/api-contract.md` | Contrato de la API. |
+| `docs/evidence.md` | Evidencias técnicas y resultados de pruebas. |
+| `docs/evidence/concurrency-test.md` | Evidencia de concurrencia. |
+| `docs/adr/ADR-001.md` | Decisión arquitectónica 001. |
+| `docs/adr/ADR-002.md` | Decisión arquitectónica 002. |
+| `docs/adr/ADR-003.md` | Decisión arquitectónica 003. |
 
-La evidencia de concurrencia es un documento del repositorio; no debe interpretarse como una ejecucion automatizada de concurrencia.
+También existen documentos específicos en:
 
-## Seguridad de configuracion
+- `api/README.md`
+- `app/README.md`
+- `tool/README.md`
 
-- Usa `api/.env.example`, `infra/.env.example` y `tool/.env.example` como plantillas para los archivos locales `.env`.
-- No copies contrasenas ni claves reales al README, al codigo o a archivos versionados.
-- No hay plantilla `app/.env.example`; la URL de la API esta actualmente escrita en `app/src/services/api.js`.
-- Los archivos `.env` estan incluidos en las reglas de `.gitignore`.
+## Estado del proyecto
+
+El plan de trabajo contiene exactamente 23 tareas.
+
+| Indicador | Resultado |
+|---|---:|
+| Tareas planificadas | 23 |
+| Tareas completadas | 23 |
+| Tareas pendientes | 0 |
+| Avance del plan de tareas | 100 % |
+
+La implementación, las pruebas y las evidencias se encuentran registradas en el repositorio.
+
+El estado de las tareas no sustituye la evaluación formal ni la calificación del plan de mejoramiento.
+
+## Seguridad
+
+- Los archivos `.env` deben mantenerse fuera del control de versiones.
+- Las contraseñas de MySQL deben configurarse mediante variables de entorno.
+- No se deben publicar claves privadas ni credenciales.
+- Los archivos `.env.example` sirven como plantillas de configuración.
+- La base de pruebas `music_school_test` debe permanecer separada de la base principal `music_school`.
+- No se deben ejecutar pruebas destructivas sobre información que deba conservarse.
+- Los puertos de desarrollo deben utilizarse únicamente en entornos controlados.
+
+## Evidencias de validación
+
+Durante la revisión técnica del proyecto se verificaron:
+
+- Ejecución integrada mediante Docker Compose.
+- Disponibilidad de los cuatro servicios principales.
+- Respuesta HTTP 200 del sitio público.
+- Funcionamiento de la API.
+- Ejecución de la herramienta de inicialización de datos.
+- Pruebas automatizadas aprobadas.
+- Compilación de producción de React.
+- Control de concurrencia con respuestas HTTP 201 y 409.
+- Separación entre la base de datos principal y la base de pruebas.
+
+Los resultados detallados se encuentran en `docs/evidence.md`.
+
