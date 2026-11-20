@@ -1,154 +1,126 @@
-# Arquitectura del sistema — Music School
 
-**Identificador:** music-school  
-**Proyecto:** Sistema de prestamo de instrumentos musicales  
-**Ficha:** ADSO 3239137  
-**Codigo del aprendiz:** A12  
-**Version:** 1.1
-**Estado:** Borrador para validacion
+# System Architecture — Music School
+
+**Identifier:** music-school  
+**Project:** Musical Instrument Loan Management System  
+**Training Group:** ADSO 3239137  
+**Apprentice Code:** A12  
+**Version:** 1.1  
+**Status:** Draft for Validation
 
 ---
 
-## 1. Proposito
+## 1. Purpose
 
-El presente documento describe la arquitectura tecnica del sistema Music School, estableciendo la organizacion de sus componentes, responsabilidades, mecanismos de comunicacion y distribucion de la infraestructura.
+This document describes the technical architecture of the Music School system, establishing the organization of its components, responsibilities, communication mechanisms, and infrastructure distribution.
 
-La arquitectura define como se integraran el frontend, backend, base de datos y demas componentes necesarios para gestionar el prestamo y devolucion de instrumentos musicales.
+The architecture defines how the frontend, backend, database, and other components required to manage musical instrument loans and returns will be integrated.
 
-Su diseño debera respetar los principios establecidos en `constitution.md` y los requisitos funcionales, reglas de negocio y requisitos no funcionales definidos en `spec.md`.
+Its design must comply with the principles established in `constitution.md` and the functional requirements, business rules, and non-functional requirements defined in `spec.md`.
 
-## 2. Objetivo arquitectonico
+## 2. Architectural Objective
 
-Definir una arquitectura organizada, mantenible y segura que permita desarrollar Music School mediante componentes independientes en sus responsabilidades, con comunicacion centralizada a traves de una API REST.
+Define an organized, maintainable, and secure architecture that enables Music School to be developed using components with independent responsibilities and centralized communication through a REST API.
 
-## 3. Estilo arquitectonico
+## 3. Architectural Style
 
-El sistema utilizara una arquitectura cliente-servidor con separacion de responsabilidades por capas.
+The system will use a client-server architecture with a layered separation of responsibilities.
 
-Se estableceran los siguientes componentes principales:
+The following main components will be established:
 
-- **Frontend:** aplicacion web desarrollada con React.
-- **Backend:** aplicacion desarrollada con PHP y Laravel.
-- **Persistencia:** base de datos MySQL.
-- **Sitio publico:** pagina estatica para presentar el producto.
-- **Infraestructura:** servicios configurados mediante Docker.
-- **Herramienta de inicializacion:** mecanismo de siembra de datos mediante la API.
+- **Frontend:** Web application developed with React.
+- **Backend:** Application developed with PHP and Laravel.
+- **Persistence:** MySQL database.
+- **Public Website:** Static page used to present the product.
+- **Infrastructure:** Services configured using Docker.
+- **Data Initialization Tool:** Data seeding mechanism through the API.
 
-El backend utilizara una organizacion por capas para separar las responsabilidades de presentacion de la API, logica de negocio y acceso a datos.
+The backend will use a layered organization to separate API presentation, business logic, and data access responsibilities.
 
-## 4. Componentes principales
+## 4. Main Components
 
 ### 4.1. Frontend — React
 
-**Tecnologia:** React.
+**Technology:** React.
 
-**Responsabilidad:**
+**Responsibility:**
 
-Proporcionar la interfaz de usuario para interactuar con las funcionalidades del sistema.
+Provide the user interface for interacting with the system's features.
 
-**Funciones principales:**
+**Main Functions:**
 
-- Consultar el catalogo de instrumentos.
-- Consultar las unidades disponibles.
-- Gestionar la informacion de los estudiantes.
-- Registrar prestamos.
-- Registrar devoluciones.
-- Consultar prestamos vencidos.
-- Consultar el historial de operaciones.
-- Consultar el inventario.
-- Visualizar el reporte de instrumentos mas solicitados.
+- View the instrument catalog.
+- View available units.
+- Manage student information.
+- Register loans.
+- Register returns.
+- View overdue loans.
+- View transaction history.
+- View inventory.
+- Display the most requested instruments report.
 
-**Reglas de implementacion:**
+**Implementation Rules:**
 
-- Consumir los endpoints definidos en `api-contract.md`.
-- Enviar solicitudes HTTP al backend.
-- Presentar mensajes de usuario en español.
-- Mantener la logica de presentacion separada de las reglas de negocio.
-- No acceder directamente a la base de datos.
+- Consume the endpoints defined in `api-contract.md`.
+- Send HTTP requests to the backend.
+- Display user-facing messages in Spanish.
+- Keep presentation logic separate from business rules.
+- Do not access the database directly.
 
-### 4.2. Backend — PHP y Laravel
+### 4.2. Backend — PHP and Laravel
 
-**Tecnologia:** PHP con Laravel.
+**Technology:** PHP with Laravel.
 
-**Responsabilidad:**
+**Responsibility:**
 
-Centralizar la logica de negocio, validar las operaciones y controlar el acceso a los datos.
+Centralize business logic, validate operations, and control data access.
 
-**Funciones principales:**
+**Main Functions:**
 
-- Gestionar instrumentos y categorias.
-- Gestionar estudiantes.
-- Registrar prestamos.
-- Registrar devoluciones.
-- Controlar los vencimientos.
-- Validar la disponibilidad del inventario.
-- Conservar la informacion historica.
-- Generar el reporte de instrumentos mas solicitados.
-- Controlar las operaciones simultaneas.
-- Proporcionar respuestas HTTP y JSON.
+- Manage instruments and categories.
+- Manage students.
+- Register loans.
+- Register returns.
+- Control loan due dates.
+- Validate inventory availability.
+- Preserve historical information.
+- Generate the most requested instruments report.
+- Control simultaneous operations.
+- Provide HTTP and JSON responses.
 
-**Organizacion interna:**
+**Internal Organization:**
 
-El backend se organizara mediante las siguientes capas:
+The backend will be organized into the following layers:
 
-**Controladores (Controllers)**
+**Controllers**
 
-Reciben las solicitudes HTTP, validan la entrada inicial, invocan la logica correspondiente y devuelven las respuestas.
+Receive HTTP requests, validate initial input, invoke the corresponding logic, and return responses.
 
-**Servicios (Services)**
+**Services**
 
-Contienen las reglas de negocio y coordinan las operaciones del sistema.
+Contain business rules and coordinate system operations.
 
-**Modelos (Models)**
+**Models**
 
-Representan las entidades y permiten interactuar con la persistencia mediante Laravel Eloquent.
+Represent entities and enable interaction with persistence through Laravel Eloquent.
 
-**Migraciones (Migrations)**
+**Migrations**
 
-Definen la estructura de las tablas, relaciones y restricciones de la base de datos.
+Define database table structures, relationships, and constraints.
 
-**Rutas (Routes)**
+**Routes**
 
-Definen los endpoints disponibles para la comunicacion con el frontend y las herramientas autorizadas.
+Define the endpoints available for communication with the frontend and authorized tools.
 
-### 4.3. Base de datos — MySQL
+### 4.3. Database — MySQL
 
-**Tecnologia:** MySQL.
+**Technology:** MySQL.
 
-**Responsabilidad:**
+**Responsibility:**
 
-Almacenar y conservar la informacion del sistema, garantizando la integridad de los datos.
+Store and preserve system information while ensuring data integrity.
 
-**Entidades principales:**
-
-- `categories`
-- `instruments`
-- `students`
-- `loans`
-- `returns`
-
-**Responsabilidades de persistencia:**
-
-- Conservar las categorias de instrumentos.
-- Registrar los instrumentos y sus unidades.
-- Almacenar la informacion de los estudiantes.
-- Conservar los prestamos realizados.
-- Registrar las devoluciones.
-- Mantener las relaciones entre las entidades.
-- Aplicar las restricciones de integridad.
-- Preservar la informacion historica de las operaciones.
-
-La estructura de la base de datos debera corresponder con lo definido en `data-model.md`.
-
-#### Acceso a datos y gestion del esquema
-
-Laravel utilizara Eloquent ORM para interactuar con la base de datos MySQL mediante modelos que representan las entidades definidas en `data-model.md`.
-
-Los modelos Eloquent permitiran consultar, crear, actualizar y relacionar los registros de las entidades del sistema, evitando que los controladores accedan directamente a la base de datos.
-
-Las migraciones de Laravel definiran la estructura fisica de las tablas, sus columnas, claves primarias, claves foraneas, restricciones e indices necesarios.
-
-Las tablas principales seran:
+**Main Entities:**
 
 - `categories`
 - `instruments`
@@ -156,75 +128,103 @@ Las tablas principales seran:
 - `loans`
 - `returns`
 
-La estructura implementada mediante las migraciones debera mantener correspondencia con el modelo de datos documentado en `docs/data-model.md`.
+**Persistence Responsibilities:**
 
-De esta manera, `data-model.md` sera la referencia del diseño logico y las migraciones Laravel seran el mecanismo para construir y mantener el esquema de la base de datos MySQL.
+- Preserve instrument categories.
+- Register instruments and their units.
+- Store student information.
+- Preserve registered loans.
+- Register returns.
+- Maintain relationships between entities.
+- Apply integrity constraints.
+- Preserve historical transaction information.
 
-### 4.4. Sitio publico estatico
+The database structure must correspond to the definitions established in `data-model.md`.
 
-**Tecnologia:** tecnologias web estaticas.
+#### Data Access and Schema Management
 
-**Responsabilidad:**
+Laravel will use Eloquent ORM to interact with the MySQL database through models representing the entities defined in `data-model.md`.
 
-Presentar el producto Music School mediante una pagina publica informativa.
+Eloquent models will allow the system to retrieve, create, update, and relate entity records, preventing controllers from directly accessing the database.
 
-La pagina debera describir el proposito del sistema y sus principales caracteristicas.
+Laravel migrations will define the physical structure of database tables, their columns, primary keys, foreign keys, constraints, and required indexes.
 
-No reemplazara la aplicacion funcional ni realizara operaciones de prestamo o devolucion.
+The main tables will be:
 
-### 4.5. Infraestructura — Docker
+- `categories`
+- `instruments`
+- `students`
+- `loans`
+- `returns`
 
-**Tecnologia:** Docker y Docker Compose.
+The structure implemented through migrations must remain consistent with the data model documented in `docs/data-model.md`.
 
-**Responsabilidad:**
+Therefore, `data-model.md` will serve as the logical design reference, while Laravel migrations will provide the mechanism for creating and maintaining the MySQL database schema.
 
-Permitir la ejecucion integrada de los servicios requeridos por el proyecto.
+### 4.4. Static Public Website
 
-La infraestructura contemplara:
+**Technology:** Static web technologies.
 
-- Servicio del backend.
-- Servicio del frontend.
-- Servicio de base de datos MySQL.
-- Servicio o configuracion necesaria para presentar el sitio publico estatico.
+**Responsibility:**
 
-Los servicios deberan configurarse para iniciar mediante un solo comando, de acuerdo con el requisito de despliegue.
+Present the Music School product through an informative public website.
 
-### 4.6. Herramienta de siembra de datos
+The page must describe the system's purpose and main features.
 
-**Responsabilidad:**
+It will not replace the functional application or perform loan or return operations.
 
-Facilitar la inicializacion de informacion de prueba mediante los endpoints de la API.
+### 4.5. Infrastructure — Docker
 
-Debera permitir preparar los datos necesarios para validar las funcionalidades del sistema sin modificar directamente la base de datos por fuera de los mecanismos establecidos.
+**Technology:** Docker and Docker Compose.
 
-La informacion inicial debera contemplar las cinco categorias de instrumentos definidas en `spec.md`.
+**Responsibility:**
 
+Enable the integrated execution of the services required by the project.
 
-## 5. Arquitectura logica
+The infrastructure will include:
 
-La comunicacion entre los componentes seguira el siguiente flujo:
+- Backend service.
+- Frontend service.
+- MySQL database service.
+- Service or configuration required to display the static public website.
+
+Services must be configured to start with a single command, according to the deployment requirement.
+
+### 4.6. Data Seeding Tool
+
+**Responsibility:**
+
+Facilitate the initialization of test data through API endpoints.
+
+The tool must prepare the data required to validate system features without directly modifying the database outside the established mechanisms.
+
+The initial data must include the five instrument categories defined in `spec.md`.
+
+## 5. Logical Architecture
+
+Communication between components will follow this flow:
 
 ```mermaid
 flowchart TB
-    U["Usuario / Operador"]
+    U["User / Operator"]
 
-    subgraph CLIENTES["Capa de presentacion"]
-        APP["Aplicacion administrativa<br/>React"]
-        PAGE["Sitio publico<br/>HTML, CSS y JavaScript"]
-        SEED["Herramienta de inicializacion<br/>Node.js"]
+    subgraph CLIENTES["Presentation Layer"]
+        APP["Administrative Application - React"]
+        PAGE["Public Website - HTML, CSS and JavaScript"]
+        SEED["Data Initialization Tool - Node.js"]
     end
 
-    subgraph BACKEND["Capa de aplicacion"]
-        API["API REST<br/>Laravel"]
-        CTRL["Controladores"]
-        SERVICE["Servicios<br/>Reglas de negocio"]
-        MODEL["Modelos<br/>Eloquent ORM"]
+    subgraph BACKEND["Application Layer"]
+        API["REST API - Laravel"]
+        CTRL["Controllers"]
+        SERVICE["Services - Business Rules"]
+        MODEL["Models - Eloquent ORM"]
     end
 
-    DB[("MySQL<br/>Base de datos")]
+    DB[("MySQL Database")]
 
-    subgraph INFRA["Infraestructura"]
-        DOCKER["Docker Compose<br/>Orquestacion de servicios"]
+    subgraph INFRA["Infrastructure"]
+        DOCKER["Docker Compose - Service Orchestration"]
     end
 
     U --> APP
@@ -242,108 +242,111 @@ flowchart TB
     DOCKER -.-> PAGE
 ```
 
-El frontend no tendra acceso directo a MySQL. Todas las operaciones de consulta y modificacion deberan realizarse mediante los endpoints del backend.
+The frontend will not have direct access to MySQL. All retrieval and modification operations must be performed through backend endpoints.
 
-El sitio publico estatico sera un componente independiente de presentacion del producto.
+The static public website will be an independent component used to present the product.
 
-## 6. Flujo de las operaciones principales
+## 6. Main Operation Flows
 
-### 6.1. Registro de prestamos
+### 6.1. Loan Registration
 
-1. El frontend envia la solicitud de prestamo al backend.
-2. Laravel recibe y valida los datos de entrada.
-3. El servicio de prestamos verifica que el estudiante exista y cumpla las reglas de prestamo.
-4. Inicia una transaccion en la base de datos.
-5. Consulta y bloquea el registro del instrumento mediante `lockForUpdate()`.
-6. Despues de adquirir el bloqueo, verifica que el instrumento este activo y tenga unidades disponibles.
-7. Comprueba nuevamente las restricciones del estudiante antes de registrar la operacion.
-8. Registra el prestamo con la informacion historica correspondiente.
-9. Disminuye las unidades disponibles en una unidad.
-10. Confirma la transaccion mediante `commit()`.
-11. Devuelve la respuesta al frontend.
+1. The frontend sends a loan request to the backend.
+2. Laravel receives and validates the input data.
+3. The loan service verifies that the student exists and complies with the loan rules.
+4. A database transaction is started.
+5. The instrument record is retrieved and locked using `lockForUpdate()`.
+6. After acquiring the lock, the system verifies that the instrument is active and has available units.
+7. Student restrictions are checked again before registering the operation.
+8. The loan is registered with the corresponding historical information.
+9. Available units are decreased by one.
+10. The transaction is committed using `commit()`.
+11. The response is returned to the frontend.
 
-Si alguna validacion falla, la operacion debera cancelarse mediante `rollback()`, sin modificar indebidamente los datos. Si no hay unidades disponibles, el backend respondera con HTTP 409 Conflict.
+If any validation fails, the operation must be canceled using `rollback()` without improperly modifying data.
 
-### 6.2. Registro de devoluciones
+If no units are available, the backend must return HTTP `409 Conflict`.
 
-1. El frontend envia la solicitud de devolucion.
-2. Laravel identifica el prestamo correspondiente.
-3. Verifica que el prestamo no tenga una devolucion registrada.
-4. Inicia una transaccion.
-5. Registra la devolucion con fecha y hora UTC.
-6. Incrementa las unidades disponibles del instrumento.
-7. Comprueba que las unidades disponibles no superen el total.
-8. Confirma la transaccion.
-9. Devuelve la respuesta al frontend.
+### 6.2. Return Registration
 
-La informacion original del prestamo debera conservarse sin modificaciones.
+1. The frontend sends the return request.
+2. Laravel identifies the corresponding loan.
+3. The system verifies that the loan does not already have a registered return.
+4. A transaction is started.
+5. The return is registered with its date and time in UTC.
+6. Available units of the instrument are increased.
+7. The system verifies that available units do not exceed total units.
+8. The transaction is committed.
+9. The response is returned to the frontend.
 
-### 6.3. Control de concurrencia
-#### Control de concurrencia en los prestamos
+The original loan information must remain unchanged.
 
-Cuando dos operadores intentan registrar simultaneamente un prestamo de la ultima unidad disponible de un instrumento, el backend debe garantizar que solo una operacion pueda completarse.
+### 6.3. Concurrency Control
 
-Para ello, Laravel ejecutara el proceso dentro de una transaccion de base de datos y utilizara un bloqueo de fila (`lockForUpdate()`) sobre el registro del instrumento.
+#### Loan Concurrency Control
 
-El procedimiento sera el siguiente:
+When two operators simultaneously attempt to register a loan for the last available unit of an instrument, the backend must ensure that only one operation can succeed.
 
-1. Iniciar una transaccion en la base de datos.
-2. Consultar el instrumento y bloquear su registro mediante `lockForUpdate()`.
-3. Una vez adquirido el bloqueo, verificar nuevamente que el instrumento este activo y tenga unidades disponibles.
-4. Si existe disponibilidad, registrar el prestamo y disminuir las unidades disponibles en una unidad.
-5. Confirmar la transaccion mediante `commit()`.
-6. Si no hay unidades disponibles, cancelar la operacion mediante `rollback()` y responder con el codigo HTTP `409 Conflict`.
+To achieve this, Laravel will execute the process within a database transaction and use row-level locking (`lockForUpdate()`) on the instrument record.
 
-De esta manera, si dos operadores intentan prestar la ultima unidad al mismo tiempo, el primero podra completar la operacion y el segundo recibira una respuesta HTTP 409, evitando que el inventario quede con cantidades inconsistentes.
+The procedure will be as follows:
 
-La validacion de disponibilidad debe realizarse despues de adquirir el bloqueo, no antes.
+1. Start a database transaction.
+2. Retrieve the instrument and lock its record using `lockForUpdate()`.
+3. After acquiring the lock, verify again that the instrument is active and has available units.
+4. If units are available, register the loan and decrease available units by one.
+5. Commit the transaction using `commit()`.
+6. If no units are available, cancel the operation using `rollback()` and return HTTP `409 Conflict`.
 
-## 7. Reglas de seguridad e integridad
+Therefore, if two operators attempt to lend the last available unit at the same time, the first operation may succeed, while the second receives an HTTP 409 response, preventing inconsistent inventory quantities.
 
-La arquitectura debera cumplir los siguientes lineamientos:
+Availability validation must be performed after acquiring the lock, not before.
 
-- Las validaciones de negocio deberan ejecutarse en el backend.
-- Los secretos y credenciales deberan gestionarse mediante variables de entorno.
-- Las contraseñas, cuando existan, deberan almacenarse mediante mecanismos seguros de hash.
-- El acceso a la base de datos debera realizarse desde el backend.
-- Las operaciones que modifiquen el inventario deberan ejecutarse mediante transacciones.
-- Se deberan aplicar las restricciones de integridad definidas en `data-model.md`.
-- Los prestamos y devoluciones no deberan eliminarse fisicamente.
-- Los instrumentos retirados deberan manejarse mediante baja logica.
-- Los datos historicos deberan conservar la informacion original de cada operacion.
-- Las fechas y horas deberan almacenarse y procesarse en UTC.
-- Los mensajes visibles para el usuario deberan estar en español.
+## 7. Security and Integrity Rules
 
-## 8. Contrato de comunicacion
+The architecture must comply with the following guidelines:
 
-La comunicacion entre frontend y backend se realizara mediante una API REST utilizando HTTP y JSON.
+- Business validations must be executed in the backend.
+- Secrets and credentials must be managed through environment variables.
+- Passwords, when applicable, must be stored using secure hashing mechanisms.
+- Database access must be performed through the backend.
+- Operations that modify inventory must be executed within transactions.
+- Integrity constraints defined in `data-model.md` must be applied.
+- Loans and returns must not be physically deleted.
+- Removed instruments must be managed through logical deactivation.
+- Historical data must preserve the original information of each operation.
+- Dates and times must be stored and processed in UTC.
+- User-facing messages must be written in Spanish.
 
-El contrato detallado de comunicacion se documentara en `api-contract.md`.
+## 8. Communication Contract
 
-Este documento debera definir:
+Communication between the frontend and backend will be performed through a REST API using HTTP and JSON.
+
+The detailed communication contract will be documented in `api-contract.md`.
+
+This document must define:
 
 - Endpoints.
-- Metodos HTTP.
-- Parametros de entrada.
-- Estructuras de solicitudes.
-- Estructuras de respuestas.
-- Codigos de estado HTTP.
-- Validaciones y errores.
+- HTTP methods.
+- Input parameters.
+- Request structures.
+- Response structures.
+- HTTP status codes.
+- Validations and errors.
 
-Las respuestas deberan utilizar los codigos HTTP correspondientes al resultado de cada operacion, incluyendo HTTP 409 Conflict para los conflictos de disponibilidad definidos en las reglas de negocio.
+Responses must use the HTTP status codes corresponding to the outcome of each operation, including HTTP `409 Conflict` for availability conflicts defined in the business rules.
 
-## 9. Organizacion de la infraestructura
+## 9. Infrastructure Organization
 
-La infraestructura se organizara mediante Docker Compose para facilitar la ejecucion integrada del proyecto.
+The infrastructure will be organized using Docker Compose to facilitate integrated project execution.
 
-La estructura prevista sera:
+The planned structure will be:
 
-
+```text
 plan-mejoramiento/
 │
-├── api/                         # Backend Laravel
+├── api/                         # Laravel Backend
 │
-├── app/                         # Frontend React
+├── app/                         # React Frontend
 │   ├── public/
 │   └── src/
 │       ├── assets/
@@ -365,19 +368,19 @@ plan-mejoramiento/
 │       ├── App.css
 │       └── index.css
 │
-├── docs/                        # Documentacion tecnica
-│   └── adr/                     # Decisiones arquitectonicas
+├── docs/                        # Technical Documentation
+│   └── adr/                     # Architectural Decisions
 │
-├── infra/                       # Infraestructura
+├── infra/                       # Infrastructure
 │   ├── docker-compose.yml
 │   └── .env.example
 │
-├── page/                        # Sitio publico estatico
+├── page/                        # Static Public Website
 │   ├── index.html
 │   ├── styles.css
 │   └── script.js
 │
-├── tool/                        # Herramienta de inicializacion
+├── tool/                        # Data Initialization Tool
 │   ├── src/
 │   │   ├── api.js
 │   │   ├── config.js
@@ -389,71 +392,71 @@ plan-mejoramiento/
 │
 ├── .gitignore
 └── README.md
+```
 
+The final configuration must correspond to the actual locations of each component's build and configuration files.
 
-La configuracion definitiva debera corresponder con la ubicacion real de los archivos de construccion y configuracion de cada componente.
+Services must use environment variables to configure credentials and connections.
 
-Los servicios deberan utilizar variables de entorno para la configuracion de credenciales y conexiones.
+The project must be executable using a single Docker Compose command.
 
-La ejecucion del proyecto debera realizarse mediante un solo comando de Docker Compose.
+#### Service Orchestration with Docker Compose
 
-#### Orquestacion de servicios con Docker Compose
+Docker Compose will be responsible for defining, configuring, and coordinating the services required to run Music School.
 
-Docker Compose sera el encargado de definir, configurar y coordinar los servicios necesarios para ejecutar Music School.
+The configuration will include the following services:
 
-La configuracion contemplara los siguientes servicios:
+- **Backend:** Application developed with PHP and Laravel, responsible for business logic and the REST API.
+- **Frontend:** Application developed with React, responsible for the user interface.
+- **Database:** MySQL, responsible for persistent data storage.
+- **Public Website:** Static application used to present the product.
 
-- **Backend:** aplicacion desarrollada con PHP y Laravel, responsable de la logica de negocio y la API REST.
-- **Frontend:** aplicacion desarrollada con React, responsable de la interfaz de usuario.
-- **Base de datos:** MySQL, encargado del almacenamiento persistente de la informacion.
-- **Sitio publico:** aplicacion estatica destinada a presentar el producto.
+Docker Compose will allow the required service configurations, ports, environment variables, networks, and dependencies to be established.
 
-Docker Compose permitira establecer las configuraciones, puertos, variables de entorno, redes y dependencias necesarias entre los servicios.
-
-El objetivo es que el entorno de desarrollo pueda iniciarse mediante un unico comando:
+The objective is to start the development environment with a single command:
 
 `docker compose up -d`
 
-La configuracion definitiva de los servicios se establecera en el archivo `infra/docker-compose.yml`.
+The final service configuration will be defined in `infra/docker-compose.yml`.
 
-## 10. Restricciones arquitectonicas
+## 10. Architectural Constraints
 
-La solucion debera respetar las siguientes restricciones:
+The solution must comply with the following constraints:
 
-- El frontend se desarrollara utilizando React.
-- El backend se desarrollara utilizando PHP y Laravel.
-- La persistencia utilizara MySQL.
-- La comunicacion entre frontend y backend se realizara mediante API REST.
-- Los datos se intercambiaran mediante JSON.
-- La infraestructura utilizara Docker.
-- Las reglas de negocio se centralizaran en el backend.
-- Los identificadores del codigo se escribiran en ingles.
-- Los mensajes visibles para el usuario se escribiran en español.
-- No se introduciran funcionalidades fuera del alcance establecido en `spec.md`.
+- The frontend must be developed using React.
+- The backend must be developed using PHP and Laravel.
+- Persistence must use MySQL.
+- Communication between the frontend and backend must use a REST API.
+- Data must be exchanged using JSON.
+- Infrastructure must use Docker.
+- Business rules must be centralized in the backend.
+- Code identifiers must be written in English.
+- User-facing messages must be written in Spanish.
+- Features outside the scope established in `spec.md` must not be introduced.
 
-## 11. Relacion con los demas documentos
+## 11. Relationship with Other Documents
 
-| Documento | Relacion arquitectonica |
+| Document | Architectural Relationship |
 |---|---|
-| `constitution.md` | Establece los principios y restricciones que debe respetar la arquitectura. |
-| `spec.md` | Define las funcionalidades, reglas de negocio y requisitos que debe soportar. |
-| `plan.md` | Organiza las fases y actividades para diseñar e implementar la solucion. |
-| `data-model.md` | Define la estructura de persistencia y las relaciones de datos. |
-| `api-contract.md` | Define la comunicacion entre frontend y backend. |
-| `tasks.md` | Descompone la implementacion en las 23 tareas establecidas. |
-| `adr/` | Registra las decisiones arquitectonicas y sus justificaciones. |
+| `constitution.md` | Establishes the principles and constraints that the architecture must follow. |
+| `spec.md` | Defines the features, business rules, and requirements that the system must support. |
+| `plan.md` | Organizes the phases and activities required to design and implement the solution. |
+| `data-model.md` | Defines the persistence structure and data relationships. |
+| `api-contract.md` | Defines communication between the frontend and backend. |
+| `tasks.md` | Breaks down implementation into the 23 established tasks. |
+| `adr/` | Records architectural decisions and their justifications. |
 
-## 12. Decisiones arquitectonicas
+## 12. Architectural Decisions
 
-Las decisiones relevantes de arquitectura deberan documentarse mediante registros ADR (Architecture Decision Records).
+Relevant architectural decisions must be documented through Architecture Decision Records (ADRs).
 
-Se deberan elaborar al menos tres registros que documenten las decisiones adoptadas, sus contextos, alternativas y justificaciones.
+At least three records must be prepared to document the decisions made, their contexts, alternatives, and justifications.
 
-Los registros deberan mantenerse en el directorio `docs/adr/`.
+These records must be maintained in the `docs/adr/` directory.
 
-## 13. Control de cambios
+## 13. Change Log
 
-| Version | Fecha | Descripcion | Estado |
+| Version | Date | Description | Status |
 |---|---|---|---|
-| 1.0 | 07/11/2026 | Creacion inicial del documento de arquitectura de Music School. | Borrador para validacion |
-| 1.1 | 08/11/2026 | Actualizacion del diagrama de arquitectura logica, descripcion del control de concurrencia, organizacion de infraestructura Docker Compose, acceso a datos mediante Eloquent y migraciones, y estructura de directorios. | Borrador para validacion |
+| 1.0 | 07/11/2026 | Initial creation of the Music School architecture document. | Draft for Validation |
+| 1.1 | 08/11/2026 | Updated the logical architecture diagram, concurrency control description, Docker Compose infrastructure organization, data access through Eloquent and migrations, and directory structure. | Draft for Validation |

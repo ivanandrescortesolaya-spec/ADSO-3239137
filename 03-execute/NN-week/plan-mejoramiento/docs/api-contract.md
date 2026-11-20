@@ -1,48 +1,49 @@
-# Contrato de API REST — Music School
 
-**Identificador:** music-school  
-**Proyecto:** Sistema de prestamo de instrumentos musicales  
-**Ficha:** ADSO 3239137  
-**Codigo del aprendiz:** A12  
-**Version:** 1.1
-**Estado:** Borrador para validacion
+# REST API Contract — Music School
+
+**Identifier:** music-school  
+**Project:** Musical Instrument Loan Management System  
+**Training Group:** ADSO 3239137  
+**Apprentice Code:** A12  
+**Version:** 1.1  
+**Status:** Draft for Validation
 
 ---
 
-## 1. Proposito
+## 1. Purpose
 
-El presente documento establece el contrato de comunicacion entre el frontend desarrollado con React y el backend desarrollado con PHP y Laravel para el sistema Music School.
+This document establishes the communication contract between the frontend developed with React and the backend developed with PHP and Laravel for the Music School system.
 
-Define los endpoints, metodos HTTP, parametros, estructuras de solicitudes, respuestas, codigos de estado y validaciones necesarias para garantizar una comunicacion uniforme entre los componentes del sistema.
+It defines the endpoints, HTTP methods, parameters, request structures, responses, status codes, and validations required to ensure consistent communication between system components.
 
-El contrato debera respetar los requisitos establecidos en `spec.md`, las estructuras de datos definidas en `data-model.md` y las decisiones arquitectonicas documentadas en `architecture.md`.
+The contract must comply with the requirements established in `spec.md`, the data structures defined in `data-model.md`, and the architectural decisions documented in `architecture.md`.
 
-## 2. Alcance
+## 2. Scope
 
-La API REST permitira realizar las siguientes operaciones:
+The REST API will support the following operations:
 
-- Consultar categorias de instrumentos.
-- Gestionar instrumentos.
-- Consultar y gestionar estudiantes.
-- Registrar prestamos.
-- Consultar prestamos e historial.
-- Registrar devoluciones.
-- Consultar prestamos vencidos.
-- Consultar unidades disponibles.
-- Generar el reporte de instrumentos mas solicitados.
-- Inicializar informacion de prueba mediante solicitudes a la API.
+- Retrieve instrument categories.
+- Manage instruments.
+- Retrieve and manage students.
+- Register loans.
+- Retrieve loans and historical records.
+- Register returns.
+- Retrieve overdue loans.
+- Check available units.
+- Generate the most requested instruments report.
+- Initialize test data through API requests.
 
-La API sera el mecanismo de comunicacion entre el frontend y el backend. El frontend no tendra acceso directo a la base de datos.
+The API will serve as the communication mechanism between the frontend and backend. The frontend will not have direct access to the database.
 
-### 2.1. Herramienta de siembra de datos
+### 2.1. Data Seeding Tool
 
-El proyecto contara con una herramienta de siembra ubicada en la carpeta `tool/`, cuya responsabilidad sera inicializar informacion de prueba mediante solicitudes HTTP a los endpoints de la API REST.
+The project will include a data seeding tool located in the `tool/` directory. Its responsibility will be to initialize test data through HTTP requests to REST API endpoints.
 
-La herramienta no debera conectarse directamente a MySQL ni ejecutar consultas SQL sobre la base de datos.
+The tool must not connect directly to MySQL or execute SQL queries against the database.
 
-La informacion inicial debera contemplar las siguientes cinco categorias:
+The initial data must include the following five categories:
 
-| Codigo | Categoria |
+| Code | Category |
 |---|---|
 | CAT-01 | Cuerdas |
 | CAT-02 | Vientos |
@@ -50,53 +51,53 @@ La informacion inicial debera contemplar las siguientes cinco categorias:
 | CAT-04 | Teclados |
 | CAT-05 | Electronicos |
 
-La herramienta podra utilizar los endpoints de la API para registrar las categorias, los instrumentos y los estudiantes necesarios para las pruebas del sistema.
+The tool may use API endpoints to register the categories, instruments, and students required for system testing.
 
-El proceso debera respetar las validaciones del backend y las restricciones de integridad definidas en `data-model.md`.
+The process must comply with backend validations and the integrity constraints defined in `data-model.md`.
 
-La siembra debera evitar duplicar registros cuando se ejecute mas de una vez, utilizando los codigos unicos definidos para identificar los datos iniciales.
+Data seeding must avoid creating duplicate records when executed more than once, using the unique codes defined to identify the initial data.
 
-La herramienta debera permitir preparar un conjunto de datos de prueba para validar las consultas del catalogo, los prestamos, las devoluciones y los reportes.
+The tool must allow a test dataset to be prepared for validating catalog queries, loans, returns, and reports.
 
-## 3. Caracteristicas generales
+## 3. General Characteristics
 
-| Caracteristica | Definicion |
+| Characteristic | Definition |
 |---|---|
-| Estilo de comunicacion | API REST |
-| Protocolo | HTTP |
-| Formato de intercambio | JSON |
-| Backend | PHP y Laravel |
+| Communication Style | REST API |
+| Protocol | HTTP |
+| Data Exchange Format | JSON |
+| Backend | PHP and Laravel |
 | Frontend | React |
-| Base de datos | MySQL |
-| Codificacion | UTF-8 |
-| Fechas | UTC |
-| Idioma de mensajes | Español |
-| Identificadores del codigo | Ingles |
+| Database | MySQL |
+| Encoding | UTF-8 |
+| Dates | UTC |
+| Message Language | Spanish |
+| Code Identifiers | English |
 
-### 3.1. URL base
+### 3.1. Base URL
 
-Durante el desarrollo local, la API utilizara la siguiente direccion base:
+During local development, the API will use the following base address:
 
 `http://localhost:8000/api`
 
-**Nota de configuracion:** El puerto `8000` se establece como valor provisional para el entorno local. Se debera verificar y ajustar segun el mapeo de puertos definido en `infra/docker-compose.yml` durante la configuracion de la infraestructura.
+**Configuration Note:** Port `8000` is established as a provisional value for the local environment. It must be verified and adjusted according to the port mapping defined in `infra/docker-compose.yml` during infrastructure configuration.
 
-### 3.2. Encabezados HTTP
+### 3.2. HTTP Headers
 
-Las solicitudes que envien informacion en formato JSON deberan utilizar:
+Requests that send information in JSON format must use:
 
 ```http
 Content-Type: application/json
 Accept: application/json
 ```
 
-## 4. Convenciones de respuesta
+## 4. Response Conventions
 
-Las respuestas de la API deberan utilizar estructuras JSON uniformes.
+API responses must use consistent JSON structures.
 
-### 4.1. Respuesta exitosa
+### 4.1. Successful Response
 
-Ejemplo:
+Example:
 
 ```json
 {
@@ -107,9 +108,9 @@ Ejemplo:
 }
 ```
 
-### 4.2. Respuesta de error
+### 4.2. Error Response
 
-Ejemplo:
+Example:
 
 ```json
 {
@@ -118,9 +119,9 @@ Ejemplo:
 }
 ```
 
-### 4.3. Respuesta de validacion
+### 4.3. Validation Response
 
-Ejemplo:
+Example:
 
 ```json
 {
@@ -133,33 +134,33 @@ Ejemplo:
 }
 ```
 
-## 5. Codigos de estado HTTP
+## 5. HTTP Status Codes
 
-| Codigo | Nombre | Uso |
+| Code | Name | Usage |
 |---|---|---|
-| 200 | OK | Consulta u operacion exitosa. |
-| 201 | Created | Registro creado correctamente. |
-| 204 | No Content | Operacion exitosa sin contenido de respuesta. |
-| 400 | Bad Request | Solicitud incorrecta. |
-| 404 | Not Found | Recurso no encontrado. |
-| 409 | Conflict | Conflicto con las reglas de negocio o disponibilidad. |
-| 422 | Unprocessable Entity | Error de validacion de los datos. |
-| 500 | Internal Server Error | Error interno del servidor. |
+| 200 | OK | Successful query or operation. |
+| 201 | Created | Record successfully created. |
+| 204 | No Content | Successful operation without response content. |
+| 400 | Bad Request | Invalid request. |
+| 404 | Not Found | Resource not found. |
+| 409 | Conflict | Conflict with business rules or availability. |
+| 422 | Unprocessable Entity | Data validation error. |
+| 500 | Internal Server Error | Internal server error. |
 
-El backend debera utilizar los codigos HTTP de acuerdo con el resultado de cada operacion.
+The backend must use HTTP status codes according to the result of each operation.
 
-## 6. Endpoints de categorias
+## 6. Category Endpoints
 
-### 6.1. Consultar categorias
+### 6.1. Retrieve Categories
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/categories` |
-| Descripcion | Consultar las categorias de instrumentos. |
-| Respuesta exitosa | 200 OK |
+| Description | Retrieve instrument categories. |
+| Successful Response | 200 OK |
 
-Ejemplo de respuesta:
+Example response:
 
 ```json
 {
@@ -194,9 +195,9 @@ Ejemplo de respuesta:
 }
 ```
 
-Las cinco categorias iniciales deberan estar disponibles para la clasificacion de instrumentos.
+The five initial categories must be available for instrument classification.
 
-### 6.2. Registrar una categoria
+### 6.2. Register a Category
 
 **Endpoint:**
 
@@ -204,11 +205,11 @@ Las cinco categorias iniciales deberan estar disponibles para la clasificacion d
 POST /categories
 ```
 
-**Descripcion:**
+**Description:**
 
-Permite registrar una nueva categoria de instrumentos musicales en el catalogo del sistema.
+Allows a new musical instrument category to be registered in the system catalog.
 
-**Cuerpo de la solicitud:**
+**Request Body:**
 
 ```json
 {
@@ -217,18 +218,18 @@ Permite registrar una nueva categoria de instrumentos musicales en el catalogo d
 }
 ```
 
-**Validaciones:**
+**Validations:**
 
-- `code` es obligatorio.
-- `code` debe tener una longitud maxima de 20 caracteres.
-- `code` debe ser unico.
-- `name` es obligatorio.
-- `name` debe tener una longitud maxima de 100 caracteres.
-- No se deben registrar categorias con codigos duplicados.
+- `code` is required.
+- `code` must have a maximum length of 20 characters.
+- `code` must be unique.
+- `name` is required.
+- `name` must have a maximum length of 100 characters.
+- Categories with duplicate codes must not be registered.
 
-**Respuesta exitosa:**
+**Successful Response:**
 
-Codigo HTTP: `201 Created`
+HTTP Status: `201 Created`
 
 ```json
 {
@@ -241,23 +242,24 @@ Codigo HTTP: `201 Created`
 }
 ```
 
-**Respuestas de error:**
+**Error Responses:**
 
-- `409 Conflict`: cuando el codigo de categoria ya existe.
-- `422 Unprocessable Entity`: cuando los datos enviados no cumplen las reglas de validacion.
-- `500 Internal Server Error`: cuando ocurre un error inesperado en el servidor.
-## 7. Endpoints de instrumentos
+- `409 Conflict`: When the category code already exists.
+- `422 Unprocessable Entity`: When the submitted data does not meet validation rules.
+- `500 Internal Server Error`: When an unexpected server error occurs.
 
-### 7.1. Consultar instrumentos
+## 7. Instrument Endpoints
 
-| Propiedad | Definicion |
+### 7.1. Retrieve Instruments
+
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/instruments` |
-| Descripcion | Consultar el catalogo de instrumentos. |
-| Respuesta exitosa | 200 OK |
+| Description | Retrieve the instrument catalog. |
+| Successful Response | 200 OK |
 
-Ejemplo de respuesta:
+Example response:
 
 ```json
 {
@@ -276,26 +278,26 @@ Ejemplo de respuesta:
 }
 ```
 
-### 7.2. Consultar un instrumento
+### 7.2. Retrieve an Instrument
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/instruments/{id}` |
-| Descripcion | Consultar el detalle de un instrumento. |
-| Respuesta exitosa | 200 OK |
-| Error posible | 404 Not Found |
+| Description | Retrieve the details of an instrument. |
+| Successful Response | 200 OK |
+| Possible Error | 404 Not Found |
 
-### 7.3. Registrar un instrumento
+### 7.3. Register an Instrument
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | POST |
+| Method | POST |
 | Endpoint | `/instruments` |
-| Descripcion | Registrar un instrumento en el catalogo. |
-| Respuesta exitosa | 201 Created |
+| Description | Register an instrument in the catalog. |
+| Successful Response | 201 Created |
 
-Ejemplo de solicitud:
+Example request:
 
 ```json
 {
@@ -306,24 +308,24 @@ Ejemplo de solicitud:
 }
 ```
 
-Validaciones:
+Validations:
 
-- La categoria debe existir.
-- El codigo debe ser unico.
-- El nombre es obligatorio.
-- El total de unidades debe ser un numero entero igual o mayor que cero.
-- Las unidades disponibles iniciales deberan corresponder con el total de unidades registradas.
+- The category must exist.
+- The code must be unique.
+- The name is required.
+- Total units must be an integer greater than or equal to zero.
+- Initial available units must match the registered total units.
 
-### 7.4. Actualizar un instrumento
+### 7.4. Update an Instrument
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | PUT |
+| Method | PUT |
 | Endpoint | `/instruments/{id}` |
-| Descripcion | Actualizar la informacion de un instrumento. |
-| Respuesta exitosa | 200 OK |
+| Description | Update instrument information. |
+| Successful Response | 200 OK |
 
-#### Ejemplo de solicitud
+#### Example Request
 
 ```json
 {
@@ -334,71 +336,71 @@ Validaciones:
 }
 ```
 
-#### Validaciones
+#### Validations
 
-- El instrumento debe existir.
-- La categoria indicada debe existir.
-- El codigo debe ser unico, excluyendo el registro que se esta actualizando.
-- El nombre es obligatorio.
-- `total_units` debe ser un numero entero mayor o igual a cero.
-- El nuevo `total_units` no puede ser inferior a la cantidad de unidades que actualmente estan prestadas.
-- Cuando se actualice `total_units`, el backend debera recalcular `available_units` conservando la cantidad de unidades prestadas. El calculo sera: `available_units = nuevo_total_units - unidades_prestadas`.
-- La actualizacion debera realizarse dentro de una transaccion de base de datos para garantizar la integridad del inventario.
-- La cantidad de unidades prestadas se obtiene mediante la diferencia entre las unidades totales actuales y las unidades disponibles actuales.
-- `available_units` no debe modificarse directamente desde la solicitud del cliente; su actualizacion corresponde a las operaciones de prestamo y devolucion gestionadas por el backend.
-- El sistema debe conservar la integridad del inventario despues de cualquier actualizacion.
-- La actualizacion no debe modificar los datos historicos congelados en prestamos anteriores.
+- The instrument must exist.
+- The specified category must exist.
+- The code must be unique, excluding the record being updated.
+- The name is required.
+- `total_units` must be an integer greater than or equal to zero.
+- The new `total_units` value cannot be lower than the number of units currently on loan.
+- When `total_units` is updated, the backend must recalculate `available_units` while preserving the number of units on loan. The calculation is: `available_units = new_total_units - loaned_units`.
+- The update must be performed within a database transaction to ensure inventory integrity.
+- The number of units on loan is calculated as the difference between the current total units and current available units.
+- `available_units` must not be modified directly through the client request; it must be updated by backend-managed loan and return operations.
+- The system must preserve inventory integrity after any update.
+- The update must not modify historical snapshot data stored in previous loans.
 
-#### Respuesta exitosa
+#### Successful Response
 
-Codigo HTTP: `200 OK`.
+HTTP Status: `200 OK`.
 
-La actualizacion debera respetar las restricciones de inventario y conservar la informacion historica de los prestamos existentes.
+The update must comply with inventory constraints and preserve the historical information of existing loans.
 
-### 7.5. Dar de baja un instrumento
+### 7.5. Deactivate an Instrument
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | PATCH |
+| Method | PATCH |
 | Endpoint | `/instruments/{id}/deactivate` |
-| Descripcion | Realizar la baja logica de un instrumento. |
-| Respuesta exitosa | 200 OK |
+| Description | Logically deactivate an instrument. |
+| Successful Response | 200 OK |
 
-La baja logica debera cambiar el estado de actividad del instrumento sin eliminar fisicamente su registro.
+Logical deactivation must change the instrument's active status without physically deleting its record.
 
-Los instrumentos inactivos no deberan aparecer como disponibles ni permitir nuevos prestamos.
+Inactive instruments must not appear as available or allow new loans.
 
-## 8. Endpoints de estudiantes
+## 8. Student Endpoints
 
-### 8.1. Consultar estudiantes
+### 8.1. Retrieve Students
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/students` |
-| Descripcion | Consultar los estudiantes registrados. |
-| Respuesta exitosa | 200 OK |
+| Description | Retrieve registered students. |
+| Successful Response | 200 OK |
 
-### 8.2. Consultar un estudiante
+### 8.2. Retrieve a Student
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/students/{id}` |
-| Descripcion | Consultar la informacion de un estudiante. |
-| Respuesta exitosa | 200 OK |
-| Error posible | 404 Not Found |
+| Description | Retrieve student information. |
+| Successful Response | 200 OK |
+| Possible Error | 404 Not Found |
 
-### 8.3. Registrar un estudiante
+### 8.3. Register a Student
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | POST |
+| Method | POST |
 | Endpoint | `/students` |
-| Descripcion | Registrar un estudiante. |
-| Respuesta exitosa | 201 Created |
+| Description | Register a student. |
+| Successful Response | 201 Created |
 
-Ejemplo de solicitud:
+Example request:
 
 ```json
 {
@@ -408,22 +410,22 @@ Ejemplo de solicitud:
 }
 ```
 
-Validaciones:
+Validations:
 
-- El codigo del estudiante es obligatorio y unico.
-- El nombre completo es obligatorio.
-- El correo electronico debe tener un formato valido.
+- The student code is required and must be unique.
+- The full name is required.
+- The email address must have a valid format.
 
-### 8.4. Actualizar un estudiante
+### 8.4. Update a Student
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | PUT |
+| Method | PUT |
 | Endpoint | `/students/{id}` |
-| Descripcion | Actualizar los datos de un estudiante. |
-| Respuesta exitosa | 200 OK |
+| Description | Update student information. |
+| Successful Response | 200 OK |
 
-#### Ejemplo de solicitud
+#### Example Request
 
 ```json
 {
@@ -433,60 +435,60 @@ Validaciones:
 }
 ```
 
-#### Validaciones
+#### Validations
 
-- El estudiante debe existir.
-- El codigo del estudiante es obligatorio y unico, excluyendo el registro que se esta actualizando.
-- El nombre completo es obligatorio.
-- El correo electronico debe tener un formato valido.
-- El correo debe ser unico, excluyendo el registro que se esta actualizando.
-- La actualizacion no debe modificar los datos historicos congelados en los prestamos anteriores.
+- The student must exist.
+- The student code is required and must be unique, excluding the record being updated.
+- The full name is required.
+- The email address must have a valid format.
+- The email address must be unique, excluding the record being updated.
+- The update must not modify historical snapshot data stored in previous loans.
 
-#### Respuesta exitosa
+#### Successful Response
 
-Codigo HTTP: `200 OK`.
+HTTP Status: `200 OK`.
 
-La actualizacion no debera modificar los datos historicos congelados en los registros de prestamos.
+The update must not modify historical snapshot data stored in loan records.
 
-## 9. Endpoints de prestamos
+## 9. Loan Endpoints
 
-### 9.1. Consultar prestamos
+### 9.1. Retrieve Loans
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/loans` |
-| Descripcion | Consultar los prestamos registrados. |
-| Respuesta exitosa | 200 OK |
+| Description | Retrieve registered loans. |
+| Successful Response | 200 OK |
 
-Los prestamos deberan permitir identificar su situacion mediante los registros asociados de devoluciones y las fechas correspondientes.
+Loans must allow their status to be identified through associated return records and the corresponding dates.
 
-### 9.2. Consultar un prestamo
+### 9.2. Retrieve a Loan
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/loans/{id}` |
-| Descripcion | Consultar el detalle de un prestamo. |
-| Respuesta exitosa | 200 OK |
-| Error posible | 404 Not Found |
+| Description | Retrieve loan details. |
+| Successful Response | 200 OK |
+| Possible Error | 404 Not Found |
 
-### 9.3. Registrar un prestamo
+### 9.3. Register a Loan
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | POST |
+| Method | POST |
 | Endpoint | `/loans` |
-| Descripcion | Registrar el prestamo de un instrumento a un estudiante. |
-| Respuesta exitosa | 201 Created |
-| Conflicto posible | 409 Conflict |
-| Error de validacion | 422 Unprocessable Entity |
+| Description | Register an instrument loan for a student. |
+| Successful Response | 201 Created |
+| Possible Conflict | 409 Conflict |
+| Validation Error | 422 Unprocessable Entity |
 
-#### Respuesta exitosa
+#### Successful Response
 
-Cuando el prestamo se registre correctamente, el backend respondera con el codigo HTTP `201 Created`.
+When the loan is successfully registered, the backend must return HTTP `201 Created`.
 
-Ejemplo de respuesta:
+Example response:
 
 ```json
 {
@@ -506,116 +508,122 @@ Ejemplo de respuesta:
 }
 ```
 
-Los campos `student_code_snapshot`, `student_name_snapshot`, `instrument_code_snapshot` e `instrument_name_snapshot` conservaran la informacion del estudiante y del instrumento en el momento de registrar el prestamo.
+The fields `student_code_snapshot`, `student_name_snapshot`, `instrument_code_snapshot`, and `instrument_name_snapshot` must preserve student and instrument information at the time the loan is registered.
 
-Las fechas `loaned_at`, `due_at` y `created_at` deberan manejarse en UTC.
+The dates `loaned_at`, `due_at`, and `created_at` must be handled in UTC.
 
-El estado del prestamo no se almacenara como un campo independiente. Se determinara mediante la existencia de una devolucion asociada en la tabla `returns`, de acuerdo con lo establecido en `data-model.md`.
+Loan status will not be stored as an independent field. It will be determined by the existence of an associated return in the `returns` table, as established in `data-model.md`.
 
-El backend debera realizar las siguientes validaciones:
+The backend must perform the following validations:
 
-1. Verificar que el estudiante exista.
-2. Verificar que el instrumento exista y este activo.
-3. Comprobar que el estudiante no tenga otro instrumento sin devolver.
-4. Comprobar que el estudiante no tenga prestamos vencidos pendientes.
-5. Verificar que existan unidades disponibles.
-6. Aplicar el plazo de prestamo de 21 dias.
-7. Registrar la informacion historica correspondiente.
-8. Actualizar las unidades disponibles mediante una transaccion.
+1. Verify that the student exists.
+2. Verify that the instrument exists and is active.
+3. Confirm that the student does not have another unreturned instrument.
+4. Confirm that the student does not have overdue and unreturned loans.
+5. Verify that available units exist.
+6. Apply the 21-day loan period.
+7. Record the corresponding historical information.
+8. Update available units within a transaction.
 
-El registro del prestamo debera conservar una copia de los datos historicos definidos en `data-model.md`.
+Loan registration must preserve a copy of the historical data defined in `data-model.md`.
 
-La fecha de prestamo y la fecha limite de devolucion deberan manejarse en UTC.
+The loan date and return due date must be handled in UTC.
 
-### 9.4. Consultar prestamos de un estudiante
+### 9.4. Retrieve a Student's Loans
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/students/{id}/loans` |
-| Descripcion | Consultar los prestamos asociados a un estudiante. |
-| Respuesta exitosa | 200 OK |
+| Description | Retrieve loans associated with a student. |
+| Successful Response | 200 OK |
 
-### 9.5. Consultar prestamos vencidos
+### 9.5. Retrieve Overdue Loans
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/loans/overdue` |
-| Descripcion | Consultar prestamos que superaron su fecha limite y no tienen devolucion registrada. |
-| Respuesta exitosa | 200 OK |
+| Description | Retrieve loans that have passed their due dates and have no registered return. |
+| Successful Response | 200 OK |
 
-La condicion de vencimiento debera calcularse utilizando la fecha limite y la ausencia de un registro asociado en `returns`.
+Overdue status must be calculated using the due date and the absence of an associated record in `returns`.
 
-## 10. Endpoints de devoluciones
+## 10. Return Endpoints
 
-### 10.1. Registrar una devolucion
+### 10.1. Register a Return
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | POST |
+| Method | POST |
 | Endpoint | `/loans/{id}/returns` |
-| Descripcion | Registrar la devolucion de un instrumento prestado. |
-| Respuesta exitosa | 201 Created |
-| Conflicto posible | 409 Conflict |
+| Description | Register the return of a borrowed instrument. |
+| Successful Response | 201 Created |
+| Possible Conflict | 409 Conflict |
 
-Ejemplo de solicitud:
+Example request:
 
 ```json
 {}
 ```
 
-El identificador del prestamo se enviara mediante la URL.
+The loan identifier will be provided through the URL.
 
-El backend debera:
+The backend must:
 
-1. Verificar que el prestamo exista.
-2. Iniciar una transaccion de base de datos.
-3. Bloquear el registro del prestamo mediante `lockForUpdate()`.
-4. Verificar nuevamente que el prestamo no tenga una devolucion registrada.
-5. Bloquear el registro del instrumento asociado mediante `lockForUpdate()`.
-6. Registrar la devolucion con la fecha y hora actual en UTC.
-7. Incrementar las unidades disponibles del instrumento en una sola unidad.
-8. Verificar que las unidades disponibles no superen las unidades totales.
-9. Confirmar la transaccion mediante `COMMIT`.
-10. Si ocurre algun error, cancelar la operacion mediante `ROLLBACK`.
+1. Verify that the loan exists.
+2. Start a database transaction.
+3. Lock the loan record using `lockForUpdate()`.
+4. Verify again that the loan has no registered return.
+5. Lock the associated instrument record using `lockForUpdate()`.
+6. Register the return with the current date and time in UTC.
+7. Increase the instrument's available units by exactly one.
+8. Verify that available units do not exceed total units.
+9. Commit the transaction using `COMMIT`.
+10. If an error occurs, cancel the operation using `ROLLBACK`.
 
-La creacion del registro de devolucion y el incremento de las unidades disponibles deberan ejecutarse dentro de la misma transaccion de base de datos. Si cualquiera de estas operaciones falla, el backend debera ejecutar `ROLLBACK` para revertir todos los cambios realizados. De esta manera, se evita registrar una devolucion sin actualizar el inventario o incrementar las unidades disponibles sin registrar la devolucion correspondiente.
+The creation of the return record and the increase in available units must be executed within the same database transaction.
 
-La informacion original del prestamo debera conservarse sin modificaciones.
+If either operation fails, the backend must execute `ROLLBACK` to revert all changes.
 
-**Control de concurrencia:**
+This prevents a return from being registered without updating inventory or available units from increasing without the corresponding return record.
 
-Si dos operadores intentan registrar simultaneamente la devolucion del mismo prestamo, el sistema debe permitir que solamente una operacion se complete.
+The original loan information must remain unchanged.
 
-La segunda solicitud debera verificar nuevamente el registro de devolucion despues de obtener el bloqueo y responder con `409 Conflict` si el prestamo ya fue devuelto.
+**Concurrency Control:**
 
-La restriccion `UNIQUE` del campo `loan_id` en la tabla `returns` debe actuar como proteccion adicional para impedir devoluciones duplicadas. Los conflictos por duplicidad deben manejarse y responderse como `409 Conflict`, no como un error interno `500`.
+If two operators simultaneously attempt to register the return of the same loan, the system must allow only one operation to succeed.
 
-Si el prestamo ya fue devuelto, la operacion debera rechazarse y no debera incrementar nuevamente el inventario.
+The second request must check the return record again after acquiring the lock and respond with `409 Conflict` if the loan has already been returned.
 
-### 10.2. Consultar una devolucion
+The `UNIQUE` constraint on the `loan_id` field in the `returns` table must provide additional protection against duplicate returns.
 
-| Propiedad | Definicion |
+Duplicate conflicts must be handled and returned as `409 Conflict`, not as an internal `500` error.
+
+If the loan has already been returned, the operation must be rejected and inventory must not be increased again.
+
+### 10.2. Retrieve a Return
+
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/loans/{id}/returns` |
-| Descripcion | Consultar la devolucion asociada a un prestamo. |
-| Respuesta exitosa | 200 OK |
-| Error posible | 404 Not Found |
+| Description | Retrieve the return associated with a loan. |
+| Successful Response | 200 OK |
+| Possible Error | 404 Not Found |
 
-## 11. Endpoint del reporte de instrumentos mas solicitados
+## 11. Most Requested Instruments Report Endpoint
 
-### 11.1. Consultar instrumentos mas solicitados
+### 11.1. Retrieve Most Requested Instruments
 
-| Propiedad | Definicion |
+| Property | Definition |
 |---|---|
-| Metodo | GET |
+| Method | GET |
 | Endpoint | `/reports/most-requested-instruments` |
-| Descripcion | Consultar el reporte de instrumentos mas solicitados. |
-| Respuesta exitosa | 200 OK |
+| Description | Retrieve the most requested instruments report. |
+| Successful Response | 200 OK |
 
-Ejemplo de respuesta:
+Example response:
 
 ```json
 {
@@ -635,108 +643,110 @@ Ejemplo de respuesta:
 }
 ```
 
-El reporte debera basarse en los registros historicos de prestamos y presentar los instrumentos ordenados segun la cantidad de solicitudes registradas.
+The report must be based on historical loan records and display instruments ordered by the number of registered requests.
 
-## 12. Reglas de negocio aplicadas por la API
+## 12. Business Rules Enforced by the API
 
-La API debera garantizar el cumplimiento de las siguientes reglas:
+The API must ensure compliance with the following rules:
 
-| Codigo | Regla | Comportamiento esperado |
+| Code | Rule | Expected Behavior |
 |---|---|---|
-| RN-01 | Maximo un instrumento sin devolver por estudiante. | Rechazar nuevos prestamos mientras exista uno pendiente. |
-| RN-02 | Plazo de 21 dias. | Calcular la fecha limite de devolucion. |
-| RN-03 | Bloqueo por prestamos vencidos. | Rechazar nuevos prestamos hasta registrar la devolucion correspondiente. |
-| RN-04 | Integridad del inventario. | Mantener las unidades disponibles entre cero y el total. |
-| RN-05 | Conservacion historica. | No modificar los datos congelados de operaciones anteriores. |
-| RN-06 | Conservacion de registros. | No eliminar fisicamente prestamos ni devoluciones; utilizar baja logica para instrumentos. |
+| RN-01 | Maximum of one unreturned instrument per student. | Reject new loans while another loan remains pending. |
+| RN-02 | 21-day loan period. | Calculate the return due date. |
+| RN-03 | Restriction due to overdue loans. | Reject new loans until the corresponding return is registered. |
+| RN-04 | Inventory integrity. | Keep available units between zero and total units. |
+| RN-05 | Historical preservation. | Do not modify snapshot data from previous operations. |
+| RN-06 | Record preservation. | Do not physically delete loans or returns; use logical deactivation for instruments. |
 
-### 12.1 Concurrencia
+### 12.1. Concurrency
 
-El registro de prestamos debe ejecutarse dentro de una transaccion de base de datos para garantizar la integridad de la informacion cuando varios monitores realizan operaciones simultaneamente.
+Loan registration must be executed within a database transaction to ensure data integrity when multiple monitors perform operations simultaneously.
 
-El procedimiento debe seguir este orden:
+The procedure must follow this order:
 
-1. Iniciar una transaccion.
-2. Bloquear el registro del estudiante mediante `lockForUpdate()`.
-3. Verificar que el estudiante no tenga un prestamo pendiente ni prestamos vencidos sin devolver.
-4. Bloquear el registro del instrumento mediante `lockForUpdate()`.
-5. Verificar que el instrumento este activo y tenga unidades disponibles.
-6. Registrar el prestamo y actualizar las unidades disponibles dentro de la misma transaccion.
-7. Confirmar la transaccion si todas las validaciones y operaciones se completan correctamente.
-8. Ejecutar `rollback` si ocurre algun error durante el proceso.
+1. Start a transaction.
+2. Lock the student record using `lockForUpdate()`.
+3. Verify that the student has no pending loan or overdue and unreturned loans.
+4. Lock the instrument record using `lockForUpdate()`.
+5. Verify that the instrument is active and has available units.
+6. Register the loan and update available units within the same transaction.
+7. Commit the transaction if all validations and operations complete successfully.
+8. Execute `rollback` if an error occurs during the process.
 
-**Control de concurrencia:**
+**Concurrency Control:**
 
-Si dos monitores intentan registrar un prestamo de la ultima unidad disponible del mismo instrumento, la base de datos debe serializar las operaciones mediante el bloqueo de registros. El primer prestamo podra completarse; el segundo debera recibir una respuesta HTTP `409 Conflict` cuando compruebe que ya no existen unidades disponibles.
+If two monitors attempt to register a loan for the last available unit of the same instrument, the database must serialize the operations through record locking.
 
-Las validaciones del estudiante tambien deben realizarse despues de obtener su bloqueo, evitando que dos solicitudes simultaneas generen prestamos que incumplan las reglas de negocio.
+The first loan may succeed; the second must receive HTTP `409 Conflict` when it determines that no available units remain.
 
-Todos los procesos deben respetar el mismo orden de bloqueo para reducir el riesgo de interbloqueos (*deadlocks*).
+Student validations must also be performed after acquiring the student lock, preventing simultaneous requests from creating loans that violate business rules.
 
-## 13. Manejo de errores
+All processes must follow the same locking order to reduce the risk of deadlocks.
 
-La API debera presentar mensajes claros en español.
+## 13. Error Handling
 
-Ejemplos:
+The API must display clear messages in Spanish.
 
-| Situacion | Codigo HTTP | Mensaje |
+Examples:
+
+| Situation | HTTP Code | Message |
 |---|---|---|
-| Estudiante inexistente | 404 | El estudiante no existe. |
-| Instrumento inexistente | 404 | El instrumento no existe. |
-| Instrumento sin unidades disponibles | 409 | No hay unidades disponibles para este instrumento. |
-| Estudiante con prestamo pendiente | 409 | El estudiante ya tiene un instrumento sin devolver. |
-| Estudiante con prestamo vencido | 409 | El estudiante tiene prestamos vencidos pendientes. |
-| Instrumento inactivo | 409 | No es posible prestar un instrumento dado de baja. |
-| Prestamo ya devuelto | 409 | Este prestamo ya tiene una devolucion registrada. |
-| Datos incorrectos | 422 | Los datos proporcionados no son validos. |
-| Error interno | 500 | Ocurrio un error interno del servidor. |
+| Student does not exist | 404 | El estudiante no existe. |
+| Instrument does not exist | 404 | El instrumento no existe. |
+| Instrument has no available units | 409 | No hay unidades disponibles para este instrumento. |
+| Student has a pending loan | 409 | El estudiante ya tiene un instrumento sin devolver. |
+| Student has an overdue loan | 409 | El estudiante tiene prestamos vencidos pendientes. |
+| Inactive instrument | 409 | No es posible prestar un instrumento dado de baja. |
+| Loan already returned | 409 | Este prestamo ya tiene una devolucion registrada. |
+| Invalid data | 422 | Los datos proporcionados no son validos. |
+| Internal error | 500 | Ocurrio un error interno del servidor. |
 
-## 14. Seguridad y validacion
+## 14. Security and Validation
 
-El backend sera responsable de validar todas las solicitudes recibidas.
+The backend will be responsible for validating all incoming requests.
 
-Se deberan aplicar los siguientes lineamientos:
+The following guidelines must be applied:
 
-- Validar los datos de entrada.
-- Evitar que el frontend controle directamente las reglas de negocio.
-- No permitir acceso directo a MySQL desde el frontend.
-- Proteger las credenciales mediante variables de entorno.
-- Evitar exponer informacion sensible en las respuestas.
-- Utilizar transacciones para las operaciones que modifiquen el inventario.
-- Mantener los mensajes visibles para el usuario en español.
+- Validate input data.
+- Prevent the frontend from directly controlling business rules.
+- Do not allow direct MySQL access from the frontend.
+- Protect credentials using environment variables.
+- Avoid exposing sensitive information in responses.
+- Use transactions for operations that modify inventory.
+- Keep user-facing messages in Spanish.
 
-Los mecanismos de autenticacion y autorizacion deberan implementarse si estan contemplados en el alcance aprobado del proyecto.
+Authentication and authorization mechanisms must be implemented if they are included in the approved project scope.
 
-## 15. Relacion con los demas documentos
+## 15. Relationship with Other Documents
 
-| Documento | Relacion |
+| Document | Relationship |
 |---|---|
-| `constitution.md` | Establece los principios y restricciones del sistema. |
-| `spec.md` | Define los requisitos funcionales, reglas de negocio y requisitos no funcionales. |
-| `plan.md` | Organiza las fases de desarrollo. |
-| `architecture.md` | Define los componentes y la comunicacion arquitectonica. |
-| `data-model.md` | Define las entidades, relaciones y estructuras de datos. |
-| `tasks.md` | Organiza las actividades de implementacion. |
-| `adr/` | Registra las decisiones arquitectonicas. |
+| `constitution.md` | Establishes system principles and constraints. |
+| `spec.md` | Defines functional requirements, business rules, and non-functional requirements. |
+| `plan.md` | Organizes development phases. |
+| `architecture.md` | Defines components and architectural communication. |
+| `data-model.md` | Defines entities, relationships, and data structures. |
+| `tasks.md` | Organizes implementation activities. |
+| `adr/` | Records architectural decisions. |
 
-## 16. Criterios de aceptacion
+## 16. Acceptance Criteria
 
-El contrato de API se considerara validado cuando:
+The API contract shall be considered validated when:
 
-1. Los endpoints esten definidos y correspondan con las funcionalidades del sistema.
-2. Los metodos HTTP sean coherentes con las operaciones.
-3. Las solicitudes y respuestas utilicen JSON.
-4. Los codigos HTTP representen correctamente los resultados.
-5. Las reglas de negocio se validen en el backend.
-6. Las operaciones de prestamo y devolucion protejan la integridad del inventario.
-7. El control de concurrencia responda con HTTP 409 cuando corresponda.
-8. Las fechas se manejen en UTC.
-9. Los mensajes visibles para el usuario esten en español.
-10. El contrato mantenga correspondencia con `spec.md`, `data-model.md` y `architecture.md`.
+1. Endpoints are defined and correspond to system features.
+2. HTTP methods are consistent with their operations.
+3. Requests and responses use JSON.
+4. HTTP status codes correctly represent operation results.
+5. Business rules are validated in the backend.
+6. Loan and return operations protect inventory integrity.
+7. Concurrency control returns HTTP 409 when applicable.
+8. Dates are handled in UTC.
+9. User-facing messages are written in Spanish.
+10. The contract remains consistent with `spec.md`, `data-model.md`, and `architecture.md`.
 
-## 17. Control de cambios
+## 17. Change Log
 
-| Version | Fecha | Descripcion | Estado |
+| Version | Date | Description | Status |
 |---|---|---|---|
-| 1.0 | 08/11/2026 | Creacion inicial del contrato de API REST de Music School. | Borrador para validacion |
-| 1.1 | 08/11/2026 | Incorporacion del endpoint POST /categories, validaciones para mantener la integridad del inventario, control de concurrencia en las devoluciones y manejo de conflictos por operaciones duplicadas. | Borrador para validacion |
+| 1.0 | 08/11/2026 | Initial creation of the Music School REST API contract. | Draft for Validation |
+| 1.1 | 08/11/2026 | Added the POST /categories endpoint, validations to maintain inventory integrity, concurrency control for returns, and conflict handling for duplicate operations. | Draft for Validation |
