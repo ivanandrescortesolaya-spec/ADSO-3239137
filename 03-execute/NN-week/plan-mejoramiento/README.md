@@ -1,30 +1,30 @@
 
-Este proyecto es la solución del plan de mejoramiento del aprendiz A12, ficha 3239137, dominio music-school
+This project is the solution to the disciplinary notice issued to apprentice A12, training group 3239137, in the music-school domain.
 
 # Music School
 
-Sistema para administrar instrumentos musicales, categorías, estudiantes, préstamos y devoluciones.
+System for managing musical instruments, categories, students, loans, and returns.
 
-El proyecto cuenta con **23 tareas documentadas como completadas**, integración mediante Docker Compose, pruebas automatizadas aprobadas y evidencias técnicas registradas en `docs/evidence.md`.
+The project has **23 tasks documented as completed**, integration through Docker Compose, passing automated tests, and technical evidence recorded in `docs/evidence.md`.
 
-## Tecnologías verificadas
+## Verified Technologies
 
-| Componente | Versión o requisito |
+| Component | Version or Requirement |
 |---|---|
-| PHP | `^8.3`, declarado en `api/composer.json` |
-| Laravel | `^13.17`, declarado en `api/composer.json` |
-| React | `^19.3.1`, declarado en `app/package.json` |
-| Vite | `^8.3.6`, declarado en `app/package.json` |
-| MySQL | Imagen `mysql:8.4` |
-| Node.js | `>=20`, requerido por `tool/package.json` |
+| PHP | `^8.3`, declared in `api/composer.json` |
+| Laravel | `^13.17`, declared in `api/composer.json` |
+| React | `^19.3.1`, declared in `app/package.json` |
+| Vite | `^8.3.6`, declared in `app/package.json` |
+| MySQL | `mysql:8.4` image |
+| Node.js | `>=20`, required by `tool/package.json` |
 | Docker | Docker Compose |
-| Comunicación | API HTTP con JSON |
+| Communication | HTTP API with JSON |
 
-Composer y npm administran las dependencias declaradas en sus manifiestos. Los componentes `api/` y `app/` incluyen archivos de bloqueo.
+Composer and npm manage the dependencies declared in their manifests. The `api/` and `app/` components include lock files.
 
-Docker Compose integra MySQL, Laravel, React y el sitio público estático.
+Docker Compose integrates MySQL, Laravel, React, and the static public website.
 
-## Estructura del repositorio
+## Repository Structure
 
 ```text
 .
@@ -92,173 +92,173 @@ Docker Compose integra MySQL, Laravel, React y el sitio público estático.
     `-- README.md
 ```
 
-## Funcionalidades implementadas
+## Implemented Features
 
-El sistema permite:
+The system allows users to:
 
-- Consultar y administrar categorías de instrumentos.
-- Registrar, consultar, actualizar y desactivar instrumentos.
-- Controlar las unidades disponibles del inventario.
-- Registrar y consultar estudiantes.
-- Registrar préstamos de instrumentos.
-- Consultar préstamos activos, vencidos e históricos.
-- Registrar devoluciones.
-- Consultar los instrumentos más solicitados.
-- Administrar las operaciones desde una interfaz React.
-- Presentar información general mediante un sitio público independiente.
-- Inicializar categorías e instrumentos mediante una herramienta que consume la API.
+- Retrieve and manage instrument categories.
+- Register, retrieve, update, and deactivate instruments.
+- Control available inventory units.
+- Register and retrieve students.
+- Register instrument loans.
+- Retrieve active, overdue, and historical loans.
+- Register returns.
+- Retrieve the most requested instruments.
+- Manage operations through a React interface.
+- Present general information through an independent public website.
+- Initialize categories and instruments using a tool that consumes the API.
 
-## Reglas de negocio
+## Business Rules
 
-Las reglas del sistema están documentadas en `docs/spec.md`.
+The system's business rules are documented in `docs/spec.md`.
 
-### Préstamos
+### Loans
 
-- Un estudiante no puede mantener más de un préstamo pendiente de devolución.
-- El plazo de devolución es de **21 días**.
-- No se permiten préstamos de instrumentos inactivos.
-- No se permiten préstamos cuando no existen unidades disponibles.
-- Los préstamos vencidos se identifican mediante la fecha límite y la ausencia de una devolución.
-- Las fechas de las operaciones se gestionan en UTC.
+- A student cannot have more than one loan pending return.
+- The return period is **21 days**.
+- Loans of inactive instruments are not allowed.
+- Loans are not allowed when no units are available.
+- Overdue loans are identified by their due date and the absence of a registered return.
+- Operation dates are managed in UTC.
 
-### Inventario
+### Inventory
 
-- Las unidades disponibles no pueden ser negativas.
-- Las unidades disponibles no pueden superar el total registrado.
-- El inventario se actualiza cuando se registra un préstamo o una devolución.
-- Las operaciones críticas utilizan transacciones de base de datos.
+- Available units cannot be negative.
+- Available units cannot exceed the registered total.
+- Inventory is updated when a loan or return is registered.
+- Critical operations use database transactions.
 
-### Concurrencia
+### Concurrency
 
-El backend utiliza transacciones y bloqueos mediante `lockForUpdate()` para proteger las operaciones de inventario.
+The backend uses transactions and locking through `lockForUpdate()` to protect inventory operations.
 
-En la prueba manual de concurrencia documentada:
+In the documented manual concurrency test:
 
-- Primera solicitud: HTTP `201 Created`.
-- Segunda solicitud: HTTP `409 Conflict`.
-- Disponibilidad final: `0` unidades.
+- First request: HTTP `201 Created`.
+- Second request: HTTP `409 Conflict`.
+- Final availability: `0` units.
 
-La evidencia se encuentra en `docs/evidence/concurrency-test.md` y `docs/tasks.md`.
+The evidence is available in `docs/evidence/concurrency-test.md` and `docs/tasks.md`.
 
-### Historial
+### Historical Records
 
-Los préstamos y las devoluciones se conservan en registros separados para mantener el historial de las operaciones.
+Loans and returns are preserved in separate records to maintain the history of operations.
 
-### Categorías
+### Categories
 
-La implementación también incorpora activación y desactivación de categorías.
+The implementation also includes category activation and deactivation.
 
-El backend impide utilizar categorías inactivas para registrar nuevos instrumentos o préstamos y rechaza su desactivación cuando existen préstamos pendientes asociados.
+The backend prevents inactive categories from being used to register new instruments or loans and rejects their deactivation when associated pending loans exist.
 
-Este comportamiento adicional se distingue de los requisitos originales documentados en `docs/spec.md`.
+This additional behavior is distinguished from the original requirements documented in `docs/spec.md`.
 
-## Requisitos de ejecución
+## Execution Requirements
 
-Para ejecutar el proyecto mediante Docker se necesita:
+To run the project using Docker, the following are required:
 
-- Docker Desktop o Docker Engine.
+- Docker Desktop or Docker Engine.
 - Docker Compose.
-- Puertos locales disponibles: `8000`, `5173`, `3308` y `8080`.
+- Available local ports: `8000`, `5173`, `3308`, and `8080`.
 
-Para ejecutar componentes manualmente se necesita:
+To run components manually, the following are required:
 
-- PHP compatible con `^8.3`.
+- PHP compatible with `^8.3`.
 - Composer.
-- Node.js y npm.
-- Una instancia de MySQL compatible.
+- Node.js and npm.
+- A compatible MySQL instance.
 
-## Configuración y ejecución con Docker Compose
+## Configuration and Execution with Docker Compose
 
-Los comandos siguientes están preparados para PowerShell y deben ejecutarse desde la raíz del proyecto.
+The following commands are prepared for PowerShell and must be executed from the project root.
 
-### 1. Configurar variables de entorno
+### 1. Configure Environment Variables
 
-Crear el archivo local de infraestructura:
+Create the local infrastructure environment file:
 
 ```powershell
 Copy-Item infra/.env.example infra/.env
 ```
 
-Editar `infra/.env` y establecer contraseñas privadas para las variables de base de datos, incluyendo:
+Edit `infra/.env` and set private passwords for the database variables, including:
 
 - `DB_PASSWORD`
 - `DB_ROOT_PASSWORD`
 
-Los archivos `.env` contienen configuración privada y no deben publicarse en GitHub.
+`.env` files contain private configuration and must not be published on GitHub.
 
-### 2. Iniciar los servicios
+### 2. Start the Services
 
 ```powershell
 docker compose --env-file infra/.env -f infra/docker-compose.yml up -d
 ```
 
-Docker Compose integra cuatro servicios principales:
+Docker Compose integrates four main services:
 
-| Servicio | Dirección local |
+| Service | Local Address |
 |---|---|
-| API Laravel | `http://localhost:8000/api` |
-| Frontend React | `http://localhost:5173` |
-| Sitio público | `http://localhost:8080` |
+| Laravel API | `http://localhost:8000/api` |
+| React Frontend | `http://localhost:5173` |
+| Public Website | `http://localhost:8080` |
 | MySQL | `127.0.0.1:3308` |
 
-La base de datos principal se denomina `music_school`.
+The main database is named `music_school`.
 
-### 3. Comprobar los contenedores
+### 3. Check the Containers
 
 ```powershell
 docker compose --env-file infra/.env -f infra/docker-compose.yml ps
 ```
 
-Los servicios esperados son:
+The expected services are:
 
 - `music-school-api`
 - `music-school-app`
 - `music-school-db`
 - `music-school-page`
 
-### 4. Ejecutar migraciones
+### 4. Run Migrations
 
-Con los servicios iniciados y la configuración de Laravel preparada:
+With the services running and Laravel configuration prepared:
 
 ```powershell
 docker compose --env-file infra/.env -f infra/docker-compose.yml exec -T api php artisan migrate --force
 ```
 
-Para comprobar el estado de las migraciones:
+To check migration status:
 
 ```powershell
 docker compose --env-file infra/.env -f infra/docker-compose.yml exec -T api php artisan migrate:status
 ```
 
-### 5. Comprobar la API
+### 5. Check the API
 
-La API se encuentra disponible en:
+The API is available at:
 
 `http://localhost:8000/api`
 
-El endpoint de salud de Laravel se encuentra en:
+The Laravel health endpoint is available at:
 
 `http://localhost:8000/up`
 
-Para comprobarlo desde PowerShell:
+To check it from PowerShell:
 
 ```powershell
 curl.exe -I http://localhost:8000/up
 ```
 
-### 6. Detener los servicios
+### 6. Stop the Services
 
 ```powershell
 docker compose --env-file infra/.env -f infra/docker-compose.yml down
 ```
 
-Este comando detiene los servicios sin solicitar la eliminación de los volúmenes persistentes.
+This command stops the services without requesting the deletion of persistent volumes.
 
-## Ejecución manual de Laravel
+## Running Laravel Manually
 
-Esta opción es alternativa a la ejecución del backend mediante Docker.
+This option is an alternative to running the backend through Docker.
 
-### 1. Preparar Laravel
+### 1. Prepare Laravel
 
 ```powershell
 Copy-Item api/.env.example api/.env
@@ -270,23 +270,23 @@ composer install
 php artisan key:generate
 ```
 
-Configurar en `api/.env` los datos de conexión a MySQL.
+Configure the MySQL connection details in `api/.env`.
 
-Si se utiliza MySQL publicado por Docker desde Windows:
+If using MySQL exposed by Docker from Windows:
 
 - Host: `127.0.0.1`
-- Puerto: `3308`
-- Base de datos: `music_school`
-- Usuario: el configurado en Docker Compose.
-- Contraseña: la definida localmente.
+- Port: `3308`
+- Database: `music_school`
+- Username: The one configured in Docker Compose.
+- Password: The one defined locally.
 
-### 2. Ejecutar migraciones
+### 2. Run Migrations
 
 ```powershell
 php artisan migrate
 ```
 
-### 3. Iniciar Laravel
+### 3. Start Laravel
 
 ```powershell
 php artisan serve --host=0.0.0.0 --port=8000
@@ -296,11 +296,11 @@ API:
 
 `http://localhost:8000/api`
 
-## Ejecución manual de React
+## Running React Manually
 
-Esta opción es alternativa a ejecutar React mediante Docker.
+This option is an alternative to running React through Docker.
 
-Desde la raíz del proyecto:
+From the project root:
 
 ```powershell
 Set-Location app
@@ -310,33 +310,33 @@ npm install
 npm run dev
 ```
 
-El frontend utiliza la API disponible en:
+The frontend uses the API available at:
 
 `http://localhost:8000/api`
 
-Para generar la compilación de producción:
+To generate the production build:
 
 ```powershell
 npm run build
 ```
 
-Para ejecutar el linter:
+To run the linter:
 
 ```powershell
 npm run lint
 ```
 
-## Herramienta de inicialización de datos
+## Data Initialization Tool
 
-La herramienta ubicada en `tool/` registra información inicial mediante solicitudes HTTP a la API.
+The tool located in `tool/` registers initial information through HTTP requests to the API.
 
-No ejecuta consultas SQL directas contra MySQL.
+It does not execute direct SQL queries against MySQL.
 
-### Datos iniciales
+### Initial Data
 
-Las categorías definidas son:
+The defined categories are:
 
-| Código | Categoría |
+| Code | Category |
 |---|---|
 | CAT-01 | Cuerdas |
 | CAT-02 | Vientos |
@@ -344,11 +344,11 @@ Las categorías definidas son:
 | CAT-04 | Teclados |
 | CAT-05 | Electrónicos |
 
-También se dispone de **10 instrumentos iniciales** definidos en `tool/instruments.json`.
+There are also **10 initial instruments** defined in `tool/instruments.json`.
 
-### Ejecución
+### Execution
 
-Con la API iniciada, desde la raíz del repositorio:
+With the API running, from the repository root:
 
 ```powershell
 Set-Location tool
@@ -360,11 +360,11 @@ npm install
 npm run seed
 ```
 
-Verificar que `API_BASE_URL` en `tool/.env` corresponda a la dirección de la API.
+Verify that `API_BASE_URL` in `tool/.env` matches the API address.
 
-La herramienta evita duplicar los registros existentes.
+The tool prevents duplicate records.
 
-En una ejecución repetida verificada se obtuvo:
+A verified repeated execution produced:
 
 ```text
 CATEGORIAS:
@@ -378,118 +378,117 @@ Existentes: 10
 Errores: 0
 ```
 
-La evidencia de ejecución está registrada en `docs/evidence.md`.
+Execution evidence is recorded in `docs/evidence.md`.
 
-## Pruebas automatizadas
+## Automated Tests
 
-El backend cuenta con **16 archivos de pruebas automatizadas**.
+The backend contains **16 automated test files**.
 
-La última ejecución verificada obtuvo:
+The latest verified execution produced:
 
-| Indicador | Resultado |
+| Indicator | Result |
 |---|---:|
-| Pruebas aprobadas | 56 |
-| Aserciones | 138 |
-| Errores | 0 |
-| Archivos de pruebas | 16 |
+| Passed Tests | 56 |
+| Assertions | 138 |
+| Errors | 0 |
+| Test Files | 16 |
 
-### Ejecutar pruebas mediante Docker
+### Run Tests Using Docker
 
-Desde la raíz del proyecto:
+From the project root:
 
 ```powershell
 docker compose --env-file infra/.env -f infra/docker-compose.yml --profile testing run --rm api-test php artisan test
 ```
 
-El servicio `api-test` utiliza la base de datos:
+The `api-test` service uses the database:
 
 `music_school_test`
 
-La API principal utiliza:
+The main API uses:
 
 `music_school`
 
-**Importante:** las pruebas utilizan operaciones que pueden reinicializar tablas mediante `RefreshDatabase`. No deben ejecutarse contra la base de datos principal ni contra información que se necesite conservar.
+**Important:** Tests use operations that may reinitialize tables through `RefreshDatabase`. They must not be executed against the main database or against information that needs to be preserved.
 
-### Verificar la compilación de React
+### Verify the React Build
 
 ```powershell
 docker compose --env-file infra/.env -f infra/docker-compose.yml exec -T app npm run build
 ```
 
-La compilación de producción fue verificada correctamente.
+The production build was successfully verified.
 
-### Prueba de concurrencia
+### Concurrency Test
 
-La evidencia manual de concurrencia se encuentra en:
+Manual concurrency evidence is available at:
 
 `docs/evidence/concurrency-test.md`
 
-Esta prueba verifica que dos solicitudes simultáneas no puedan prestar la misma última unidad disponible.
+This test verifies that two simultaneous requests cannot lend the same last available unit.
 
-La prueba manual no se presenta como una prueba automatizada.
+The manual test is not presented as an automated test.
 
-## Documentación técnica
+## Technical Documentation
 
-| Archivo | Contenido |
+| File | Content |
 |---|---|
-| `docs/constitution.md` | Principios y restricciones del proyecto. |
-| `docs/spec.md` | Historias de usuario, requisitos y reglas de negocio. |
-| `docs/plan.md` | Plan de implementación. |
-| `docs/tasks.md` | Seguimiento de las 23 tareas. |
-| `docs/architecture.md` | Arquitectura del sistema. |
-| `docs/data-model.md` | Modelo de datos y relaciones. |
-| `docs/api-contract.md` | Contrato de la API. |
-| `docs/evidence.md` | Evidencias técnicas y resultados de pruebas. |
-| `docs/evidence/concurrency-test.md` | Evidencia de concurrencia. |
-| `docs/adr/ADR-001.md` | Decisión arquitectónica 001. |
-| `docs/adr/ADR-002.md` | Decisión arquitectónica 002. |
-| `docs/adr/ADR-003.md` | Decisión arquitectónica 003. |
+| `docs/constitution.md` | Project principles and constraints. |
+| `docs/spec.md` | User stories, requirements, and business rules. |
+| `docs/plan.md` | Implementation plan. |
+| `docs/tasks.md` | Tracking of the 23 tasks. |
+| `docs/architecture.md` | System architecture. |
+| `docs/data-model.md` | Data model and relationships. |
+| `docs/api-contract.md` | API contract. |
+| `docs/evidence.md` | Technical evidence and test results. |
+| `docs/evidence/concurrency-test.md` | Concurrency evidence. |
+| `docs/adr/ADR-001.md` | Architectural Decision Record 001. |
+| `docs/adr/ADR-002.md` | Architectural Decision Record 002. |
+| `docs/adr/ADR-003.md` | Architectural Decision Record 003. |
 
-También existen documentos específicos en:
+Additional component-specific documentation is available in:
 
 - `api/README.md`
 - `app/README.md`
 - `tool/README.md`
 
-## Estado del proyecto
+## Project Status
 
-El plan de trabajo contiene exactamente 23 tareas.
+The work plan contains exactly 23 tasks.
 
-| Indicador | Resultado |
+| Indicator | Result |
 |---|---:|
-| Tareas planificadas | 23 |
-| Tareas completadas | 23 |
-| Tareas pendientes | 0 |
-| Avance del plan de tareas | 100 % |
+| Planned Tasks | 23 |
+| Completed Tasks | 23 |
+| Pending Tasks | 0 |
+| Task Plan Progress | 100% |
 
-La implementación, las pruebas y las evidencias se encuentran registradas en el repositorio.
+Implementation, tests, and evidence are recorded in the repository.
 
-El estado de las tareas no sustituye la evaluación formal ni la calificación del plan de mejoramiento.
+Task status does not replace the formal evaluation or grading of the improvement plan.
 
-## Seguridad
+## Security
 
-- Los archivos `.env` deben mantenerse fuera del control de versiones.
-- Las contraseñas de MySQL deben configurarse mediante variables de entorno.
-- No se deben publicar claves privadas ni credenciales.
-- Los archivos `.env.example` sirven como plantillas de configuración.
-- La base de pruebas `music_school_test` debe permanecer separada de la base principal `music_school`.
-- No se deben ejecutar pruebas destructivas sobre información que deba conservarse.
-- Los puertos de desarrollo deben utilizarse únicamente en entornos controlados.
+- `.env` files must remain outside version control.
+- MySQL passwords must be configured through environment variables.
+- Private keys and credentials must not be published.
+- `.env.example` files serve as configuration templates.
+- The test database `music_school_test` must remain separate from the main database `music_school`.
+- Destructive tests must not be executed against information that needs to be preserved.
+- Development ports must only be used in controlled environments.
 
-## Evidencias de validación
+## Validation Evidence
 
-Durante la revisión técnica del proyecto se verificaron:
+During the project's technical review, the following were verified:
 
-- Ejecución integrada mediante Docker Compose.
-- Disponibilidad de los cuatro servicios principales.
-- Respuesta HTTP 200 del sitio público.
-- Funcionamiento de la API.
-- Ejecución de la herramienta de inicialización de datos.
-- Pruebas automatizadas aprobadas.
-- Compilación de producción de React.
-- Control de concurrencia con respuestas HTTP 201 y 409.
-- Separación entre la base de datos principal y la base de pruebas.
+- Integrated execution using Docker Compose.
+- Availability of the four main services.
+- HTTP 200 response from the public website.
+- API functionality.
+- Execution of the data initialization tool.
+- Passing automated tests.
+- React production build.
+- Concurrency control with HTTP 201 and 409 responses.
+- Separation between the main database and the test database.
 
-Los resultados detallados se encuentran en `docs/evidence.md`.
-
+Detailed results are available in `docs/evidence.md`.
