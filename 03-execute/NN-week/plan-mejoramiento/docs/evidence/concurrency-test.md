@@ -1,47 +1,48 @@
-# Evidencia de prueba de concurrencia — Music School
 
-## 1. Objetivo
+# Concurrency Test Evidence — Music School
 
-Verificar que el sistema controle correctamente dos solicitudes simultaneas de prestamo cuando solamente existe una unidad disponible de un instrumento.
+## 1. Objective
 
-## 2. Regla de negocio evaluada
+Verify that the system correctly handles two simultaneous loan requests when only one unit of an instrument is available.
 
-**RN-05 — Control de concurrencia**
+## 2. Business Rule Evaluated
 
-Cuando dos operadores intenten entregar simultaneamente la ultima unidad disponible de un instrumento, solamente una operacion podra completarse. La operacion que no consiga la disponibilidad debera responder con HTTP 409 Conflict.
+**RN-05 — Concurrency Control**
 
-## 3. Configuracion de la prueba
+When two operators simultaneously attempt to lend the last available unit of an instrument, only one operation may succeed. The operation that cannot obtain the available unit must return HTTP 409 Conflict.
 
-- Instrumento: INS-CONC-001.
-- Unidades totales: 1.
-- Unidades disponibles antes de la prueba: 1.
-- Estudiante A: EST-CONC-001.
-- Estudiante B: EST-CONC-002.
-- Operaciones: dos solicitudes independientes a `POST /api/loans`.
+## 3. Test Configuration
 
-## 4. Resultados observados
+- Instrument: INS-CONC-001.
+- Total units: 1.
+- Available units before the test: 1.
+- Student A: EST-CONC-001.
+- Student B: EST-CONC-002.
+- Operations: Two independent requests to `POST /api/loans`.
 
-| Solicitud | Resultado HTTP | Resultado |
-|---|---:|---|
-| Estudiante A | 201 Created | Prestamo registrado correctamente |
-| Estudiante B | 409 Conflict | No hay unidades disponibles |
+## 4. Observed Results
 
-Despues de la operacion exitosa, la disponibilidad quedo en cero y solamente se registro un nuevo prestamo.
+| Request | HTTP Result | Result |
+|---|---|---|
+| Student A | 201 Created | Prestamo registrado correctamente |
+| Student B | 409 Conflict | No hay unidades disponibles |
 
-## 5. Mecanismo tecnico
+After the successful operation, availability was reduced to zero, and only one new loan was registered.
 
-El servicio `LoanService` utiliza:
+## 5. Technical Mechanism
 
-- Transacciones mediante `DB::transaction()`.
-- Bloqueo de registros mediante `lockForUpdate()`.
-- Verificacion de disponibilidad despues de obtener el bloqueo.
-- Actualizacion de inventario dentro de la transaccion.
-- Respuesta HTTP 409 cuando no existen unidades disponibles.
+The `LoanService` uses:
+
+- Database transactions through `DB::transaction()`.
+- Row-level locking through `lockForUpdate()`.
+- Availability verification after acquiring the lock.
+- Inventory updates within the transaction.
+- HTTP 409 responses when no units are available.
 
 ## 6. Conclusion
 
-La prueba realizada con dos procesos independientes confirmo que, ante las solicitudes efectuadas, solamente una operacion pudo registrar el prestamo de la ultima unidad disponible. La segunda recibio HTTP 409 Conflict.
+The test performed using two independent processes confirmed that, for the executed requests, only one operation successfully registered the loan of the last available unit. The second request received HTTP 409 Conflict.
 
-Esta evidencia respalda la implementacion de la regla RN-05 y los criterios de concurrencia de TASK-14.
+This evidence supports the implementation of business rule RN-05 and the concurrency criteria of TASK-14.
 
-**Nota:** Esta prueba manual comprueba el escenario ejecutado; no reemplaza una prueba de estres ni verifica por si sola todas las posibles condiciones de concurrencia.
+**Note:** This manual test verifies the executed scenario; it does not replace a stress test or independently verify all possible concurrency conditions.

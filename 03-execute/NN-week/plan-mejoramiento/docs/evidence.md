@@ -1,121 +1,123 @@
-# Registro de evidencias — Music School
 
-**Identificador:** music-school  
-**Proyecto:** Sistema de prestamo de instrumentos musicales  
-**Ficha:** ADSO 3239137  
+# Evidence Register — Music School
+
+**Identifier:** music-school  
+**Project:** Musical Instrument Loan Management System  
+**Training Group:** ADSO 3239137  
 **Version:** 1.0  
-**Estado:** Registro de evidencias  
-**Fecha:** 10/11/2026
+**Status:** Evidence Register  
+**Date:** 10/11/2026
 
 ---
 
-## 1. Objetivo
+## 1. Objective
 
-Registrar y organizar las evidencias que permiten verificar los entregables desarrollados y publicados en el repositorio GitHub del proyecto Music School.
+Record and organize the evidence used to verify the deliverables developed and published in the Music School project's GitHub repository.
 
-## 2. Evidencias de documentacion
+## 2. Documentation Evidence
 
-| ID | Entregable | Ubicacion |
+| ID | Deliverable | Location |
 |---|---|---|
-| EV-01 | Principios y lineamientos del proyecto | `docs/constitution.md` |
-| EV-02 | Especificacion de requisitos | `docs/spec.md` |
-| EV-03 | Plan de desarrollo | `docs/plan.md` |
-| EV-04 | Arquitectura del sistema | `docs/architecture.md` |
-| EV-05 | Modelo de datos | `docs/data-model.md` |
-| EV-06 | Contrato de la API | `docs/api-contract.md` |
-| EV-07 | Matriz de seguimiento | `docs/tasks.md` |
-| EV-08 | Decisiones arquitectonicas | `docs/adr/` |
+| EV-01 | Project principles and guidelines | `docs/constitution.md` |
+| EV-02 | Requirements specification | `docs/spec.md` |
+| EV-03 | Development plan | `docs/plan.md` |
+| EV-04 | System architecture | `docs/architecture.md` |
+| EV-05 | Data model | `docs/data-model.md` |
+| EV-06 | API contract | `docs/api-contract.md` |
+| EV-07 | Task tracking matrix | `docs/tasks.md` |
+| EV-08 | Architectural decisions | `docs/adr/` |
 
-## 3. Evidencias del frontend
+## 3. Frontend Evidence
 
-| ID | Entregable | Ubicacion |
+| ID | Deliverable | Location |
 |---|---|---|
-| EV-09 | Aplicacion administrativa React | `app/` |
-| EV-10 | Gestion de categorias, instrumentos y estudiantes | `app/src/pages/` |
-| EV-11 | Gestion de prestamos y devoluciones | `app/src/pages/` |
-| EV-12 | Dashboard e indicadores del inventario | `app/src/pages/Dashboard.jsx` |
+| EV-09 | React administrative application | `app/` |
+| EV-10 | Category, instrument, and student management | `app/src/pages/` |
+| EV-11 | Loan and return management | `app/src/pages/` |
+| EV-12 | Dashboard and inventory indicators | `app/src/pages/Dashboard.jsx` |
 
-## 4. Evidencias tecnicas
+## 4. Technical Evidence
 
-| ID | Evidencia | Ubicacion |
+| ID | Evidence | Location |
 |---|---|---|
-| EVT-01 | Prueba manual de concurrencia RN-05 | `docs/evidence/concurrency-test.md` |
+| EVT-01 | Manual concurrency test for RN-05 | `docs/evidence/concurrency-test.md` |
 
-## 5. Criterios de validacion
+## 5. Validation Criteria
 
-- Cada evidencia debe corresponder a un entregable real.
-- Las rutas deben coincidir con la estructura del repositorio.
-- Los resultados de pruebas deben reflejar ejecuciones realizadas.
-- Los commits deben permitir identificar los cambios publicados.
-- Los componentes pendientes de publicacion no se consideraran entregados.
+- Each piece of evidence must correspond to an actual deliverable.
+- File paths must match the repository structure.
+- Test results must reflect actual executions.
+- Commits must allow published changes to be identified.
+- Components that have not yet been published shall not be considered delivered.
 
-## 6. Control de cambios
+## 6. Change Log
 
-| Version | Fecha | Descripcion |
+| Version | Date | Description |
 |---|---|---|
-| 1.0 | 10/11/2026 | Creacion inicial del registro general de evidencias. |
+| 1.0 | 10/11/2026 | Initial creation of the general evidence register. |
 
 ---
 
-**Fin del documento.**
-## Validacion final - 13/11/2026
+**End of Document.**
 
-### TASK-23 - Pruebas automatizadas
+## Final Validation — 13/11/2026
 
-- Entorno: Docker Compose, servicio api-test.
-- Base de datos de pruebas: music_school_test.
-- Resultado PHPUnit: 56 pruebas aprobadas.
-- Aserciones: 138.
-- Archivos de pruebas automatizadas: 16.
-- Errores: 0.
-- Comando: docker compose --env-file infra/.env -f infra/docker-compose.yml --profile testing run --rm api-test php artisan test
+### TASK-23 — Automated Tests
 
-### Validacion del frontend
+- Environment: Docker Compose, `api-test` service.
+- Test database: `music_school_test`.
+- PHPUnit result: 56 tests passed.
+- Assertions: 138.
+- Automated test files: 16.
+- Errors: 0.
+- Command: `docker compose --env-file infra/.env -f infra/docker-compose.yml --profile testing run --rm api-test php artisan test`
 
-- Framework: React y Vite.
-- Comando: npm run build.
-- Resultado: compilacion de produccion exitosa.
+### Frontend Validation
 
-### Validacion de infraestructura
+- Framework: React and Vite.
+- Command: `npm run build`.
+- Result: Successful production build.
 
-- API Laravel: puerto 8000.
-- Frontend React: puerto 5173.
-- MySQL: puerto 3308.
-- Sitio publico: puerto 8080.
-- Sitio publico: respuesta HTTP 200.
+### Infrastructure Validation
 
-### Validacion de inicializacion de datos
+- Laravel API: port 8000.
+- React frontend: port 5173.
+- MySQL: port 3308.
+- Public website: port 8080.
+- Public website: HTTP 200 response.
 
-- Categorias existentes: 5.
-- Instrumentos existentes: 10.
-- Registros nuevos en segunda ejecucion: 0.
-- Errores: 0.
-- Resultado: inicializacion idempotente mediante API.
+### Data Initialization Validation
 
-### Validacion funcional
+- Existing categories: 5.
+- Existing instruments: 10.
+- New records on the second execution: 0.
+- Errors: 0.
+- Result: Idempotent data initialization through the API.
 
-- Registro y consulta de categorias, instrumentos y estudiantes.
-- Registro y consulta de prestamos.
-- Control de disponibilidad e inventario.
-- Consulta de prestamos vencidos.
-- Registro de devoluciones y rechazo de duplicados.
-- Historial de prestamos.
-- Reporte de instrumentos mas solicitados.
-- Validaciones y respuestas HTTP de error.
-- Aislamiento de la base de datos de pruebas.
+### Functional Validation
 
-## Revisión final del proyecto — 15/11/2026
+- Registration and retrieval of categories, instruments, and students.
+- Loan registration and retrieval.
+- Availability and inventory control.
+- Retrieval of overdue loans.
+- Return registration and rejection of duplicate returns.
+- Loan history.
+- Most requested instruments report.
+- Validations and HTTP error responses.
+- Test database isolation.
 
-### Verificación de entrega
+## Final Project Review — 15/11/2026
 
-- [x] Las 23 tareas del plan de mejoramiento están documentadas como completadas.
-- [x] Los resultados de las pruebas automatizadas están registrados: 56 pruebas aprobadas y 138 aserciones.
-- [x] La integración de Laravel, React, MySQL y el sitio público mediante Docker Compose está documentada.
-- [x] La herramienta de inicialización de datos cuenta con evidencia de ejecución.
-- [x] El repositorio contiene la documentación técnica del proyecto.
+### Delivery Verification
 
-### Estado de la entrega
+- [x] All 23 tasks of the improvement plan are documented as completed.
+- [x] Automated test results are recorded: 56 tests passed and 138 assertions.
+- [x] The integration of Laravel, React, MySQL, and the public website through Docker Compose is documented.
+- [x] The data initialization tool includes execution evidence.
+- [x] The repository contains the project's technical documentation.
 
-El proyecto Music School cuenta con implementación, pruebas y documentación de las 23 tareas del plan de mejoramiento.
+### Delivery Status
 
-La evaluación formal y la sustentación siguen siendo actividades pendientes.
+The Music School project includes the implementation, testing, and documentation of all 23 tasks established in the improvement plan.
+
+The formal evaluation and technical presentation remain pending.
