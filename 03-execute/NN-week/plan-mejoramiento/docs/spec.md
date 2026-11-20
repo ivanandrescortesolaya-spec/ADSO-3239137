@@ -1,432 +1,438 @@
-# Especificacion de requisitos — Music School
 
-**Identificador:** music-school  
-**Proyecto:** Sistema de prestamo de instrumentos musicales  
-**Ficha:** ADSO 3239137  
-**Version:** 1.0
-**Estado:** Borrador para validacion  
+# Requirements Specification — Music School
+
+**Identifier:** music-school  
+**Project:** Musical Instrument Loan Management System  
+**Training Group:** ADSO 3239137  
+**Version:** 1.0  
+**Status:** Draft for Validation
 
 ---
 
-## 1. Proposito
+## 1. Purpose
 
-El presente documento establece los requisitos funcionales, reglas de negocio, requisitos no funcionales y criterios de aceptacion del sistema Music School.
+This document establishes the functional requirements, business rules, non-functional requirements, and acceptance criteria for the Music School system.
 
-El sistema tiene como finalidad gestionar el catalogo de instrumentos musicales, controlar sus unidades disponibles, administrar los prestamos y devoluciones, y generar reportes de los instrumentos mas solicitados.
+The system is intended to manage the musical instrument catalog, control available inventory units, manage loans and returns, and generate reports on the most requested instruments.
 
-Esta especificacion constituye la referencia principal para el diseño, desarrollo, implementacion y validacion del producto.
+This specification serves as the main reference for the design, development, implementation, and validation of the product.
 
-## 2. Alcance del sistema
+## 2. System Scope
 
-Music School permitira:
+Music School shall allow users to:
 
-- Gestionar el catalogo de instrumentos musicales.
-- Organizar los instrumentos en cinco categorias.
-- Consultar las unidades totales y disponibles de cada instrumento.
-- Gestionar la informacion de los estudiantes.
-- Registrar prestamos de instrumentos.
-- Registrar devoluciones.
-- Controlar los plazos de devolucion.
-- Identificar prestamos vencidos.
-- Conservar el historial de operaciones.
-- Generar reportes de los instrumentos mas solicitados.
-- Evitar inconsistencias en el inventario cuando existan operaciones simultaneas.
+- Manage the musical instrument catalog.
+- Organize instruments into five categories.
+- View the total and available units of each instrument.
+- Manage student information.
+- Register instrument loans.
+- Register instrument returns.
+- Control loan return deadlines.
+- Identify overdue loans.
+- Preserve transaction history.
+- Generate reports on the most requested instruments.
+- Prevent inventory inconsistencies during simultaneous operations.
 
-### 2.1 Categorias de instrumentos
+### 2.1 Instrument Categories
 
-El sistema debe incluir cinco categorias iniciales:
+The system must include five initial categories:
 
-| Codigo | Categoria |
+| Code | Category |
 |---|---|
-| CAT-01 | Cuerdas |
-| CAT-02 | Vientos |
-| CAT-03 | Percusion |
-| CAT-04 | Teclados |
-| CAT-05 | Electronicos |
+| CAT-01 | Strings |
+| CAT-02 | Wind Instruments |
+| CAT-03 | Percussion |
+| CAT-04 | Keyboards |
+| CAT-05 | Electronic Instruments |
 
-Estas categorias deben estar disponibles mediante el sembrador de datos.
+These categories must be available through the data seeding tool.
 
-### 2.2 Identificacion de instrumentos y ejemplares
+### 2.2 Instrument Models and Physical Units
 
-El sistema distinguira entre el modelo de instrumento y sus unidades fisicas.
+The system shall distinguish between an instrument model and its physical units.
 
-- **Modelo:** representa el tipo de instrumento y se identifica mediante un codigo de modelo.
-- **Ejemplares:** representan las unidades fisicas disponibles de un modelo.
-- **Unidades totales:** cantidad total de ejemplares registrados.
-- **Unidades disponibles:** cantidad de ejemplares que pueden entregarse en prestamo.
+- **Model:** Represents an instrument type and is identified by a unique model code.
+- **Physical units:** Represent the physical units belonging to an instrument model.
+- **Total units:** Total number of registered physical units.
+- **Available units:** Number of physical units currently available for lending.
 
-La disponibilidad debe actualizarse cuando se registren prestamos y devoluciones.
+Availability must be updated whenever loans and returns are registered.
 
-### 2.3 Tecnologias del proyecto
+### 2.3 Project Technologies
 
-| Componente | Tecnologia |
+| Component | Technology |
 |---|---|
 | Frontend | React |
-| Backend | PHP con Laravel |
-| Base de datos | MySQL |
-| Comunicacion | API REST |
-| Intercambio de informacion | JSON |
-| Infraestructura | Docker |
+| Backend | PHP with Laravel |
+| Database | MySQL |
+| Communication | REST API |
+| Data Exchange | JSON |
+| Infrastructure | Docker |
 
-## 3. Actores del sistema
+## 3. System Actors
 
-### 3.1 Estudiante
+### 3.1 Student
 
-Persona que solicita instrumentos musicales en calidad de prestamo.
+A person who requests musical instruments on loan.
 
-Responsabilidades y necesidades:
+Responsibilities and needs:
 
-- Consultar los instrumentos disponibles.
-- Consultar la informacion de los instrumentos.
-- Solicitar un prestamo.
-- Realizar la devolucion del instrumento mediante el monitor.
-- Conocer las fechas de vencimiento de sus prestamos.
+- View available instruments.
+- View instrument information.
+- Request an instrument loan.
+- Return an instrument through the monitor.
+- Know the due dates of their loans.
 
-### 3.2 Monitor u operador
+### 3.2 Monitor or Operator
 
-Responsable de gestionar las operaciones de prestamo y devolucion.
+The person responsible for managing loan and return operations.
 
-Responsabilidades:
+Responsibilities:
 
-- Consultar el catalogo de instrumentos.
-- Consultar la informacion de los estudiantes.
-- Registrar prestamos.
-- Registrar devoluciones.
-- Consultar el estado de las operaciones.
-- Verificar la disponibilidad de instrumentos.
+- View the instrument catalog.
+- View student information.
+- Register loans.
+- Register returns.
+- Check transaction status.
+- Verify instrument availability.
 
-El sistema debe impedir que dos operadores entreguen simultaneamente la ultima unidad disponible.
+The system must prevent two operators from simultaneously lending the last available unit.
 
-## 4. Historias de usuario
+## 4. User Stories
 
-### HU-01. Gestion de instrumentos
+### HU-01. Instrument Management
 
-**Como** monitor,  
-**quiero** registrar modelos de instrumentos musicales y sus unidades fisicas,  
-**para** mantener organizado el catalogo y controlar las existencias.
+**As a** monitor,  
+**I want to** register musical instrument models and their physical units,  
+**so that** I can keep the catalog organized and control inventory.
 
-Criterios de aceptacion:
+**Acceptance Criteria:**
 
-- El sistema debe permitir registrar modelos de instrumentos.
-- Cada modelo debe tener un codigo identificador unico.
-- Cada modelo debe pertenecer a una categoria.
-- El modelo debe registrar sus unidades totales y disponibles.
-- No se deben aceptar cantidades negativas.
-- Las unidades disponibles no pueden superar las unidades totales.
+- The system must allow instrument models to be registered.
+- Each model must have a unique identification code.
+- Each model must belong to a category.
+- Each model must record its total and available units.
+- Negative quantities must not be accepted.
+- Available units must not exceed total units.
 
-### HU-02. Consulta del catalogo
+### HU-02. Catalog Consultation
 
-**Como** estudiante,  
-**quiero** consultar el catalogo de instrumentos musicales,  
-**para** conocer los instrumentos y sus unidades disponibles.
+**As a** student,  
+**I want to** view the musical instrument catalog,  
+**so that** I can identify instruments and their available units.
 
-Criterios de aceptacion:
+**Acceptance Criteria:**
 
-- El sistema debe mostrar los instrumentos activos.
-- Debe mostrar la categoria correspondiente.
-- Debe mostrar las unidades disponibles.
-- Los instrumentos dados de baja no deben mostrarse como disponibles para nuevos prestamos ni permitir que se registren nuevos prestamos sobre ellos.
+- The system must display active instruments.
+- The corresponding category must be displayed.
+- Available units must be displayed.
+- Deactivated instruments must not appear as available for new loans, and new loans involving them must not be permitted.
 
-### HU-03. Gestion de estudiantes
+### HU-03. Student Management
 
-**Como** monitor,  
-**quiero** registrar y consultar estudiantes,  
-**para** identificar correctamente a las personas que solicitan instrumentos.
+**As a** monitor,  
+**I want to** register and view student information,  
+**so that** I can correctly identify people requesting instruments.
 
-Criterios de aceptacion:
+**Acceptance Criteria:**
 
-- El sistema debe permitir registrar estudiantes.
-- Cada estudiante debe tener un identificador.
-- El sistema debe permitir consultar la informacion registrada.
-- Los prestamos deben estar asociados a un estudiante existente.
+- The system must allow students to be registered.
+- Each student must have an identifier.
+- The system must allow registered information to be viewed.
+- Loans must be associated with an existing student.
 
-### HU-04. Registro de prestamos
+### HU-04. Loan Registration
 
-**Como** monitor,  
-**quiero** registrar el prestamo de un instrumento a un estudiante,  
-**para** controlar la entrega de instrumentos musicales.
+**As a** monitor,  
+**I want to** register an instrument loan for a student,  
+**so that** I can control the distribution of musical instruments.
 
-Criterios de aceptacion:
+**Acceptance Criteria:**
 
-- El prestamo debe estar asociado a un estudiante.
-- El modelo de instrumento debe tener unidades disponibles.
-- El estudiante no debe tener otro instrumento sin devolver.
-- El sistema debe registrar la fecha del prestamo.
-- La fecha de vencimiento debe establecerse a 21 dias.
-- La operacion debe actualizar las unidades disponibles.
-- La operacion debe conservar la informacion original del instrumento.
-- El sistema debe impedir el prestamo cuando el estudiante tenga un prestamo vencido y pendiente de devolucion.
+- The loan must be associated with a student.
+- The instrument model must have available units.
+- The student must not have another unreturned instrument.
+- The system must record the loan date.
+- The due date must be set to 21 days after loan registration.
+- The operation must update available units.
+- The operation must preserve the original instrument information.
+- The system must reject a loan when the student has an overdue, unreturned loan.
 
-### HU-05. Registro de devoluciones
+### HU-05. Return Registration
 
-**Como** monitor,  
-**quiero** registrar la devolucion de un instrumento,  
-**para** actualizar su disponibilidad y conservar el historial de la operacion.
+**As a** monitor,  
+**I want to** register the return of an instrument,  
+**so that** I can update its availability and preserve transaction history.
 
-**Criterios de aceptacion:**
+**Acceptance Criteria:**
 
-- El sistema debe identificar el prestamo correspondiente.
-- No se debe permitir registrar dos devoluciones para el mismo prestamo.
-- La devolucion debe registrar su fecha y hora en UTC.
-- Las unidades disponibles deben incrementarse correctamente al registrar la devolucion.
-- Las unidades disponibles nunca deben superar las unidades totales.
-- La devolucion debe conservarse como registro historico.
-- La informacion original del prestamo debe mantenerse sin modificaciones.
-- El sistema debe identificar el prestamo como devuelto mediante el registro asociado en la tabla de devoluciones (returns), sin modificar la informacion original del prestamo.
+- The system must identify the corresponding loan.
+- Two returns must not be registered for the same loan.
+- The return must record its date and time in UTC.
+- Available units must increase correctly when the return is registered.
+- Available units must never exceed total units.
+- The return must be preserved as a historical record.
+- The original loan information must remain unchanged.
+- The system must identify a loan as returned through the associated record in the `returns` table, without modifying the original loan information.
 
-### HU-06. Control de prestamos vencidos
+### HU-06. Overdue Loan Control
 
-**Como** monitor,  
-**quiero** identificar los prestamos vencidos,  
-**para** impedir nuevos prestamos a estudiantes que tengan instrumentos pendientes de devolucion y cuyo plazo haya vencido.
+**As a** monitor,  
+**I want to** identify overdue loans,  
+**so that** I can prevent new loans to students who have unreturned instruments past their due dates.
 
-**Criterios de aceptacion:**
+**Acceptance Criteria:**
 
-- El sistema debe calcular la fecha de vencimiento a partir de la fecha de registro del prestamo.
-- El plazo de cada prestamo sera de 21 dias.
-- El sistema debe identificar como vencidos los prestamos cuya fecha de vencimiento haya sido superada y que no tengan una devolucion registrada.
-- El sistema debe permitir consultar los prestamos vencidos y pendientes de devolucion.
-- El estudiante que tenga un prestamo vencido y pendiente de devolucion no podra recibir nuevos instrumentos.
-- El bloqueo debe mantenerse hasta que se registre la devolucion correspondiente.
-- Las fechas y horas utilizadas para determinar el vencimiento deben manejarse en UTC.
+- The system must calculate the due date from the loan registration date.
+- Each loan must have a 21-day period.
+- Loans must be considered overdue when their due dates have passed and no return has been registered.
+- The system must allow overdue and unreturned loans to be viewed.
+- Students with overdue and unreturned loans must not receive new instruments.
+- The restriction must remain until the corresponding return is registered.
+- Dates and times used to determine overdue status must be handled in UTC.
 
-### HU-07. Control de inventario
+### HU-07. Inventory Control
 
-**Como** monitor,  
-**quiero** consultar y mantener las cantidades de instrumentos disponibles,  
-**para** evitar inconsistencias en el inventario.
+**As a** monitor,  
+**I want to** view and maintain available instrument quantities,  
+**so that** I can prevent inventory inconsistencies.
 
-**Criterios de aceptacion:**
+**Acceptance Criteria:**
 
-- Las unidades disponibles nunca podran ser inferiores a cero.
-- Las unidades disponibles nunca podran superar las unidades totales.
-- Los prestamos deben disminuir las unidades disponibles en una unidad por cada instrumento prestado.
-- Las devoluciones deben incrementar las unidades disponibles en una unidad por cada instrumento devuelto.
-- El sistema no debe permitir registrar un prestamo cuando no existan unidades disponibles.
-- Las operaciones que modifiquen el inventario deben mantener la integridad de los datos.
-- Cuando se realicen operaciones simultaneas sobre la ultima unidad disponible, solamente una podra completarse y la otra debera recibir HTTP 409 Conflict. 
+- Available units must never be less than zero.
+- Available units must never exceed total units.
+- Each loan must decrease available units by one.
+- Each return must increase available units by one.
+- The system must not allow loans when no units are available.
+- Operations that modify inventory must maintain data integrity.
+- When simultaneous operations attempt to lend the last available unit, only one may succeed, and the other must receive HTTP `409 Conflict`.
 
-### HU-08. Conservacion del historial
+### HU-08. Historical Record Preservation
 
-**Como** monitor,  
-**quiero** conservar los registros de prestamos y devoluciones,  
-**para** consultar las operaciones realizadas sin perder la informacion historica.
+**As a** monitor,  
+**I want to** preserve loan and return records,  
+**so that** I can review completed transactions without losing historical information.
 
-**Criterios de aceptacion:**
+**Acceptance Criteria:**
 
-- Los prestamos no podran eliminarse fisicamente.
-- Las devoluciones no podran eliminarse fisicamente.
-- Los datos congelados en cada operacion deben conservar la informacion original del instrumento y del estudiante.
-- Los cambios posteriores realizados en el catalogo no deben modificar la informacion historica de los prestamos y devoluciones.
-- Los instrumentos retirados del catalogo deben gestionarse mediante baja logica.
-- Los instrumentos dados de baja no deben estar disponibles para nuevos prestamos.
-- La baja logica de un instrumento no debe eliminar ni modificar los registros historicos asociados.
+- Loan records must not be physically deleted.
+- Return records must not be physically deleted.
+- Snapshot data for each operation must preserve the original instrument and student information.
+- Subsequent catalog changes must not modify historical loan and return information.
+- Instruments removed from the catalog must be managed through logical deactivation.
+- Deactivated instruments must not be available for new loans.
+- Logical deactivation must not delete or modify associated historical records.
 
-### HU-09. Reporte de instrumentos mas solicitados
+### HU-09. Most Requested Instruments Report
 
-**Como** monitor,  
-**quiero** consultar un reporte de los instrumentos mas solicitados,  
-**para** identificar cuales tienen mayor demanda.
+**As a** monitor,  
+**I want to** view a report of the most requested instruments,  
+**so that** I can identify which instruments have the highest demand.
 
-**Criterios de aceptacion:**
+**Acceptance Criteria:**
 
-- El reporte debe utilizar la informacion historica de los prestamos registrados.
-- El sistema debe calcular la frecuencia de solicitudes de cada modelo de instrumento.
-- Los resultados deben mostrar los instrumentos ordenados desde el mas solicitado hasta el menos solicitado.
-- Cada resultado debe identificar el instrumento y la cantidad de prestamos registrados.
-- Los resultados deben corresponder a las operaciones registradas en el sistema.
-- El reporte debe considerar los prestamos historicos, incluso cuando el instrumento haya sido retirado del catalogo.
-- La consulta del reporte no debe modificar ni eliminar los datos historicos.
+- The report must use historical information from registered loans.
+- The system must calculate the request frequency of each instrument model.
+- Results must be ordered from the most requested to the least requested.
+- Each result must identify the instrument and the number of registered loans.
+- Results must correspond to transactions registered in the system.
+- The report must include historical loans even when an instrument has been removed from the catalog.
+- Viewing the report must not modify or delete historical data.
 
-### HU-10. Control de concurrencia en prestamos
+### HU-10. Loan Concurrency Control
 
-**Como** monitor,  
-**quiero** que el sistema controle los prestamos simultaneos,  
-**para** evitar entregar una misma unidad a dos estudiantes.
+**As a** monitor,  
+**I want** the system to control simultaneous loan operations,  
+**so that** the same available unit cannot be lent to two students.
 
-**Criterios de aceptacion:**
+**Acceptance Criteria:**
 
-- El sistema debe controlar las operaciones simultaneas que modifiquen las unidades disponibles.
-- Si dos operadores intentan registrar un prestamo cuando solamente queda una unidad disponible, unicamente una operacion podra completarse correctamente.
-- La operacion que no consiga reservar la ultima unidad disponible debe recibir una respuesta HTTP 409 Conflict.
-- El sistema debe impedir que las unidades disponibles sean inferiores a cero.
-- El inventario debe permanecer consistente despues de finalizar ambas solicitudes.
-- La operacion exitosa debe registrar el prestamo y actualizar las unidades disponibles.
-- La operacion rechazada no debe generar un prestamo ni modificar las unidades disponibles.
+- The system must control simultaneous operations that modify available units.
+- If two operators attempt to register a loan when only one unit remains available, only one operation may succeed.
+- The operation that fails to reserve the last available unit must receive HTTP `409 Conflict`.
+- The system must prevent available units from becoming negative.
+- Inventory must remain consistent after both requests have completed.
+- The successful operation must register the loan and update available units.
+- The rejected operation must not create a loan or modify available units.
 
-## 5. Reglas de negocio
+## 5. Business Rules
 
-Las siguientes seis reglas agrupan las condiciones establecidas para el dominio Music School.
+The following six business rules define the conditions established for the Music School domain.
 
-### RN-01. Limite de prestamos por estudiante
+### RN-01. Loan Limit per Student
 
-Cada estudiante podra tener como maximo un instrumento sin devolver.
+Each student may have a maximum of one unreturned instrument.
 
-No se permitira registrar un nuevo prestamo mientras exista otro instrumento pendiente de devolucion.
+A new loan must not be registered while another instrument remains unreturned.
 
-### RN-02. Plazo y vencimiento de prestamos
+### RN-02. Loan Period and Overdue Status
 
-Cada prestamo tendra un plazo de 21 dias, calculado a partir de su fecha de registro.
+Each loan shall have a 21-day period calculated from its registration date.
 
-Los estudiantes que tengan prestamos vencidos y pendientes de devolucion no podran recibir nuevos instrumentos hasta realizar la devolucion correspondiente.
+Students with overdue and unreturned loans must not receive new instruments until the corresponding return has been registered.
 
-### RN-03. Disponibilidad e integridad del inventario
+### RN-03. Inventory Availability and Integrity
 
-Las unidades disponibles de cada instrumento deberan permanecer siempre dentro del siguiente intervalo:
+Available units for each instrument must always remain within the following range:
 
-**0 ≤ unidades disponibles ≤ unidades totales**
+**0 ≤ available units ≤ total units**
 
-Los prestamos disminuiran las unidades disponibles y las devoluciones las incrementaran.
+Loans shall decrease available units, while returns shall increase them.
 
-### RN-04. Conservacion del historial y baja logica
+### RN-04. Historical Preservation and Logical Deactivation
 
-Los registros de prestamos y devoluciones no podran eliminarse fisicamente.
+Loan and return records must not be physically deleted.
 
-Los datos congelados en cada operacion deberan conservar la informacion original del instrumento y del estudiante al momento de realizarse la operacion.
+Snapshot data stored for each operation must preserve the original instrument and student information at the time of the transaction.
 
-Los cambios posteriores en el catalogo no deberan modificar la informacion historica de los prestamos y devoluciones.
+Subsequent catalog changes must not modify historical loan and return information.
 
-Los instrumentos retirados del catalogo deberan manejarse mediante baja logica, sin eliminar los registros historicos asociados.
+Instruments removed from the catalog must be managed through logical deactivation without deleting associated historical records.
 
-### RN-05. Control de concurrencia
+### RN-05. Concurrency Control
 
-Cuando dos operadores intenten entregar simultaneamente la ultima unidad disponible de un instrumento, solamente una operacion podra completarse.
+When two operators simultaneously attempt to lend the last available unit of an instrument, only one operation may succeed.
 
-La operacion que no consiga la disponibilidad debera responder con HTTP 409 Conflict.
+The operation that fails due to insufficient availability must return HTTP `409 Conflict`.
 
-### RN-06. Manejo de fechas y comunicacion con el usuario
+### RN-06. Date Management and User Communication
 
-Las fechas y horas de las operaciones deberan almacenarse y procesarse en UTC.
+Operation dates and times must be stored and processed in UTC.
 
-Los mensajes y textos presentados al usuario deberan estar en español.
+Messages and text displayed to users must be written in Spanish.
 
-## 6. Requisitos funcionales
+## 6. Functional Requirements
 
-Los siguientes requisitos funcionales describen las operaciones que debe permitir el sistema Music School. Cada requisito esta relacionado con una historia de usuario y debe cumplir las reglas de negocio establecidas.
+The following functional requirements describe the operations supported by the Music School system. Each requirement is associated with a user story and must comply with the established business rules.
 
-| Codigo | Requisito funcional | Historia relacionada |
+| Code | Functional Requirement | Related User Story |
 |---|---|---|
-| RF-01 | Registrar modelos de instrumentos, asignarles un codigo unico, una categoria y sus unidades totales y disponibles. | HU-01 |
-| RF-02 | Consultar el catalogo de instrumentos activos, mostrando su categoria y unidades disponibles. | HU-02 |
-| RF-03 | Registrar y consultar la informacion de los estudiantes. | HU-03 |
-| RF-04 | Registrar prestamos asociados a estudiantes e instrumentos, validando la disponibilidad, el limite de prestamos pendientes y el plazo de 21 dias. | HU-04 |
-| RF-05 | Registrar devoluciones de prestamos, actualizar la disponibilidad y conservar el historial de la operacion. | HU-05 |
-| RF-06 | Identificar y consultar los prestamos vencidos que permanezcan pendientes de devolucion. | HU-06 |
-| RF-07 | Consultar y controlar las unidades totales y disponibles de cada modelo de instrumento, manteniendo la integridad del inventario. | HU-07 |
-| RF-08 | Consultar y conservar el historial de prestamos y devoluciones, manteniendo la informacion original de cada operacion. | HU-08 |
-| RF-09 | Generar un reporte de los modelos de instrumentos mas solicitados, ordenados segun la cantidad de prestamos registrados. | HU-09 |
-| RF-10 | Controlar las solicitudes de prestamos simultaneas, evitando inconsistencias en el inventario y respondiendo con HTTP 409 Conflict cuando no exista disponibilidad. | HU-10 |
+| RF-01 | Register instrument models with a unique code, category, total units, and available units. | HU-01 |
+| RF-02 | View the catalog of active instruments, including their categories and available units. | HU-02 |
+| RF-03 | Register and view student information. | HU-03 |
+| RF-04 | Register loans associated with students and instruments, validating availability, pending loan limits, and the 21-day period. | HU-04 |
+| RF-05 | Register loan returns, update availability, and preserve transaction history. | HU-05 |
+| RF-06 | Identify and view overdue loans that remain unreturned. | HU-06 |
+| RF-07 | View and control the total and available units of each instrument model while maintaining inventory integrity. | HU-07 |
+| RF-08 | View and preserve loan and return history while maintaining the original information for each operation. | HU-08 |
+| RF-09 | Generate a report of the most requested instrument models, ordered by the number of registered loans. | HU-09 |
+| RF-10 | Control simultaneous loan requests, preventing inventory inconsistencies and returning HTTP `409 Conflict` when no units are available. | HU-10 |
 
-## 7. Requisitos no funcionales
+## 7. Non-Functional Requirements
 
-Los siguientes requisitos establecen las condiciones de calidad, seguridad, integridad, mantenibilidad, despliegue y verificabilidad del sistema Music School.
+The following requirements establish quality, security, integrity, maintainability, deployment, and verifiability conditions for the Music School system.
 
-### RNF-01. Seguridad
+### RNF-01. Security
 
-El sistema debe validar las operaciones en el backend para evitar modificaciones no autorizadas o datos inconsistentes.
+The system must validate operations in the backend to prevent unauthorized modifications or inconsistent data.
 
-Las credenciales y secretos deben gestionarse mediante variables de entorno. Las contraseñas, cuando existan, deben almacenarse utilizando mecanismos seguros de hash.
+Credentials and secrets must be managed through environment variables. Passwords, when applicable, must be stored using secure hashing mechanisms.
 
-**Verificacion:**
-- Comprobar que las validaciones de las operaciones se ejecuten en Laravel.
-- Verificar que los secretos no esten escritos directamente en el codigo fuente.
-- Comprobar que las contraseñas no se almacenen en texto plano.
-- Comprobar que las operaciones rechazadas por las validaciones no modifiquen los datos almacenados.
+**Verification:**
 
-### RNF-02. Integridad de datos
+- Confirm that operation validations are executed in Laravel.
+- Verify that secrets are not hardcoded in the source code.
+- Confirm that passwords are not stored in plain text.
+- Confirm that operations rejected by validation do not modify stored data.
 
-La base de datos debe mantener la integridad referencial y las restricciones definidas para el inventario y los prestamos.
+### RNF-02. Data Integrity
 
-Las operaciones que modifiquen las unidades disponibles deben ejecutarse de manera consistente, incluso cuando existan solicitudes simultaneas.
+The database must maintain referential integrity and the constraints defined for inventory and loans.
 
-**Verificacion:**
-- Comprobar que las unidades disponibles nunca sean inferiores a cero.
-- Comprobar que las unidades disponibles nunca superen las unidades totales.
-- Verificar que los prestamos y las devoluciones actualicen correctamente el inventario.
-- Ejecutar pruebas de concurrencia para comprobar que solamente una operacion pueda entregar la ultima unidad disponible.
-- Verificar que una operacion rechazada por falta de disponibilidad no genere un prestamo ni modifique el inventario.
+Operations that modify available units must execute consistently, including when simultaneous requests occur.
 
-### RNF-03. Mantenibilidad
+**Verification:**
 
-El codigo debe mantener separacion de responsabilidades entre frontend, backend y persistencia.
+- Confirm that available units never fall below zero.
+- Confirm that available units never exceed total units.
+- Verify that loans and returns update inventory correctly.
+- Execute concurrency tests to confirm that only one operation can lend the last available unit.
+- Verify that an operation rejected due to insufficient availability does not create a loan or modify inventory.
 
-Los identificadores de clases, metodos, variables y demas elementos del codigo deben escribirse en ingles. Los mensajes visibles para el usuario deben estar en español.
+### RNF-03. Maintainability
 
-**Verificacion:**
-- Revisar la organizacion del codigo fuente.
-- Comprobar la separacion de responsabilidades entre React y Laravel.
-- Revisar los nombres de clases, metodos, variables y tablas.
-- Verificar que los mensajes presentados al usuario esten en español.
+The code must maintain a separation of responsibilities between the frontend, backend, and persistence layers.
 
-### RNF-04. Portabilidad y despliegue
+Identifiers for classes, methods, variables, and other code elements must be written in English. User-facing messages must be written in Spanish.
 
-Los servicios del proyecto deben poder ejecutarse mediante contenedores Docker.
+**Verification:**
 
-La infraestructura debe permitir levantar los servicios requeridos mediante un solo comando.
+- Review source code organization.
+- Confirm the separation of responsibilities between React and Laravel.
+- Review class, method, variable, and table names.
+- Verify that user-facing messages are written in Spanish.
 
-**Verificacion:**
-- Ejecutar el proyecto desde una configuracion limpia.
-- Comprobar que los contenedores se inicien correctamente.
-- Comprobar la conexion entre el backend y la base de datos.
-- Verificar que el despliegue pueda realizarse mediante un solo comando.
+### RNF-04. Portability and Deployment
 
-### RNF-05. Verificabilidad
+Project services must be executable using Docker containers.
 
-El proyecto debe contar con pruebas automatizadas que permitan comprobar las funcionalidades y reglas de negocio definidas en esta especificacion.
+The infrastructure must allow the required services to be started with a single command.
 
-La entrega debe contener al menos 15 archivos de pruebas automatizadas.
+**Verification:**
 
-**Verificacion:**
-- Revisar la existencia de los archivos de pruebas.
-- Ejecutar las pruebas automatizadas.
-- Comprobar que las pruebas validen los comportamientos esperados y los escenarios de error.
-- Verificar que existan al menos 15 archivos de pruebas automatizadas.
-- Comprobar que las pruebas cubran las diez historias de usuario y las seis reglas de negocio.
+- Run the project from a clean configuration.
+- Confirm that containers start correctly.
+- Verify the connection between the backend and the database.
+- Confirm that deployment can be performed with a single command.
 
-## 8. Restricciones del sistema
+### RNF-05. Verifiability
 
-1. El frontend debe desarrollarse con React.
-2. El backend debe desarrollarse con PHP y Laravel.
-3. La persistencia debe utilizar MySQL.
-4. La comunicacion entre frontend y backend debe realizarse mediante una API REST.
-5. Los datos intercambiados mediante la API deben utilizar JSON.
-6. El sistema debe ejecutarse mediante contenedores Docker.
-7. Los identificadores del codigo deben estar en ingles.
-8. Los mensajes visibles para el usuario deben estar en español.
-9. Las fechas y horas deben manejarse en UTC.
-10. No se deben desarrollar funcionalidades fuera de la especificacion.
+The project must include automated tests to verify the features and business rules defined in this specification.
 
-## 9. Criterios generales de aceptacion
+The deliverable must contain at least 15 automated test files.
 
-El sistema Music School se considerara funcionalmente aceptable cuando se verifique el cumplimiento de las siguientes condiciones:
+**Verification:**
 
-- Se puedan registrar y consultar modelos de instrumentos con sus respectivos codigos, categorias y unidades.
-- Se encuentren disponibles las cinco categorias iniciales: cuerdas, vientos, percusion, teclados y electronicos.
-- Se puedan registrar y consultar estudiantes.
-- Se puedan registrar prestamos asociados a estudiantes e instrumentos existentes.
-- Se puedan registrar devoluciones y actualizar correctamente las unidades disponibles.
-- Se aplique el limite maximo de un instrumento pendiente de devolucion por estudiante.
-- Se establezca un plazo de 21 dias para cada prestamo.
-- Se identifiquen los prestamos vencidos y se impidan nuevos prestamos a estudiantes que tengan prestamos vencidos pendientes de devolucion.
-- Las unidades disponibles permanezcan siempre entre cero y las unidades totales.
-- Se conserve el historial de prestamos y devoluciones sin eliminacion fisica ni modificacion de los datos congelados.
-- Los instrumentos retirados del catalogo utilicen baja logica.
-- Se genere el reporte de los modelos de instrumentos mas solicitados, ordenados por cantidad de prestamos registrados.
-- Se controle la concurrencia cuando dos operadores intenten entregar la ultima unidad disponible: una operacion debe completarse y la otra debe recibir HTTP 409 Conflict.
-- Las fechas y horas de las operaciones se almacenen y procesen en UTC.
-- Los mensajes y textos visibles para el usuario se presenten en español.
-- El proyecto pueda ejecutarse mediante contenedores Docker utilizando un solo comando.
-- Se disponga de al menos 15 archivos de pruebas automatizadas que permitan verificar las diez historias de usuario y las seis reglas de negocio.
+- Check that the test files exist.
+- Execute the automated tests.
+- Confirm that tests validate expected behavior and error scenarios.
+- Verify that at least 15 automated test files exist.
+- Confirm that tests cover all ten user stories and six business rules.
 
-## 10. Trazabilidad de requisitos
+## 8. System Constraints
 
-La siguiente matriz relaciona las historias de usuario con sus requisitos funcionales, reglas de negocio y requisitos no funcionales aplicables. Tambien permite identificar los requisitos transversales que afectan al desarrollo y validacion del sistema.
+1. The frontend must be developed using React.
+2. The backend must be developed using PHP and Laravel.
+3. Data persistence must use MySQL.
+4. Communication between the frontend and backend must use a REST API.
+5. Data exchanged through the API must use JSON.
+6. The system must run using Docker containers.
+7. Code identifiers must be written in English.
+8. User-facing messages must be written in Spanish.
+9. Dates and times must be handled in UTC.
+10. Features outside the specification must not be developed.
 
-| Historia | RF | Reglas de negocio | RNF |
+## 9. General Acceptance Criteria
+
+The Music School system shall be considered functionally acceptable when the following conditions have been verified:
+
+- Instrument models can be registered and viewed with their respective codes, categories, and units.
+- The five initial categories are available: strings, wind instruments, percussion, keyboards, and electronic instruments.
+- Students can be registered and viewed.
+- Loans can be registered for existing students and instruments.
+- Returns can be registered and available units are updated correctly.
+- The maximum limit of one unreturned instrument per student is enforced.
+- A 21-day period is established for each loan.
+- Overdue loans are identified, and new loans are blocked for students with overdue and unreturned instruments.
+- Available units always remain between zero and total units.
+- Loan and return history is preserved without physical deletion or modification of snapshot data.
+- Instruments removed from the catalog use logical deactivation.
+- A report of the most requested instrument models is generated, ordered by the number of registered loans.
+- Concurrency is controlled when two operators attempt to lend the last available unit: one operation succeeds and the other receives HTTP `409 Conflict`.
+- Operation dates and times are stored and processed in UTC.
+- User-facing messages and text are displayed in Spanish.
+- The project can run using Docker containers with a single command.
+- At least 15 automated test files are available to verify the ten user stories and six business rules.
+
+## 10. Requirements Traceability
+
+The following matrix links user stories to their functional requirements, business rules, and applicable non-functional requirements. It also identifies cross-cutting requirements that affect system development and validation.
+
+| User Story | Functional Requirement | Business Rules | Non-Functional Requirements |
 |---|---|---|---|
 | HU-01 | RF-01 | RN-03 | RNF-01, RNF-02 |
 | HU-02 | RF-02 | RN-04 | RNF-01 |
-| HU-03 | RF-03 | Ninguna directa | RNF-01 |
+| HU-03 | RF-03 | None directly | RNF-01 |
 | HU-04 | RF-04 | RN-01, RN-02, RN-03, RN-04, RN-05, RN-06 | RNF-01, RNF-02 |
 | HU-05 | RF-05 | RN-03, RN-04, RN-06 | RNF-01, RNF-02 |
 | HU-06 | RF-06 | RN-02, RN-06 | RNF-01, RNF-02 |
@@ -435,35 +441,37 @@ La siguiente matriz relaciona las historias de usuario con sus requisitos funcio
 | HU-09 | RF-09 | RN-04 | RNF-01, RNF-02 |
 | HU-10 | RF-10 | RN-03, RN-05 | RNF-01, RNF-02 |
 
-### 10.1 Requisitos transversales
+### 10.1 Cross-Cutting Requirements
 
-Los siguientes requisitos no funcionales aplican de manera general al proyecto y no se limitan a una historia de usuario especifica.
+The following non-functional requirements apply to the project as a whole and are not limited to a specific user story.
 
-| Requisito | Historias y alcance relacionado |
+| Requirement | Related User Stories and Scope |
 |---|---|
-| RNF-03. Mantenibilidad | Todas las historias y componentes del sistema. |
-| RNF-04. Portabilidad y despliegue | Proyecto completo: frontend, backend y base de datos. |
-| RNF-05. Verificabilidad | Las diez historias de usuario y las seis reglas de negocio. |
+| RNF-03. Maintainability | All user stories and system components. |
+| RNF-04. Portability and Deployment | Entire project: frontend, backend, and database. |
+| RNF-05. Verifiability | All ten user stories and six business rules. |
 
-## 11. Relacion con los demas documentos
+## 11. Relationship with Other Documents
 
-Esta especificacion servira como referencia para construir los siguientes artefactos del proyecto. Todos los documentos deberan mantener coherencia con los requisitos funcionales, reglas de negocio, requisitos no funcionales y restricciones establecidos en este documento.
+This specification serves as a reference for creating the following project artifacts. All documents must remain consistent with the functional requirements, business rules, non-functional requirements, and constraints established here.
 
-| Documento | Relacion |
+| Document | Relationship |
 |---|---|
-| constitution.md | Establece los principios, lineamientos y restricciones generales del proyecto. |
-| plan.md | Define la planificacion y organizacion de las actividades de desarrollo. |
-| architecture.md | Describe la arquitectura tecnica y la distribucion de responsabilidades del sistema. |
-| data-model.md | Define el modelo de datos, las entidades, sus atributos y relaciones. |
-| api-contract.md | Especifica los endpoints, metodos HTTP, estructuras JSON y respuestas de la API. |
-| tasks.md | Descompone el trabajo de implementacion en las 23 tareas establecidas. |
-| adr/ | Contiene el registro de al menos 3 decisiones arquitectonicas y sus justificaciones. |
+| constitution.md | Establishes the project's general principles, guidelines, and constraints. |
+| plan.md | Defines the planning and organization of development activities. |
+| architecture.md | Describes the technical architecture and distribution of system responsibilities. |
+| data-model.md | Defines the data model, entities, attributes, and relationships. |
+| api-contract.md | Specifies API endpoints, HTTP methods, JSON structures, and responses. |
+| tasks.md | Breaks down implementation work into the 23 established tasks. |
+| adr/ | Contains at least three architectural decision records and their justifications. |
 
-Los artefactos deberan respetar el alcance definido en esta especificacion y mantener la trazabilidad entre las historias de usuario, los requisitos funcionales, las reglas de negocio y los requisitos no funcionales. No deberan introducir funcionalidades que no esten contempladas en ella.
+All artifacts must respect the scope defined in this specification and maintain traceability between user stories, functional requirements, business rules, and non-functional requirements.
 
-## 12. Control de cambios
+Features not included in this specification must not be introduced.
 
-| Version | Fecha | Descripcion | Estado |
+## 12. Change Log
+
+| Version | Date | Description | Status |
 |---|---|---|---|
-| 1.0 | 07/11/2026 | Creacion inicial de la especificacion de Music School. | Borrador |
-| 1.1 | 07/11/2026 | Ajustes en los criterios de aceptacion de las historias HU-02 y HU-05 para mejorar la coherencia con el modelo de datos. | Borrador para validacion |
+| 1.0 | 07/11/2026 | Initial creation of the Music School requirements specification. | Draft |
+| 1.1 | 07/11/2026 | Adjustments to the acceptance criteria of user stories HU-02 and HU-05 to improve consistency with the data model. | Draft for Validation |

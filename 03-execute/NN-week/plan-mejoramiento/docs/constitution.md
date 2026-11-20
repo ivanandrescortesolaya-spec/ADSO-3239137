@@ -1,176 +1,173 @@
-# Constitucion del proyecto — Music School
 
-**Identificador:** music-school  
-**Proyecto:** Sistema de prestamo de instrumentos musicales  
-**Ficha:** ADSO 3239137    
-**Version:** 1.0
-**Codigo del aprendiz:** A12
+# Project Constitution — Music School
 
-## 1. Proposito
+**Identifier:** music-school  
+**Project:** Musical Instrument Loan Management System  
+**Training Group:** ADSO 3239137  
+**Version:** 1.0  
+**Apprentice Code:** A12
 
-Este documento establece los principios, restricciones y reglas tecnicas fundamentales que deben respetarse durante el diseño, desarrollo, implementacion y mantenimiento del sistema Music School.
+## 1. Purpose
 
-Todo componente, funcionalidad y cambio debe cumplir esta constitucion y los requisitos definidos en la especificacion del proyecto.
+This document establishes the fundamental principles, constraints, and technical rules that must be followed during the design, development, implementation, and maintenance of the Music School system.
 
-## 2. Principios fundamentales
+Every component, feature, and change must comply with this constitution and the requirements defined in the project specification.
 
-### Articulo I. Integridad de las reglas de negocio
+## 2. Fundamental Principles
 
-Las reglas de negocio deben implementarse en el backend mediante Laravel.
+### Article I. Business Rule Integrity
 
-El frontend no sera responsable de garantizar las restricciones del sistema, ya que cualquier operacion debe validarse nuevamente en el servidor.
+Business rules must be implemented in the backend using Laravel.
 
-**Verificacion:** realizar solicitudes directamente a la API para comprobar que las reglas se cumplen incluso cuando no se utiliza la interfaz grafica.
+The frontend shall not be responsible for enforcing system constraints, since every operation must be validated again on the server.
 
-### Articulo II. Separacion de responsabilidades
+**Verification:** Send requests directly to the API to confirm that business rules are enforced even when the graphical user interface is not used.
 
-El sistema debe mantener responsabilidades diferenciadas:
+### Article II. Separation of Responsibilities
 
-- React: presentacion e interaccion con el usuario.
-- Laravel: logica de negocio, validaciones y API REST.
-- Base de datos: persistencia, relaciones y restricciones.
-- Docker: ejecucion y comunicacion de los servicios.
+The system must maintain clearly separated responsibilities:
 
-**Verificacion:** comprobar que el frontend consume la API y que las reglas de negocio no dependen exclusivamente de React.
+- React: presentation and user interaction.
+- Laravel: business logic, validation, and REST API.
+- Database: data persistence, relationships, and constraints.
+- Docker: service execution and communication.
 
-### Articulo III. Contrato de comunicacion
+**Verification:** Confirm that the frontend consumes the API and that business rules do not depend exclusively on React.
 
-La comunicacion entre React y Laravel se realizara mediante endpoints HTTP y respuestas JSON.
+### Article III. Communication Contract
 
-Las operaciones deben respetar el contrato definido en `api-contract.md`.
+Communication between React and Laravel shall be performed through HTTP endpoints and JSON responses.
 
-**Verificacion:** ejecutar pruebas de los endpoints y comprobar sus solicitudes, respuestas y codigos HTTP.
+All operations must comply with the contract defined in `api-contract.md`.
 
-### Articulo IV. Control de inventario
+**Verification:** Execute endpoint tests and verify their requests, responses, and HTTP status codes.
 
-Las unidades disponibles de cada instrumento deben permanecer siempre entre cero y el total registrado.
+### Article IV. Inventory Control
 
-Ningun prestamo puede producir cantidades negativas ni superar las unidades existentes.
+The available units of each instrument must always remain between zero and the registered total number of units.
 
-**Verificacion:** realizar pruebas de prestamo, devolucion y actualizacion de inventario.
+No loan may result in negative inventory quantities or exceed the existing number of units.
 
-### Articulo V. Restricciones de prestamos
+**Verification:** Perform loan, return, and inventory update tests.
 
-Cada estudiante puede tener como maximo un instrumento sin devolver.
+### Article V. Loan Restrictions
 
-El plazo de devolucion sera de 21 dias.
+Each student may have a maximum of one unreturned instrument.
 
-Los estudiantes que tengan prestamos vencidos no podran recibir nuevos instrumentos hasta realizar la devolucion correspondiente.
+The loan period shall be 21 days.
 
-**Verificacion:** ejecutar pruebas para estudiantes sin prestamos, con prestamos activos y con prestamos vencidos.
+Students with overdue loans shall not receive additional instruments until the corresponding instrument has been returned.
 
-### Articulo VI. Proteccion de la informacion historica
+**Verification:** Execute tests involving students without loans, students with active loans, and students with overdue loans.
 
-Los prestamos y las devoluciones son registros historicos que no podran borrarse.
+### Article VI. Historical Data Protection
 
-Los datos congelados en cada operacion deben conservar la informacion original registrada al momento de realizarla y no deben modificarse cuando cambien los datos del catalogo.
+Loans and returns are historical records and must not be deleted.
 
-El catalogo de instrumentos utilizara baja logica en lugar de eliminacion fisica.
+The snapshot data stored for each operation must preserve the original information recorded when the operation was performed and must not change when catalog information is updated.
 
-### Articulo VII. Control de concurrencia
+The instrument catalog shall use logical deactivation instead of physical deletion.
 
-Cuando dos operadores intenten entregar simultaneamente la ultima unidad disponible de un instrumento, solamente una operacion podra completarse.
+### Article VII. Concurrency Control
 
-La operacion que pierda la disponibilidad debe recibir una respuesta HTTP `409 Conflict`.
+When two operators simultaneously attempt to lend the last available unit of an instrument, only one operation may succeed.
 
-**Verificacion:** ejecutar una prueba automatizada de concurrencia con dos solicitudes simultaneas.
+The operation that fails due to insufficient availability must receive an HTTP `409 Conflict` response.
 
-### Articulo VIII. Manejo del tiempo
+**Verification:** Execute an automated concurrency test using two simultaneous requests.
 
-Las fechas y horas de las operaciones se almacenaran y procesaran en UTC.
+### Article VIII. Time Management
 
-El plazo de devolucion se calculara a partir del instante de registro del prestamo.
+Operation dates and times shall be stored and processed in UTC.
 
-**Verificacion:** comprobar las fechas almacenadas, las fechas de vencimiento y su representacion en las respuestas de la API.
+The return deadline shall be calculated from the time the loan is registered.
 
-### Articulo IX. Seguridad y proteccion de secretos
+**Verification:** Check stored dates, due dates, and their representation in API responses.
 
-Las credenciales y los secretos de configuracion no deben almacenarse directamente en el repositorio.
+### Article IX. Security and Secret Protection
 
-Se utilizaran variables de entorno y un archivo `.env.example` sin informacion sensible.
+Credentials and configuration secrets must not be stored directly in the repository.
 
-Las contraseñas deben almacenarse mediante mecanismos seguros de hash.
+Environment variables and a `.env.example` file without sensitive information shall be used.
 
-**Verificacion:** revisar los archivos versionados, las respuestas HTTP y los registros de ejecucion para comprobar que no se exponen secretos.
+Passwords must be stored using secure hashing mechanisms.
 
-### Articulo X. Responsabilidad de las migraciones
+**Verification:** Review version-controlled files, HTTP responses, and execution logs to ensure that secrets are not exposed.
 
-La estructura de la base de datos debe mantenerse mediante migraciones versionadas de Laravel.
+### Article X. Migration Management
 
-Las relaciones, claves, indices y restricciones deben corresponder al modelo definido en `data-model.md`.
+The database structure must be maintained through version-controlled Laravel migrations.
 
-**Verificacion:** ejecutar las migraciones desde una base de datos vacia y comprobar que se construye el esquema esperado.
+Relationships, keys, indexes, and constraints must correspond to the model defined in `data-model.md`.
 
-### Articulo XI. Convenciones de idioma
+**Verification:** Execute migrations against an empty database and confirm that the expected schema is created.
 
-Los identificadores del codigo, variables, clases, metodos, tablas y columnas se escribiran en ingles.
+### Article XI. Language Conventions
 
-Los mensajes, las notificaciones y los textos visibles para el usuario estaran en espanol, sin tildes en las vocales y conservando la letra `ñ`.
+Code identifiers, variables, classes, methods, tables, and columns shall be written in English.
 
-**Verificacion:** revisar el codigo fuente y la interfaz de usuario.
+Messages, notifications, and text displayed to users shall be written in Spanish, without accent marks on vowels and while preserving the letter `ñ`.
 
-### Articulo XII. Desarrollo guiado por especificacion
+**Verification:** Review the source code and user interface.
 
-Ninguna funcionalidad debe desarrollarse sin estar relacionada con un requisito, historia de usuario o tarea documentada.
+### Article XII. Specification-Driven Development
 
-No se deben agregar funcionalidades fuera del alcance definido.
+No functionality may be developed unless it is associated with a documented requirement, user story, or task.
 
-Cada tarea se considerara terminada cuando exista evidencia verificable de su implementacion.
+Features outside the defined scope must not be added.
 
-**Verificacion:** relacionar las tareas de `tasks.md` con los requisitos, pruebas y resultados correspondientes.
+Each task shall be considered completed when verifiable evidence of its implementation exists.
 
-### Articulo XIII. Generacion de reportes
+**Verification:** Trace the tasks defined in `tasks.md` to their corresponding requirements, tests, and results.
 
-El sistema debe permitir generar un reporte de los
-instrumentos mas solicitados, utilizando la informacion
-historica de los prestamos registrados.
+### Article XIII. Report Generation
 
-**Verificacion:** realizar prestamos de diferentes
-instrumentos y comprobar que el reporte refleje
-correctamente su frecuencia de solicitud.
+The system must provide a report of the most requested instruments using historical information from registered loans.
 
-## 3. Tecnologias obligatorias
+**Verification:** Register loans for different instruments and confirm that the report correctly reflects their request frequency.
 
-| Componente | Tecnologia |
+## 3. Required Technologies
+
+| Component | Technology |
 |---|---|
 | Frontend | React |
-| Backend | PHP con Laravel |
-| Comunicacion | API REST |
-| Formato de intercambio | JSON |
-| Contenedores | Docker |
-| Base de datos | MySQL |
+| Backend | PHP with Laravel |
+| Communication | REST API |
+| Data Exchange Format | JSON |
+| Containers | Docker |
+| Database | MySQL |
 
-## 4. Reglas particulares del dominio
+## 4. Domain-Specific Rules
 
-El sistema debe respetar las siguientes condiciones:
+The system must comply with the following conditions:
 
-1. Maximo un instrumento sin devolver por estudiante.
-2. Plazo de prestamo de 21 dias.
-3. Bloqueo de nuevos prestamos cuando existan instrumentos vencidos sin devolver.
-4. Control permanente de unidades disponibles y unidades totales.
-5. Conservacion de los datos historicos de cada operacion.
-6. Baja logica de los instrumentos.
-7. Almacenamiento de fechas en UTC.
-8. Mensajes de usuario en español.
-9. Reporte de instrumentos mas solicitados.
-10. Control de concurrencia para evitar prestar dos veces la ultima unidad.
+1. A maximum of one unreturned instrument per student.
+2. A loan period of 21 days.
+3. New loans must be blocked when overdue instruments have not been returned.
+4. Continuous control of available units and total units.
+5. Preservation of historical data for each operation.
+6. Logical deactivation of instruments.
+7. Storage of dates and times in UTC.
+8. User-facing messages in Spanish.
+9. A report of the most requested instruments.
+10. Concurrency control to prevent the last available unit from being lent twice.
 
-## 5. Cumplimiento de la constitucion
+## 5. Compliance with the Constitution
 
-Todos los integrantes o responsables del desarrollo deben respetar estos principios.
+All team members or individuals responsible for development must follow these principles.
 
-Cualquier cambio que modifique una regla, una decision tecnica o el alcance del sistema debe quedar documentado y justificado.
+Any change affecting a business rule, technical decision, or system scope must be documented and justified.
 
-Las decisiones arquitectonicas importantes se registraran en documentos ADR.
+Important architectural decisions shall be recorded in Architectural Decision Records (ADRs).
 
-## 6. Criterio de aceptacion
+## 6. Acceptance Criteria
 
-La constitucion se considerara aplicada cuando:
+The constitution shall be considered implemented when:
 
-- Las reglas de negocio esten implementadas en el backend.
-- La arquitectura respete la separacion de responsabilidades.
-- El modelo de datos mantenga la integridad de la informacion.
-- La concurrencia este controlada.
-- Los secretos esten protegidos.
-- Las pruebas automatizadas demuestren el cumplimiento de los principios.
-- Las funcionalidades correspondan a la especificacion aprobada.
+- Business rules are implemented in the backend.
+- The architecture respects the separation of responsibilities.
+- The data model maintains data integrity.
+- Concurrency is properly controlled.
+- Secrets are protected.
+- Automated tests demonstrate compliance with the established principles.
+- Implemented features correspond to the approved specification.
