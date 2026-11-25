@@ -5,7 +5,7 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.1  
+**Version:** 1.2
 **Status:** Draft for Validation
 
 ---
@@ -47,21 +47,33 @@ Stores musical instrument categories.
 
 | Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| id | BIGINT | PK, AUTO_INCREMENT | Category identifier. |
+| id | BIGINT UNSIGNED | PK, AUTO_INCREMENT | Category identifier. |
 | code | VARCHAR(20) | UNIQUE, NOT NULL | Category code. |
 | name | VARCHAR(100) | NOT NULL | Category name. |
-| created_at | DATETIME(6) | NOT NULL | Creation date in UTC. |
-| updated_at | DATETIME(6) | NOT NULL | Last update date in UTC. |
+| is_active | BOOLEAN | NOT NULL, DEFAULT TRUE | Category status for logical activation and deactivation. |
+| created_at | TIMESTAMP | NULLABLE | Creation date in UTC. |
+| updated_at | TIMESTAMP | NULLABLE | Last update date in UTC. |
+
+Constraints:
+
+- Categories must be active by default.
+- Category codes must be unique.
+- Categories must support logical activation and deactivation using the `is_active` field.
+- Categories with instruments associated with pending loans cannot be deactivated.
+- Inactive categories cannot be used for new instrument registrations or loans.
+- Inactive categories cannot be assigned during instrument updates.
+- Categories can be reactivated without creating new records.
+- Logical deactivation must preserve existing relationships and historical records.
 
 Initial categories:
 
 | Code | Category |
 |---|---|
-| CAT-01 | Strings |
-| CAT-02 | Wind Instruments |
-| CAT-03 | Percussion |
-| CAT-04 | Keyboards |
-| CAT-05 | Electronic Instruments |
+| CAT-01 | Cuerdas |
+| CAT-02 | Vientos |
+| CAT-03 | Percusion |
+| CAT-04 | Teclados |
+| CAT-05 | Electronicos |
 
 ### 4.2. `instruments` Table
 
@@ -69,15 +81,15 @@ Stores musical instrument models and their quantities.
 
 | Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| id | BIGINT | PK, AUTO_INCREMENT | Instrument identifier. |
-| category_id | BIGINT | FK, NOT NULL | Associated category. |
-| code | VARCHAR(50) | UNIQUE, NOT NULL | Unique model code. |
+| id | BIGINT UNSIGNED | PK, AUTO_INCREMENT | Instrument identifier. |
+| category_id | BIGINT UNSIGNED | FK, NOT NULL | Associated category. |
+| code | VARCHAR(30) | UNIQUE, NOT NULL | Unique model code. |
 | name | VARCHAR(150) | NOT NULL | Instrument name. |
-| total_units | INT | NOT NULL | Total number of units. |
-| available_units | INT | NOT NULL | Number of available units. |
+| total_units | INT UNSIGNED | NOT NULL | Total number of units. |
+| available_units | INT UNSIGNED | NOT NULL | Number of available units. |
 | is_active | BOOLEAN | NOT NULL, DEFAULT TRUE | Instrument status for logical deactivation. |
-| created_at | DATETIME(6) | NOT NULL | Creation date in UTC. |
-| updated_at | DATETIME(6) | NOT NULL | Last update date in UTC. |
+| created_at | TIMESTAMP | NULLABLE | Creation date in UTC. |
+| updated_at | TIMESTAMP | NULLABLE | Last update date in UTC. |
 
 Constraints:
 
@@ -87,6 +99,9 @@ Constraints:
 - Inactive instruments cannot be included in new loans.
 - Deactivated instruments must preserve their historical records.
 - Deactivating an instrument must not physically delete its record.
+- Instruments must belong to an active category when registered or updated.
+- Instruments belonging to inactive categories cannot be included in new loans.
+- Category activation or deactivation must not modify the individual `is_active` status of associated instruments.
 
 ### 4.3. `students` Table
 
@@ -94,12 +109,12 @@ Stores student information.
 
 | Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| id | BIGINT | PK, AUTO_INCREMENT | Student identifier. |
-| student_code | VARCHAR(50) | UNIQUE, NOT NULL | Student code. |
+| id | BIGINT UNSIGNED | PK, AUTO_INCREMENT | Student identifier. |
+| student_code | VARCHAR(30) | UNIQUE, NOT NULL | Student code. |
 | full_name | VARCHAR(150) | NOT NULL | Full name. |
 | email | VARCHAR(150) | UNIQUE, NOT NULL | Email address. |
-| created_at | DATETIME(6) | NOT NULL | Creation date in UTC. |
-| updated_at | DATETIME(6) | NOT NULL | Last update date in UTC. |
+| created_at | TIMESTAMP | NULLABLE | Creation date in UTC. |
+| updated_at | TIMESTAMP | NULLABLE | Last update date in UTC. |
 
 Constraints:
 
@@ -113,16 +128,17 @@ Stores registered loans and preserves the original student and instrument inform
 
 | Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| id | BIGINT | PK, AUTO_INCREMENT | Loan identifier. |
-| student_id | BIGINT | FK, NOT NULL | Associated student. |
-| instrument_id | BIGINT | FK, NOT NULL | Associated instrument model. |
-| student_code_snapshot | VARCHAR(50) | NOT NULL | Student code at the time of the loan. |
-| student_name_snapshot | VARCHAR(150) | NOT NULL | Student name at the time of the loan. |
-| instrument_code_snapshot | VARCHAR(50) | NOT NULL | Instrument code at the time of the loan. |
-| instrument_name_snapshot | VARCHAR(150) | NOT NULL | Instrument name at the time of the loan. |
-| loaned_at | DATETIME(6) | NOT NULL | Loan date and time in UTC. |
-| due_at | DATETIME(6) | NOT NULL | Due date and time in UTC. |
-| created_at | DATETIME(6) | NOT NULL | Record creation date in UTC. |
+| id | BIGINT UNSIGNED | PK, AUTO_INCREMENT | Loan identifier. |
+| student_id | BIGINT UNSIGNED | FK, NOT NULL | Associated student. |
+| instrument_id | BIGINT UNSIGNED | FK, NOT NULL | Associated instrument model. |
+| student_code | VARCHAR(30) | NOT NULL | Student code at the time of the loan. |
+| student_name | VARCHAR(150) | NOT NULL | Student name at the time of the loan. |
+| instrument_code | VARCHAR(30) | NOT NULL | Instrument code at the time of the loan. |
+| instrument_name | VARCHAR(150) | NOT NULL | Instrument name at the time of the loan. |
+| loaned_at | DATETIME | NOT NULL | Loan date and time in UTC. |
+| due_at | DATETIME | NOT NULL | Due date and time in UTC. |
+| created_at | TIMESTAMP | NULLABLE | Record creation date in UTC. |
+| updated_at | TIMESTAMP | NULLABLE | Last update date in UTC. |
 
 Constraints:
 
@@ -135,6 +151,7 @@ Constraints:
 - Snapshot data must preserve the original student and instrument information.
 - Loans must not be physically deleted.
 - Historical records must not be modified by subsequent changes to the catalog or student information.
+- New loans require an active instrument belonging to an active category.
 
 **Loan Status Identification:**
 
@@ -152,10 +169,11 @@ Stores instrument returns.
 
 | Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| id | BIGINT | PK, AUTO_INCREMENT | Return identifier. |
-| loan_id | BIGINT | FK, UNIQUE, NOT NULL | Returned loan. |
-| returned_at | DATETIME(6) | NOT NULL | Return date and time in UTC. |
-| created_at | DATETIME(6) | NOT NULL | Record creation date in UTC. |
+| id | BIGINT UNSIGNED | PK, AUTO_INCREMENT | Return identifier. |
+| loan_id | BIGINT UNSIGNED | FK, UNIQUE, NOT NULL | Returned loan. |
+| returned_at | DATETIME | NOT NULL | Return date and time in UTC. |
+| created_at | TIMESTAMP | NULLABLE | Record creation date in UTC. |
+| updated_at | TIMESTAMP | NULLABLE | Last update date in UTC. |
 
 Constraints:
 
@@ -197,21 +215,22 @@ Relationship descriptions:
 10. Instruments removed from the catalog must use logical deactivation.
 11. Simultaneous operations must protect inventory availability.
 12. Dates and times must be stored and processed in UTC.
+13. Categories must support logical activation and deactivation.
+14. Categories with instruments associated with pending loans cannot be deactivated.
+15. Instruments belonging to inactive categories cannot be included in new loans.
+16. Category activation and deactivation must preserve existing relationships and historical records.
 
-## 7. Recommended Indexes
+## 7. Implemented Indexes
 
 | Table | Index | Purpose |
 |---|---|---|
 | categories | UNIQUE(code) | Retrieve categories by code. |
 | instruments | UNIQUE(code) | Identify instrument models. |
-| instruments | category_id | Retrieve instruments by category. |
-| instruments | is_active | Retrieve active instruments. |
+| instruments | category_id, is_active | Retrieve instruments by category and active status. |
 | students | UNIQUE(student_code) | Search students by code. |
 | students | UNIQUE(email) | Prevent duplicate email addresses. |
-| loans | student_id | Retrieve loans by student. |
-| loans | instrument_id | Retrieve loans by instrument. |
-| loans | due_at | Identify overdue loans. |
-| loans | student_id, loaned_at | Retrieve a student's loans by date. |
+| loans | student_id, due_at | Retrieve student loans and support overdue validations. |
+| loans | instrument_id, loaned_at | Retrieve historical instrument loans. |
 | returns | UNIQUE(loan_id) | Prevent duplicate returns. |
 
 Primary keys, UNIQUE constraints, and foreign keys also generate or require indexes according to MySQL rules.
@@ -229,7 +248,7 @@ The following steps must be performed within the transaction:
 3. Verify that the student has no other pending loan.
 4. Verify that the student has no overdue and unreturned loans.
 5. Lock the row of the instrument to be lent.
-6. Verify that the instrument is active.
+6. Verify that the instrument is active and belongs to an active category.
 7. Verify that available units exist.
 8. Register the loan and its snapshot data.
 9. Decrease available units by one.
@@ -281,6 +300,10 @@ To ensure information integrity and preserve loan history:
 - Foreign keys must use the `ON DELETE RESTRICT` constraint when appropriate.
 - Instruments must be removed from the catalog through logical deactivation using the `is_active` field.
 - Loans and returns must be permanently preserved to maintain transaction traceability.
+- Categories must support logical activation and deactivation using the `is_active` field.
+- Categories with associated pending instrument loans cannot be deactivated.
+- Category deactivation must preserve existing instruments, relationships, and historical loan records.
+- Reactivating a category must not create duplicate records or modify the individual active status of its instruments.
 
 ### 8.5. Inventory Integrity Constraints
 
@@ -299,21 +322,16 @@ The following constraints must be applied:
 In MySQL 8, `CHECK` constraints must be used to reinforce inventory conditions:
 
 ```sql
-CONSTRAINT chk_total_units
-    CHECK (total_units >= 0),
-
-CONSTRAINT chk_available_units
-    CHECK (available_units >= 0),
-
-CONSTRAINT chk_inventory_units
-    CHECK (available_units <= total_units)
+ALTER TABLE instruments
+ADD CONSTRAINT chk_instruments_inventory
+CHECK (available_units <= total_units);
 ```
 
-These constraints must be declared within the `CREATE TABLE instruments` definition, together with the other table fields.
+The `total_units` and `available_units` columns use unsigned integers to prevent negative values.
 
-They must not be executed as independent statements.
+The `chk_instruments_inventory` constraint is added through a dedicated Laravel migration using an `ALTER TABLE` statement.
 
-Their purpose is to ensure at the database level that total and available units are never negative and that available units never exceed total units.
+These database constraints reinforce inventory integrity and complement backend validations.
 
 ## 9. Data Model Acceptance Criteria
 
@@ -332,6 +350,10 @@ The data model shall be considered acceptable when it meets the following condit
 11. Concurrency control prevents the last available unit from being lent to two operators and returns HTTP `409 Conflict` when applicable.
 12. Dates and times are stored and processed in UTC.
 13. Defined indexes and constraints maintain consistency and facilitate system queries.
+14. Categories support logical activation and deactivation through the `is_active` field.
+15. Categories with pending instrument loans cannot be deactivated.
+16. Instruments belonging to inactive categories cannot be included in new loans.
+17. Category activation and deactivation preserve existing relationships and historical records.
 
 ## 10. Change Log
 
@@ -339,5 +361,6 @@ The data model shall be considered acceptable when it meets the following condit
 |---|---|---|
 | 1.0 | 07/11/2026 | Initial creation of the data model, including entity, attribute, and relationship definitions. |
 | 1.1 | 07/11/2026 | Added implementation considerations, referential integrity, concurrency control, inventory constraints, and acceptance criteria. |
+| 1.2 | 24/11/2026 | Documented logical category activation and deactivation, aligned historical field names, data types, indexes, and inventory constraints with Laravel migrations. |
 
 **Current Status:** Draft for Validation.
