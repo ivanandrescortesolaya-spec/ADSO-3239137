@@ -5,7 +5,7 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.1  
+**Version:** 1.2
 **Status:** Draft for Validation
 
 ---
@@ -50,6 +50,10 @@ Provide the user interface for interacting with the system's features.
 **Main Functions:**
 
 - View the instrument catalog.
+- Register and manage instrument categories.
+- Activate and deactivate categories through the REST API.
+- Display the current activation status of categories.
+- Register, update, and logically deactivate instruments.
 - View available units.
 - Manage student information.
 - Register loans.
@@ -78,6 +82,10 @@ Centralize business logic, validate operations, and control data access.
 **Main Functions:**
 
 - Manage instruments and categories.
+- Control logical category activation and deactivation.
+- Prevent category deactivation when associated instruments have pending loans.
+- Validate category activation status during instrument registration, instrument updates, and loan registration.
+- Preserve existing instruments and historical records when category status changes.
 - Manage students.
 - Register loans.
 - Register returns.
@@ -131,6 +139,9 @@ Store and preserve system information while ensuring data integrity.
 **Persistence Responsibilities:**
 
 - Preserve instrument categories.
+- Preserve category activation status through the `is_active` field.
+- Maintain relationships between categories and instruments regardless of category status.
+- Enforce inventory integrity through unsigned quantities and the `chk_instruments_inventory` check constraint.
 - Register instruments and their units.
 - Store student information.
 - Preserve registered loans.
@@ -187,6 +198,10 @@ The infrastructure will include:
 - Frontend service.
 - MySQL database service.
 - Service or configuration required to display the static public website.
+
+The infrastructure also includes an independent `api-test` service enabled through the `testing` profile.
+
+This service uses the `music_school_test` database to execute automated and concurrency tests without modifying the main `music_school` database.
 
 Services must be configured to start with a single command, according to the deployment requirement.
 
@@ -252,33 +267,43 @@ The static public website will be an independent component used to present the p
 
 1. The frontend sends a loan request to the backend.
 2. Laravel receives and validates the input data.
-3. The loan service verifies that the student exists and complies with the loan rules.
-4. A database transaction is started.
+3. The loan service starts a database transaction using `DB::transaction()`.
+4. The student record is retrieved and locked using `lockForUpdate()`.
 5. The instrument record is retrieved and locked using `lockForUpdate()`.
-6. After acquiring the lock, the system verifies that the instrument is active and has available units.
-7. Student restrictions are checked again before registering the operation.
-8. The loan is registered with the corresponding historical information.
-9. Available units are decreased by one.
-10. The transaction is committed using `commit()`.
-11. The response is returned to the frontend.
+6. The system verifies that the instrument is active.
+7. The system verifies that the instrument belongs to an active category.
+8. The system verifies that the student has no pending loans.
+9. The system verifies that the instrument has available units.
+10. The loan is registered with the corresponding historical information and UTC dates.
+11. The due date is calculated by adding 21 days to the loan date.
+12. Available units are decreased by one.
+13. Laravel automatically commits the transaction.
+14. The response is returned to the frontend.
 
-If any validation fails, the operation must be canceled using `rollback()` without improperly modifying data.
+If an exception occurs, Laravel automatically rolls back the transaction without improperly modifying data.
 
-If no units are available, the backend must return HTTP `409 Conflict`.
+If no units are available, the backend returns HTTP `409 Conflict`.
+
+If the instrument belongs to an inactive category, the backend returns HTTP `422 Unprocessable Entity`.
 
 ### 6.2. Return Registration
 
 1. The frontend sends the return request.
-2. Laravel identifies the corresponding loan.
-3. The system verifies that the loan does not already have a registered return.
-4. A transaction is started.
-5. The return is registered with its date and time in UTC.
-6. Available units of the instrument are increased.
-7. The system verifies that available units do not exceed total units.
-8. The transaction is committed.
-9. The response is returned to the frontend.
+2. The return service starts a database transaction using `DB::transaction()`.
+3. The loan record is retrieved and locked using `lockForUpdate()`.
+4. The system verifies that the loan does not already have a registered return.
+5. The associated instrument is retrieved and locked using `lockForUpdate()`.
+6. The return is registered with its date and time in UTC.
+7. The system verifies that available units are lower than total units.
+8. Available units are increased by one.
+9. Laravel automatically commits the transaction.
+10. The response is returned to the frontend.
 
 The original loan information must remain unchanged.
+
+Returns remain available regardless of the current activation status of the instrument category.
+
+If an exception occurs, Laravel automatically rolls back the transaction.
 
 ### 6.3. Concurrency Control
 
@@ -286,20 +311,73 @@ The original loan information must remain unchanged.
 
 When two operators simultaneously attempt to register a loan for the last available unit of an instrument, the backend must ensure that only one operation can succeed.
 
-To achieve this, Laravel will execute the process within a database transaction and use row-level locking (`lockForUpdate()`) on the instrument record.
+Laravel implements this mechanism using database transactions and row-level locking.
 
-The procedure will be as follows:
+The procedure is as follows:
 
-1. Start a database transaction.
-2. Retrieve the instrument and lock its record using `lockForUpdate()`.
-3. After acquiring the lock, verify again that the instrument is active and has available units.
-4. If units are available, register the loan and decrease available units by one.
-5. Commit the transaction using `commit()`.
-6. If no units are available, cancel the operation using `rollback()` and return HTTP `409 Conflict`.
+1. Start a database transaction using `DB::transaction()`.
+2. Retrieve and lock the student record using `lockForUpdate()`.
+3. Retrieve and lock the instrument record using `lockForUpdate()`.
+4. Verify that the instrument and its category are active.
+5. Verify that the student has no pending loans.
+6. Verify inventory availability after acquiring the lock.
+7. Register the loan and decrease available units by one.
+8. Automatically commit the transaction when the operation succeeds.
+9. Automatically roll back the transaction if an exception occurs.
 
-Therefore, if two operators attempt to lend the last available unit at the same time, the first operation may succeed, while the second receives an HTTP 409 response, preventing inconsistent inventory quantities.
+If no units are available, the backend returns HTTP `409 Conflict`.
 
-Availability validation must be performed after acquiring the lock, not before.
+Locking the student record also prevents simultaneous operations from creating multiple pending loans for the same student.
+
+#### Return Concurrency Control
+
+The return service locks the loan and its associated instrument within a database transaction.
+
+This mechanism prevents duplicate returns and inconsistent inventory updates.
+
+#### Concurrency Test Evidence
+
+The concurrency test is implemented in `api/tests/concurrency.php` and executed against the isolated `music_school_test` database.
+
+The verified scenario produced the following results:
+
+| Indicator | Result |
+|---|---|
+| Initial available units | 1 |
+| First HTTP response | 201 Created |
+| Second HTTP response | 409 Conflict |
+| Loans created | 1 |
+| Final available units | 0 |
+| Test result | PASS |
+
+Additional evidence is documented in `docs/evidence.md`.
+
+### 6.4. Category Activation and Deactivation
+
+Logical category activation and deactivation are documented as a scope extension defined in `spec.md`.
+
+#### Category Deactivation
+
+1. The frontend sends a category deactivation request.
+2. The backend retrieves the category.
+3. The system verifies that the category is currently active.
+4. The system verifies that no associated instrument has a pending loan.
+5. The category status is updated to inactive.
+6. The backend returns a successful response.
+
+If the category has associated instruments with pending loans, the backend returns HTTP `409 Conflict`.
+
+#### Category Reactivation
+
+1. The frontend sends a category activation request.
+2. The backend retrieves the category.
+3. The system verifies that the category is currently inactive.
+4. The category status is updated to active.
+5. The backend returns a successful response.
+
+Category status changes do not modify the individual activation status of associated instruments.
+
+Existing records, relationships, loans, and returns are preserved.
 
 ## 7. Security and Integrity Rules
 
@@ -313,6 +391,11 @@ The architecture must comply with the following guidelines:
 - Integrity constraints defined in `data-model.md` must be applied.
 - Loans and returns must not be physically deleted.
 - Removed instruments must be managed through logical deactivation.
+- Categories must be managed through logical activation and deactivation.
+- Categories with associated pending loans must not be deactivated.
+- Inactive categories must not be used for new instrument registrations, instrument updates, or loan registrations.
+- Category status changes must preserve historical information and existing relationships.
+- Automated and concurrency tests must use the isolated `music_school_test` database.
 - Historical data must preserve the original information of each operation.
 - Dates and times must be stored and processed in UTC.
 - User-facing messages must be written in Spanish.
@@ -342,6 +425,7 @@ The infrastructure will be organized using Docker Compose to facilitate integrat
 The planned structure will be:
 
 ```text
+
 plan-mejoramiento/
 │
 ├── api/                         # Laravel Backend
@@ -352,6 +436,7 @@ plan-mejoramiento/
 │       ├── assets/
 │       ├── pages/
 │       │   ├── Categories.jsx
+│       │   ├── Instruments.jsx
 │       │   ├── Students.jsx
 │       │   ├── Loans.jsx
 │       │   ├── Returns.jsx
@@ -410,12 +495,27 @@ The configuration will include the following services:
 - **Frontend:** Application developed with React, responsible for the user interface.
 - **Database:** MySQL, responsible for persistent data storage.
 - **Public Website:** Static application used to present the product.
+- **Testing Backend:** Independent Laravel service enabled through the `testing` profile and connected to the `music_school_test` database.
 
 Docker Compose will allow the required service configurations, ports, environment variables, networks, and dependencies to be established.
 
 The objective is to start the development environment with a single command:
 
-`docker compose up -d`
+docker compose --env-file infra/.env -f infra/docker-compose.yml up -d
+
+The following services and host ports are configured for the development environment:
+
+| Service | Technology | Host Port |
+|---|---|---:|
+| `mysql` | MySQL 8.4 | 3308 |
+| `api` | PHP and Laravel | 8000 |
+| `app` | React | 5173 |
+| `page` | Nginx | 8080 |
+| `api-test` | Laravel Testing Environment | 8001 |
+
+The testing service is started separately using the `testing` profile.
+
+The main application and testing environment use independent databases.
 
 The final service configuration will be defined in `infra/docker-compose.yml`.
 
@@ -460,3 +560,4 @@ These records must be maintained in the `docs/adr/` directory.
 |---|---|---|---|
 | 1.0 | 07/11/2026 | Initial creation of the Music School architecture document. | Draft for Validation |
 | 1.1 | 08/11/2026 | Updated the logical architecture diagram, concurrency control description, Docker Compose infrastructure organization, data access through Eloquent and migrations, and directory structure. | Draft for Validation |
+| 1.2 | 24/11/2026 | Documented logical category activation and deactivation, aligned loan and return transaction flows with the implementation, updated concurrency test evidence, and documented the isolated testing environment and Docker services. | Under Review |
