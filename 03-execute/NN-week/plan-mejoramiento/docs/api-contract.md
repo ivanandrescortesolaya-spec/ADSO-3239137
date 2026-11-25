@@ -5,7 +5,7 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.1  
+**Version:** 1.2
 **Status:** Draft for Validation
 
 ---
@@ -23,6 +23,8 @@ The contract must comply with the requirements established in `spec.md`, the dat
 The REST API will support the following operations:
 
 - Retrieve instrument categories.
+- Register instrument categories.
+- Support logical category activation and deactivation as a scope extension.
 - Manage instruments.
 - Retrieve and manage students.
 - Register loans.
@@ -101,8 +103,8 @@ Example:
 
 ```json
 {
-  "mensaje": "Operacion realizada correctamente.",
-  "datos": {
+  "message": "Operacion realizada correctamente.",
+  "data": {
     "id": 1
   }
 }
@@ -114,8 +116,8 @@ Example:
 
 ```json
 {
-  "mensaje": "No fue posible completar la operacion.",
-  "errores": {}
+  "message": "No fue posible completar la operacion.",
+  "errors": {}
 }
 ```
 
@@ -125,8 +127,8 @@ Example:
 
 ```json
 {
-  "mensaje": "Los datos proporcionados no son validos.",
-  "errores": {
+  "message": "Los datos proporcionados no son validos.",
+  "errors": {
     "student_id": [
       "El estudiante seleccionado no existe."
     ]
@@ -164,32 +166,36 @@ Example response:
 
 ```json
 {
-  "mensaje": "Categorias consultadas correctamente.",
-  "datos": [
+  "data": [
     {
       "id": 1,
       "code": "CAT-01",
-      "name": "Cuerdas"
+      "name": "Cuerdas",
+      "is_active": true
     },
     {
       "id": 2,
       "code": "CAT-02",
-      "name": "Vientos"
+      "name": "Vientos",
+      "is_active": true
     },
     {
       "id": 3,
       "code": "CAT-03",
-      "name": "Percusion"
+      "name": "Percusion",
+      "is_active": true
     },
     {
       "id": 4,
       "code": "CAT-04",
-      "name": "Teclados"
+      "name": "Teclados",
+      "is_active": true
     },
     {
       "id": 5,
       "code": "CAT-05",
-      "name": "Electronicos"
+      "name": "Electronicos",
+      "is_active": true
     }
   ]
 }
@@ -226,6 +232,7 @@ Allows a new musical instrument category to be registered in the system catalog.
 - `name` is required.
 - `name` must have a maximum length of 100 characters.
 - Categories with duplicate codes must not be registered.
+- Categories must be active by default when registered.
 
 **Successful Response:**
 
@@ -233,20 +240,98 @@ HTTP Status: `201 Created`
 
 ```json
 {
-  "mensaje": "Categoria registrada correctamente.",
-  "datos": {
+  "message": "Categoria registrada correctamente.",
+  "data": {
     "id": 1,
     "code": "CAT-01",
-    "name": "Cuerdas"
+    "name": "Cuerdas",
+    "is_active": true
   }
 }
 ```
 
 **Error Responses:**
 
-- `409 Conflict`: When the category code already exists.
-- `422 Unprocessable Entity`: When the submitted data does not meet validation rules.
+- `422 Unprocessable Entity`: When the submitted data does not meet validation rules, including duplicate category codes.
 - `500 Internal Server Error`: When an unexpected server error occurs.
+
+### 6.3. Deactivate a Category
+
+| Property | Definition |
+|---|---|
+| Method | PATCH |
+| Endpoint | `/categories/{id}/deactivate` |
+| Description | Logically deactivate an instrument category. |
+| Successful Response | 200 OK |
+| Possible Errors | 404 Not Found, 409 Conflict |
+
+**Validations:**
+
+- The category must exist.
+- The category must be active.
+- The category must not have instruments with pending returns.
+- Deactivation must set `is_active` to `false` without physically deleting the category.
+- Instruments belonging to inactive categories must not be available for new loans.
+
+No request body is required.
+
+**Example Response:**
+
+```json
+{
+  "message": "Categoria desactivada correctamente.",
+  "data": {
+    "id": 1,
+    "code": "CAT-01",
+    "name": "Cuerdas",
+    "is_active": false
+  }
+}
+```
+
+**Error Responses:**
+
+- `404 Not Found`: The category does not exist.
+- `409 Conflict`: The category is already inactive or has instruments with pending returns.
+
+### 6.4. Activate a Category
+
+| Property | Definition |
+|---|---|
+| Method | PATCH |
+| Endpoint | `/categories/{id}/activate` |
+| Description | Reactivate a previously deactivated instrument category. |
+| Successful Response | 200 OK |
+| Possible Errors | 404 Not Found, 409 Conflict |
+
+**Validations:**
+
+- The category must exist.
+- The category must be inactive.
+- Reactivation must set `is_active` to `true` without creating a new record.
+- Historical records must remain unchanged.
+- Reactivation must not modify the individual active status of associated instruments.
+
+No request body is required.
+
+**Example Response:**
+
+```json
+{
+  "message": "Categoria activada correctamente.",
+  "data": {
+    "id": 1,
+    "code": "CAT-01",
+    "name": "Cuerdas",
+    "is_active": true
+  }
+}
+```
+
+**Error Responses:**
+
+- `404 Not Found`: The category does not exist.
+- `409 Conflict`: The category is already active.
 
 ## 7. Instrument Endpoints
 
@@ -263,8 +348,7 @@ Example response:
 
 ```json
 {
-  "mensaje": "Instrumentos consultados correctamente.",
-  "datos": [
+  "data": [
     {
       "id": 1,
       "category_id": 1,
@@ -311,6 +395,8 @@ Example request:
 Validations:
 
 - The category must exist.
+- The category must be active.
+- Requests involving inactive categories must return HTTP `422 Unprocessable Entity`.
 - The code must be unique.
 - The name is required.
 - Total units must be an integer greater than or equal to zero.
@@ -340,6 +426,8 @@ Validations:
 
 - The instrument must exist.
 - The specified category must exist.
+- The specified category must be active.
+- Requests involving inactive categories must return HTTP `422 Unprocessable Entity`.
 - The code must be unique, excluding the record being updated.
 - The name is required.
 - `total_units` must be an integer greater than or equal to zero.
@@ -492,15 +580,15 @@ Example response:
 
 ```json
 {
-  "mensaje": "Prestamo registrado correctamente.",
-  "datos": {
+  "message": "Prestamo registrado correctamente.",
+  "data": {
     "id": 1,
     "student_id": 1,
     "instrument_id": 1,
-    "student_code_snapshot": "EST-001",
-    "student_name_snapshot": "Estudiante de prueba",
-    "instrument_code_snapshot": "GTR-001",
-    "instrument_name_snapshot": "Guitarra acustica",
+    "student_code": "EST-001",
+    "student_name": "Estudiante de prueba",
+    "instrument_code": "GTR-001",
+    "instrument_name": "Guitarra acustica",
     "loaned_at": "2026-11-08T14:30:00Z",
     "due_at": "2026-11-29T14:30:00Z",
     "created_at": "2026-11-08T14:30:00Z"
@@ -508,7 +596,7 @@ Example response:
 }
 ```
 
-The fields `student_code_snapshot`, `student_name_snapshot`, `instrument_code_snapshot`, and `instrument_name_snapshot` must preserve student and instrument information at the time the loan is registered.
+The fields `student_code`, `student_name`, `instrument_code`, and `instrument_name` must preserve student and instrument information at the time the loan is registered.
 
 The dates `loaned_at`, `due_at`, and `created_at` must be handled in UTC.
 
@@ -517,7 +605,7 @@ Loan status will not be stored as an independent field. It will be determined by
 The backend must perform the following validations:
 
 1. Verify that the student exists.
-2. Verify that the instrument exists and is active.
+2. Verify that the instrument exists, is active, and belongs to an active category. Requests involving inactive categories must return HTTP `422 Unprocessable Entity`.
 3. Confirm that the student does not have another unreturned instrument.
 4. Confirm that the student does not have overdue and unreturned loans.
 5. Verify that available units exist.
@@ -607,10 +695,14 @@ If the loan has already been returned, the operation must be rejected and invent
 | Property | Definition |
 |---|---|
 | Method | GET |
-| Endpoint | `/loans/{id}/returns` |
-| Description | Retrieve the return associated with a loan. |
+| Endpoint | `/loans/{id}` |
+| Description | Retrieve loan details, including the associated return record when available. |
 | Successful Response | 200 OK |
 | Possible Error | 404 Not Found |
+
+The associated return record is retrieved as part of the loan details.
+
+If the loan has not been returned, the associated return record is null.
 
 ## 11. Most Requested Instruments Report Endpoint
 
@@ -623,19 +715,28 @@ If the loan has already been returned, the operation must be rejected and invent
 | Description | Retrieve the most requested instruments report. |
 | Successful Response | 200 OK |
 
+#### Example Request
+
+```json
+{
+  "student_id": 1,
+  "instrument_id": 1
+}
+```
 Example response:
 
 ```json
 {
-  "mensaje": "Reporte generado correctamente.",
-  "datos": [
+  "data": [
     {
       "instrument_id": 1,
+      "instrument_code": "GTR-001",
       "instrument_name": "Guitarra acustica",
       "total_loans": 15
     },
     {
       "instrument_id": 2,
+      "instrument_code": "PNO-001",
       "instrument_name": "Piano",
       "total_loans": 10
     }
@@ -651,12 +752,12 @@ The API must ensure compliance with the following rules:
 
 | Code | Rule | Expected Behavior |
 |---|---|---|
-| RN-01 | Maximum of one unreturned instrument per student. | Reject new loans while another loan remains pending. |
-| RN-02 | 21-day loan period. | Calculate the return due date. |
-| RN-03 | Restriction due to overdue loans. | Reject new loans until the corresponding return is registered. |
-| RN-04 | Inventory integrity. | Keep available units between zero and total units. |
-| RN-05 | Historical preservation. | Do not modify snapshot data from previous operations. |
-| RN-06 | Record preservation. | Do not physically delete loans or returns; use logical deactivation for instruments. |
+| RN-01 | Loan Limit per Student | Reject new loans while another loan remains unreturned. |
+| RN-02 | Loan Period and Overdue Status | Apply a 21-day loan period and reject new loans when overdue loans remain unreturned. |
+| RN-03 | Inventory Availability and Integrity | Keep available units between zero and total units. |
+| RN-04 | Historical Preservation and Logical Deactivation | Preserve historical records and support logical deactivation of instruments and categories. Prevent category deactivation when pending loans exist and reject new loans involving inactive categories. |
+| RN-05 | Concurrency Control | Prevent simultaneous loans from exceeding available inventory and return HTTP `409 Conflict` when applicable. |
+| RN-06 | Date Management and User Communication | Handle operation dates in UTC and display user-facing messages in Spanish. |
 
 ### 12.1. Concurrency
 
@@ -668,7 +769,7 @@ The procedure must follow this order:
 2. Lock the student record using `lockForUpdate()`.
 3. Verify that the student has no pending loan or overdue and unreturned loans.
 4. Lock the instrument record using `lockForUpdate()`.
-5. Verify that the instrument is active and has available units.
+5. Verify that the instrument is active, belongs to an active category, and has available units.
 6. Register the loan and update available units within the same transaction.
 7. Commit the transaction if all validations and operations complete successfully.
 8. Execute `rollback` if an error occurs during the process.
@@ -700,6 +801,12 @@ Examples:
 | Loan already returned | 409 | Este prestamo ya tiene una devolucion registrada. |
 | Invalid data | 422 | Los datos proporcionados no son validos. |
 | Internal error | 500 | Ocurrio un error interno del servidor. |
+| Category does not exist | 404 | La categoría no existe. |
+| Category already inactive | 409 | La categoria ya se encuentra inactiva. |
+| Category already active | 409 | La categoria ya se encuentra activa. |
+| Category has pending loans | 409 | No se puede desactivar esta categoria porque tiene instrumentos con prestamos pendientes de devolucion |
+| Register or update an instrument with an inactive category | 422 | No se puede registrar un instrumento en una categoria inactiva |
+| Loan involving an inactive category | 422 | No se puede prestar un instrumento de una categoria inactiva |
 
 ## 14. Security and Validation
 
@@ -743,6 +850,9 @@ The API contract shall be considered validated when:
 8. Dates are handled in UTC.
 9. User-facing messages are written in Spanish.
 10. The contract remains consistent with `spec.md`, `data-model.md`, and `architecture.md`.
+11. Categories can be logically activated and deactivated without deleting their records.
+12. Category deactivation is rejected when associated instruments have pending loans.
+13. Instrument registration, updates, and new loans involving inactive categories are rejected.
 
 ## 17. Change Log
 
@@ -750,3 +860,4 @@ The API contract shall be considered validated when:
 |---|---|---|---|
 | 1.0 | 08/11/2026 | Initial creation of the Music School REST API contract. | Draft for Validation |
 | 1.1 | 08/11/2026 | Added the POST /categories endpoint, validations to maintain inventory integrity, concurrency control for returns, and conflict handling for duplicate operations. | Draft for Validation |
+| 1.2 | 24/11/2026 | Documented category activation and deactivation endpoints, inactive category validations, and aligned business rule identifiers with spec.md version 1.2. | Under Review |
