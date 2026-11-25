@@ -24,3 +24,6 @@ api/storage/logs/*
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Frontend dependency lock file
+!app/package-lock.json
