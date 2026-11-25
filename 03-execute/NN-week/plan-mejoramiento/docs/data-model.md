@@ -5,14 +5,14 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Draft for Validation
 
 ---
 
 ## 1. Purpose
 
-This document defines the logical database structure of the Music School system, including its entities, attributes, data types, primary keys, foreign keys, constraints, and indexes.
+This document defines the conceptual, logical, and physical data models of the Music School system. It describes the domain entities and their relationships, then specifies their attributes, data types, primary keys, foreign keys, constraints, indexes, and implementation in MySQL and Laravel.
 
 The data model will serve as a reference for implementing data persistence using MySQL and Laravel.
 
@@ -36,12 +36,78 @@ The model includes the following entities:
 - `categories`: Stores instrument categories.
 - `instruments`: Stores instrument models and their quantities.
 - `students`: Stores student information.
-- `loans`: Records completed loans and preserves historical data.
+- `loans`: Records loans that are pending return, including overdue loans, or have been returned, and preserves historical data.
 - `returns`: Records returns associated with loans.
 
-## 4. Entity Definitions
+## 4. Conceptual Data Model
 
-### 4.1. `categories` Table
+### 4.1. Purpose and Domain Scope
+
+The conceptual model describes the main domain entities of Music School and the relationships required to manage instrument categories, instrument models, students, loans, and returns.
+
+An instrument represents a model or type of musical instrument. Its physical units are represented as quantities belonging to that model; individual physical units are not separate entities in this specification. Each loan represents one unit of an instrument model.
+
+The model contains five entities: `Category`, `Instrument`, `Student`, `Loan`, and `Return`. Their domain meaning and identifying information are summarized below. Detailed columns, data types, keys, indexes, and database constraints are defined in the logical and physical model sections that follow.
+
+| Entity | Domain meaning | Identifying and descriptive information |
+|---|---|---|
+| `Category` | A classification used to organize instrument models. | Category code, name, and active status. |
+| `Instrument` | A musical instrument model managed by the school, including its inventory quantities. | Instrument code, name, total units, available units, and active status. |
+| `Student` | A student who may request instrument loans. | Student code, full name, and email address. |
+| `Loan` | A transaction recording one instrument model unit lent to one student. | Loan identifier, student and instrument snapshots, loan date, and due date. |
+| `Return` | The recorded return associated with a loan. | Return identifier and return date and time. |
+
+### 4.2. Conceptual Relationships and Cardinalities
+
+The minimum and maximum cardinalities below describe participation in the domain model. The rule limiting a student to one unreturned loan is a business constraint over time; it does not change the historical one-to-many relationship between students and loans.
+
+| Relationship | Cardinality from the first entity | Cardinality from the second entity | Meaning |
+|---|---:|---:|---|
+| `Category` — `Instrument` | One `Category` has 0..* `Instruments`. | Each `Instrument` belongs to exactly 1 `Category`. | A category may exist before instruments are assigned to it; an instrument must have a category. |
+| `Student` — `Loan` | One `Student` has 0..* historical `Loans`. | Each `Loan` belongs to exactly 1 `Student`. | A student may have no loans or multiple loans over time. |
+| `Instrument` — `Loan` | One `Instrument` appears in 0..* historical `Loans`. | Each `Loan` refers to exactly 1 `Instrument` model. | An instrument model may never have been loaned or may appear in many loan records. |
+| `Loan` — `Return` | One `Loan` has 0..1 `Return`. | Each `Return` belongs to exactly 1 `Loan`. | A loan may still be pending, or it may have one recorded return. |
+
+### 4.3. Conceptual Entity-Relationship Diagram
+
+The diagram represents only the five domain entities, their relationships, and their cardinalities. `RETURN_RECORD` is the diagram node name for the conceptual entity `Return`; its implementation correspondence is described in Section 4.5.
+
+```mermaid
+erDiagram
+    CATEGORY ||--o{ INSTRUMENT : classifies
+    STUDENT ||--o{ LOAN : receives
+    INSTRUMENT ||--o{ LOAN : is_loaned_in
+    LOAN ||--o| RETURN_RECORD : may_have
+```
+
+### 4.4. Business Rules Associated with the Conceptual Model
+
+| Entity or relationship | Specification rule | Model interpretation |
+|---|---|---|
+| `Student` — `Loan` | RN-01 | A student may have at most one unreturned loan at a time, while retaining multiple loan records over time. |
+| `Loan` | RN-02 | A loan is due 21 days after its registration. It is overdue when its due date has passed and it has no associated return. |
+| `Instrument` — `Loan` — `Return` | RN-03 | A loan decreases available units by one, and a return increases them by one. Available units must remain between zero and total units. |
+| `Category` — `Instrument`, `Instrument` — `Loan`, and `Loan` — `Return` | RN-04 | Loan records and their student and instrument snapshots, as well as return records, are preserved. Instruments use logical deactivation; category activation and deactivation follow the extension and pending-loan restriction stated in the current specification. |
+| `Instrument` — `Loan` | RN-05 | Concurrent loans must not allocate the same last available unit twice; a request that cannot obtain the unit returns HTTP `409 Conflict`. |
+| `Loan` — `Return` and transaction dates | RN-06 | Transaction dates and times are handled in UTC. User-facing text is in Spanish. |
+
+A student may accumulate multiple historical loans, but a new loan is not permitted while that student has an unreturned loan. The pending, returned, and overdue states are derived from the loan due date and the existence of its associated return; they are not separate entities. User-facing language is an application concern specified by RN-06, not a database entity.
+
+### 4.5. Correspondence Between Conceptual, Logical, and Physical Models
+
+| Conceptual element | Logical representation | Physical implementation |
+|---|---|---|
+| `Category` | Category code, name, and active status. | `categories`; generated `id` primary key and unique `code`. `is_active` is added by `2026_11_10_000000_add_is_active_to_categories_table.php`. `Category` has many `Instrument` records. |
+| `Instrument` | Instrument model, category membership, inventory quantities, and active status. | `instruments`; `category_id` foreign key, unique `code`, unsigned `total_units` and `available_units`, and `chk_instruments_inventory`. `Instrument` belongs to a `Category` and has many `Loan` records. |
+| `Student` | Student identity and contact information. | `students`; generated `id`, unique `student_code`, and unique `email`. `Student` has many `Loan` records. |
+| `Loan` | A loan links one student to one instrument model and preserves the transaction-time snapshots and dates. | `loans`; `student_id` and `instrument_id` foreign keys, snapshot columns, `loaned_at`, `due_at`, and the documented indexes. `Loan` belongs to a `Student` and an `Instrument`, and has zero or one `ReturnRecord`. |
+| `Return` | A return records the date and time associated with one loan. | `returns`; `loan_id` is a unique foreign key and `returned_at` stores the return time. Laravel represents this table with the `ReturnRecord` model, which belongs to one `Loan`. |
+
+The conceptual model defines the domain entities and their relationships. The logical model in the following sections specifies attributes, keys, and integrity rules. Laravel migrations implement the physical MySQL tables and constraints, while Eloquent models represent the entities and relationships in application code.
+
+## 5. Entity Definitions
+
+### 5.1. `categories` Table
 
 Stores musical instrument categories.
 
@@ -75,7 +141,7 @@ Initial categories:
 | CAT-04 | Teclados |
 | CAT-05 | Electronicos |
 
-### 4.2. `instruments` Table
+### 5.2. `instruments` Table
 
 Stores musical instrument models and their quantities.
 
@@ -103,7 +169,7 @@ Constraints:
 - Instruments belonging to inactive categories cannot be included in new loans.
 - Category activation or deactivation must not modify the individual `is_active` status of associated instruments.
 
-### 4.3. `students` Table
+### 5.3. `students` Table
 
 Stores student information.
 
@@ -122,7 +188,7 @@ Constraints:
 - Student codes must not be duplicated.
 - Student information associated with historical loans must be preserved through snapshot data recorded for each operation.
 
-### 4.4. `loans` Table
+### 5.4. `loans` Table
 
 Stores registered loans and preserves the original student and instrument information at the time of each operation.
 
@@ -163,7 +229,7 @@ Loan status shall be determined by the existence of a related record in the `ret
 
 This mechanism avoids maintaining a duplicated status field that could cause inconsistencies with return records.
 
-### 4.5. `returns` Table
+### 5.5. `returns` Table
 
 Stores instrument returns.
 
@@ -185,23 +251,23 @@ Constraints:
 - Available units must never exceed total units.
 - The return must preserve the historical information of its associated loan.
 
-## 5. Relationships Between Entities
+## 6. Relationships Between Entities
 
 | Main Entity | Relationship | Related Entity |
 |---|---|---|
-| categories | 1:N | instruments |
-| instruments | 1:N | loans |
-| students | 1:N | loans |
-| loans | 1:0..1 | returns |
+| categories | 1:N (category has 0..* instruments; each instrument has exactly 1 category) | instruments |
+| instruments | 1:N (instrument has 0..* historical loans; each loan has exactly 1 instrument) | loans |
+| students | 1:N (student has 0..* historical loans; each loan has exactly 1 student) | loans |
+| loans | 1:0..1 (loan has 0..1 return; each return has exactly 1 loan) | returns / `ReturnRecord` |
 
 Relationship descriptions:
 
 - A category may contain multiple instrument models.
 - An instrument may be associated with multiple historical loans.
 - A student may have multiple loans over time while respecting the limit of one pending loan.
-- A loan may have zero or one registered return.
+- A loan may have zero or one registered return. The conceptual entity is `Return`; it is stored in the `returns` table and represented by Laravel's `ReturnRecord` model.
 
-## 6. Integrity Rules
+## 7. Integrity Rules
 
 1. Foreign keys must ensure referential integrity.
 2. Available units must remain between zero and total units.
@@ -220,7 +286,7 @@ Relationship descriptions:
 15. Instruments belonging to inactive categories cannot be included in new loans.
 16. Category activation and deactivation must preserve existing relationships and historical records.
 
-## 7. Implemented Indexes
+## 8. Implemented Indexes
 
 | Table | Index | Purpose |
 |---|---|---|
@@ -235,9 +301,9 @@ Relationship descriptions:
 
 Primary keys, UNIQUE constraints, and foreign keys also generate or require indexes according to MySQL rules.
 
-## 8. Implementation Considerations
+## 9. Implementation Considerations
 
-### 8.1. Loan Control
+### 9.1. Loan Control
 
 Loan registration must be executed within a database transaction.
 
@@ -262,7 +328,7 @@ The lock must remain active until the transaction ends through a commit or rollb
 
 This prevents two simultaneous requests from creating pending loans for the same student.
 
-### 8.2. Return Control
+### 9.2. Return Control
 
 Returns must be executed within a database transaction.
 
@@ -276,7 +342,7 @@ The following steps must be performed within the transaction:
 6. Verify that available units do not exceed total units.
 7. Commit the transaction.
 
-### 8.3. Concurrency Control
+### 9.3. Concurrency Control
 
 To prevent two operators from simultaneously lending the last available unit of an instrument:
 
@@ -290,7 +356,7 @@ To prevent two operators from simultaneously lending the last available unit of 
 - If an error occurs during the operation, a `ROLLBACK` must be executed to prevent partial changes.
 - If the operation completes successfully, a `COMMIT` must be executed.
 
-### 8.4. Referential Integrity and Record Deletion
+### 9.4. Referential Integrity and Record Deletion
 
 To ensure information integrity and preserve loan history:
 
@@ -305,7 +371,7 @@ To ensure information integrity and preserve loan history:
 - Category deactivation must preserve existing instruments, relationships, and historical loan records.
 - Reactivating a category must not create duplicate records or modify the individual active status of its instruments.
 
-### 8.5. Inventory Integrity Constraints
+### 9.5. Inventory Integrity Constraints
 
 The database must ensure that the quantities recorded for each instrument maintain inventory consistency.
 
@@ -333,7 +399,7 @@ The `chk_instruments_inventory` constraint is added through a dedicated Laravel 
 
 These database constraints reinforce inventory integrity and complement backend validations.
 
-## 9. Data Model Acceptance Criteria
+## 10. Data Model Acceptance Criteria
 
 The data model shall be considered acceptable when it meets the following conditions:
 
@@ -355,12 +421,13 @@ The data model shall be considered acceptable when it meets the following condit
 16. Instruments belonging to inactive categories cannot be included in new loans.
 17. Category activation and deactivation preserve existing relationships and historical records.
 
-## 10. Change Log
+## 11. Change Log
 
 | Version | Date | Description |
 |---|---|---|
 | 1.0 | 07/11/2026 | Initial creation of the data model, including entity, attribute, and relationship definitions. |
 | 1.1 | 07/11/2026 | Added implementation considerations, referential integrity, concurrency control, inventory constraints, and acceptance criteria. |
 | 1.2 | 24/11/2026 | Documented logical category activation and deactivation, aligned historical field names, data types, indexes, and inventory constraints with Laravel migrations. |
+| 1.3 | 25/11/2026 | Added an explicit conceptual model with domain entities, minimum and maximum cardinalities, a conceptual ER diagram, specification rule traceability, and correspondence with the logical and physical models. |
 
 **Current Status:** Draft for Validation.
