@@ -97,6 +97,10 @@ Docker Compose integrates MySQL, Laravel, React, and the static public website.
 The system allows users to:
 
 - Retrieve and manage instrument categories.
+- Activate and deactivate instrument categories without deleting their records.
+- Prevent category deactivation when associated instruments have pending loans.
+- Validate category activation status during instrument registration, instrument updates, and loan registration.
+- Preserve existing instruments and historical records when category status changes.
 - Register, retrieve, update, and deactivate instruments.
 - Control available inventory units.
 - Register and retrieve students.
@@ -117,6 +121,7 @@ The system's business rules are documented in `docs/spec.md`.
 - A student cannot have more than one loan pending return.
 - The return period is **21 days**.
 - Loans of inactive instruments are not allowed.
+- Loans of instruments belonging to inactive categories are not allowed.
 - Loans are not allowed when no units are available.
 - Overdue loans are identified by their due date and the absence of a registered return.
 - Operation dates are managed in UTC.
@@ -127,18 +132,33 @@ The system's business rules are documented in `docs/spec.md`.
 - Available units cannot exceed the registered total.
 - Inventory is updated when a loan or return is registered.
 - Critical operations use database transactions.
+- Inventory quantities are stored as unsigned integers.
+- The database enforces inventory integrity through the `chk_instruments_inventory` check constraint.
+- Instrument quantity updates must preserve the number of units currently on loan.
 
 ### Concurrency
 
-The backend uses transactions and locking through `lockForUpdate()` to protect inventory operations.
+The backend uses database transactions and row-level locking through `lockForUpdate()` to protect loan, return, and inventory operations.
 
-In the documented manual concurrency test:
+The loan service locks the student and instrument records to prevent inconsistent inventory updates and multiple pending loans for the same student.
 
-- First request: HTTP `201 Created`.
-- Second request: HTTP `409 Conflict`.
-- Final availability: `0` units.
+The return service locks the loan and instrument records to prevent duplicate returns and inconsistent inventory updates.
 
-The evidence is available in `docs/evidence/concurrency-test.md` and `docs/tasks.md`.
+The manual concurrency test executed on 24/11/2026 produced the following results:
+
+| Indicator | Result |
+|---|---|
+| Test database | `music_school_test` |
+| Initial available units | 1 |
+| First request | HTTP 201 Created |
+| Second request | HTTP 409 Conflict |
+| Loans created | 1 |
+| Final available units | 0 |
+| Test result | PASS |
+
+The tested scenario confirmed that only one loan was registered for the last available unit.
+
+The evidence is available in `docs/evidence.md`, `docs/evidence/concurrency-test.md`, and `docs/tasks.md`.
 
 ### Historical Records
 
@@ -146,11 +166,24 @@ Loans and returns are preserved in separate records to maintain the history of o
 
 ### Categories
 
-The implementation also includes category activation and deactivation.
+Logical category activation and deactivation are documented as a scope extension in version 1.2 of `docs/spec.md`.
 
-The backend prevents inactive categories from being used to register new instruments or loans and rejects their deactivation when associated pending loans exist.
+The following rules apply:
 
-This additional behavior is distinguished from the original requirements documented in `docs/spec.md`.
+- Categories are active by default.
+- Categories are managed through logical activation and deactivation.
+- Categories with associated instruments that have pending loans cannot be deactivated.
+- Inactive categories cannot be used for new instrument registrations, instrument updates, or loan registrations.
+- Inactive categories can be reactivated.
+- Category status changes do not modify the individual activation status of associated instruments.
+- Existing relationships, loans, returns, and historical records are preserved.
+- Returns remain available regardless of the current category status.
+
+The implementation is documented in `docs/spec.md`, `docs/api-contract.md`, `docs/data-model.md`, `docs/architecture.md`, and `docs/tasks.md`.
+
+The tested behavior is recorded in `docs/evidence.md`.
+
+Formal approval of the documented scope extension remains pending.
 
 ## Execution Requirements
 
@@ -159,6 +192,8 @@ To run the project using Docker, the following are required:
 - Docker Desktop or Docker Engine.
 - Docker Compose.
 - Available local ports: `8000`, `5173`, `3308`, and `8080`.
+- Available local port `8001` when the independent testing service is enabled.
+- Local environment configuration files for the main application and testing environment.
 
 To run components manually, the following are required:
 
@@ -173,16 +208,36 @@ The following commands are prepared for PowerShell and must be executed from the
 
 ### 1. Configure Environment Variables
 
-Create the local infrastructure environment file:
+Create the local infrastructure environment file if it does not already exist:
 
 ```powershell
-Copy-Item infra/.env.example infra/.env
+if (-not (Test-Path infra/.env)) {
+    Copy-Item infra/.env.example infra/.env
+}
 ```
 
 Edit `infra/.env` and set private passwords for the database variables, including:
 
 - `DB_PASSWORD`
 - `DB_ROOT_PASSWORD`
+
+Create the Laravel environment file if it does not already exist:
+
+```powershell
+if (-not (Test-Path api/.env)) {
+    Copy-Item api/.env.example api/.env
+}
+```
+
+Configure the Laravel environment variables according to the Docker Compose configuration.
+
+The main application uses the `music_school` database.
+
+Inside Docker, the MySQL host is `mysql` and the internal database port is `3306`.
+
+Database credentials must match the values configured in `infra/.env`.
+
+The testing environment requires a separate `api/.env.testing` configuration file and the `music_school_test` database.
 
 `.env` files contain private configuration and must not be published on GitHub.
 
@@ -200,6 +255,17 @@ Docker Compose integrates four main services:
 | React Frontend | `http://localhost:5173` |
 | Public Website | `http://localhost:8080` |
 | MySQL | `127.0.0.1:3308` |
+
+An independent Laravel testing service named `api-test` is also available through the `testing` profile.
+
+| Testing Component | Configuration |
+|---|---|
+| Service | `api-test` |
+| Docker Compose profile | `testing` |
+| Host port | 8001 |
+| Database | `music_school_test` |
+
+The testing service is not required for normal application execution.
 
 The main database is named `music_school`.
 
@@ -384,14 +450,18 @@ Execution evidence is recorded in `docs/evidence.md`.
 
 The backend contains **16 automated test files**.
 
-The latest verified execution produced:
+The latest verified execution was performed on 24/11/2026.
 
 | Indicator | Result |
 |---|---:|
 | Passed Tests | 56 |
+| Failed Tests | 0 |
 | Assertions | 138 |
-| Errors | 0 |
-| Test Files | 16 |
+| Feature Test Files | 15 |
+| Unit Test Files | 1 |
+| Total Automated Test Files | 16 |
+| Execution Time | 2.94 seconds |
+| Success Rate | 100% |
 
 ### Run Tests Using Docker
 
@@ -411,6 +481,10 @@ The main API uses:
 
 **Important:** Tests use operations that may reinitialize tables through `RefreshDatabase`. They must not be executed against the main database or against information that needs to be preserved.
 
+The `DatabaseIsolationTest.php` test verifies that the automated test suite uses the designated `music_school_test` database.
+
+Before running tests, the testing database must exist and the configured database user must have the required permissions.
+
 ### Verify the React Build
 
 ```powershell
@@ -421,13 +495,44 @@ The production build was successfully verified.
 
 ### Concurrency Test
 
-Manual concurrency evidence is available at:
+The manual concurrency test is implemented in `api/tests/concurrency.php`.
 
-`docs/evidence/concurrency-test.md`
+The test must be executed against the designated `music_school_test` database.
 
-This test verifies that two simultaneous requests cannot lend the same last available unit.
+Start the independent testing service:
 
-The manual test is not presented as an automated test.
+```powershell
+docker compose --env-file infra/.env -f infra/docker-compose.yml --profile testing up -d api-test
+```
+
+Execute the concurrency test:
+
+```powershell
+docker compose --env-file infra/.env -f infra/docker-compose.yml --profile testing exec api-test php tests/concurrency.php
+```
+
+The verified execution produced:
+
+```text
+Database: music_school_test
+Instrument ID: 47
+Initial available units: 1
+Request 1: HTTP 201
+Request 2: HTTP 409
+Loans created: 1
+Final available units: 0
+Result: PASS
+```
+
+Stop the testing service after completing the validation:
+
+```powershell
+docker compose --env-file infra/.env -f infra/docker-compose.yml --profile testing stop api-test
+```
+
+The manual concurrency test is not included in the automated PHPUnit test count.
+
+Detailed evidence is available in `docs/evidence.md` and `docs/evidence/concurrency-test.md`.
 
 ## Technical Documentation
 
@@ -463,6 +568,12 @@ The work plan contains exactly 23 tasks.
 | Pending Tasks | 0 |
 | Task Plan Progress | 100% |
 
+The technical revalidation performed on 24/11/2026 confirmed the automated test results, database structure, migration status, inventory constraints, category management behavior, concurrency scenario, and availability of the main Docker services.
+
+The documentation has been updated to reflect the current implementation.
+
+Formal evaluation, technical presentation, and approval of the documented scope extension remain pending.
+
 Implementation, tests, and evidence are recorded in the repository.
 
 Task status does not replace the formal evaluation or grading of the improvement plan.
@@ -479,16 +590,45 @@ Task status does not replace the formal evaluation or grading of the improvement
 
 ## Validation Evidence
 
-During the project's technical review, the following were verified:
+Technical evidence is recorded in `docs/evidence.md`.
 
-- Integrated execution using Docker Compose.
-- Availability of the four main services.
+### Previous Validation
+
+The previous project validation recorded:
+
+- Successful React production build.
 - HTTP 200 response from the public website.
 - API functionality.
-- Execution of the data initialization tool.
-- Passing automated tests.
-- React production build.
-- Concurrency control with HTTP 201 and 409 responses.
-- Separation between the main database and the test database.
+- Successful and idempotent data initialization.
+- Integration of the main Docker services.
 
-Detailed results are available in `docs/evidence.md`.
+### Technical Revalidation — 24/11/2026
+
+| Validation | Result |
+|---|---|
+| Automated tests | 56 of 56 passed |
+| Assertions | 138 |
+| Automated test files | 16 |
+| Database migrations | 11 of 11 executed |
+| Main business tables | 5 of 5 inspected |
+| Business table columns | 37 inspected |
+| Inventory integrity constraint | Verified |
+| Test database selection | Verified |
+| Category management tests | PASS |
+| Manual concurrency scenario | PASS |
+| Main Docker services | 4 of 4 running |
+| React frontend accessibility | Confirmed |
+| Public website accessibility | Confirmed |
+| Documented implementation tasks | 23 of 23 completed |
+
+The results correspond to the verified execution in the existing development environment.
+
+Detailed results and execution commands are available in `docs/evidence.md`.
+
+## Documentation Updates
+
+| Date | Description |
+|---|---|
+| 24/11/2026 | Updated the project documentation to describe logical category activation and deactivation, database integrity constraints, transaction flows, testing configuration, concurrency evidence, and technical revalidation results. |
+
+The documented scope extension remains subject to formal validation.
