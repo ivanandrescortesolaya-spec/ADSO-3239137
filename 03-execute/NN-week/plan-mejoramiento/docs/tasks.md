@@ -5,9 +5,9 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** 3239137  
 **Apprentice Identification:** A12  
-**Version:** 1.3  
-**Status:** Completed  
-**Update Date:** 13/11/2026
+**Version:** 1.4
+**Status:** Completed
+**Update Date:** 24/11/2026
 
 ---
 
@@ -33,6 +33,7 @@ The plan covers the activities required to build a musical instrument loan manag
 - Technical and architectural documentation.
 
 The system will support the management of categories, instruments, students, loans, returns, and reports.
+Logical category activation and deactivation are documented as a scope extension aligned with `spec.md`, `api-contract.md`, and `data-model.md` version 1.2, pending validation.
 
 ## 3. Task Organization
 
@@ -75,6 +76,8 @@ Tasks are organized according to their execution order and dependencies between 
   2. Relationships and foreign keys correspond to the data model.
   3. Integrity constraints are applied.
   4. Loans and returns preserve their historical records.
+  5. Categories include the `is_active` field to support logical activation and deactivation.
+  6. Category deactivation preserves existing relationships and historical records.
 - **Deliverable or Evidence:** Data model and table structure.
 
 ### TASK-04 — Configure Laravel Migrations
@@ -88,6 +91,8 @@ Tasks are organized according to their execution order and dependencies between 
   2. Primary and foreign keys are configured.
   3. Required constraints are applied.
   4. Migrations can be executed successfully.
+  5. The categories table includes the `is_active` field with a default value of `true`.
+  6. The implemented data types, indexes, and constraints correspond to the updated data model.
 - **Deliverable or Evidence:** Migration files and successful execution.
 
 ### TASK-05 — Configure the MySQL Connection
@@ -105,16 +110,24 @@ Tasks are organized according to their execution order and dependencies between 
 
 ### TASK-06 — Implement Category Management
 
-- **Description:** Develop the operations required to retrieve and manage musical instrument categories.
+- **Description:** Develop operations to register, retrieve, logically deactivate, and reactivate musical instrument categories as a scope extension.
 - **Component:** Laravel API.
-- **Related Requirements:** Category management and initial categories CAT-01 through CAT-05.
+- **Related Requirements:** HU-01, RF-01, RN-04, and initial categories CAT-01 through CAT-05.
 - **Dependencies:** TASK-04, TASK-05.
 - **Acceptance Criteria:**
   1. Registered categories can be retrieved.
   2. The five initial categories are identified by their codes.
   3. Category codes cannot be duplicated.
   4. API responses use the established JSON format.
-- **Deliverable or Evidence:** Category endpoints and corresponding tests.
+  5. New categories are active by default.
+  6. Categories can be logically deactivated without deleting their records.
+  7. Categories with instruments associated with pending loans cannot be deactivated.
+  8. Inactive categories can be reactivated.
+  9. Invalid category status transitions return HTTP 409 Conflict.
+  10. Nonexistent categories return HTTP 404 Not Found.
+  11. Duplicate category codes return HTTP 422 Unprocessable Entity.
+  12. Category activation and deactivation preserve existing relationships and historical records.
+- **Deliverable or Evidence:** CategoryController.php, category endpoints, CategoryTest.php, and API execution evidence.
 
 ### TASK-07 — Implement Instrument Management
 
@@ -129,7 +142,11 @@ Tasks are organized according to their execution order and dependencies between 
   4. Instrument deactivation is performed logically.
   5. Deactivated instruments cannot be lent.
   6. Available units cannot be negative or exceed the total number of units.
+  7. Instruments can only be registered or updated using active categories.
+  8. Requests involving inactive categories return HTTP 422 Unprocessable Entity.
+  9. Category activation and deactivation do not modify the individual active status of associated instruments.
 - **Deliverable or Evidence:** Instrument endpoints and corresponding tests.
+
 
 ### TASK-08 — Implement Available Unit Control
 
@@ -166,10 +183,11 @@ Tasks are organized according to their execution order and dependencies between 
 - **Dependencies:** TASK-07, TASK-08, TASK-09.
 - **Acceptance Criteria:**
   1. A loan can be registered for a student and an instrument.
-  2. The system verifies that the instrument is active and has available units.
+  2. The system verifies that the instrument is active, belongs to an active category, and has available units.
   3. The system verifies that the student does not have another instrument pending return.
   4. The due date is calculated using a 21-day period.
   5. Historical operation data is preserved.
+  6. New loans involving instruments belonging to inactive categories are rejected with HTTP 422 Unprocessable Entity.
 - **Deliverable or Evidence:** Loan creation endpoint and automated tests.
 
 ### TASK-11 — Implement Loan Queries
@@ -266,6 +284,8 @@ Tasks are organized according to their execution order and dependencies between 
   4. Nonexistent resources use HTTP 404.
   5. Business conflicts use HTTP 409.
   6. User-facing messages are in Spanish.
+  7. Category activation and deactivation conflicts return HTTP 409 Conflict.
+  8. Instrument registration, instrument updates, and loan requests involving inactive categories return  HTTP 422 Unprocessable Entity.
 - **Deliverable or Evidence:** Validations, standardized responses, and error tests.
 
 ### TASK-17 — Implement the React Frontend
@@ -289,11 +309,14 @@ Tasks are organized according to their execution order and dependencies between 
 - **Related Requirements:** Catalog and student management.
 - **Dependencies:** TASK-06, TASK-07, TASK-09, TASK-17.
 - **Acceptance Criteria:**
-  1. A view exists for retrieving categories.
+  1. A view exists for retrieving, registering, activating, and deactivating categories.
   2. A view exists for retrieving and managing instruments.
   3. A view exists for retrieving and managing students.
   4. Forms validate data before submission.
   5. Changes are reflected through API responses.
+  6. The category administration view displays the active or inactive status of each category.
+  7. Category status changes are performed through the corresponding API endpoints.
+  8. Category management errors are displayed through understandable messages in Spanish.
 - **Deliverable or Evidence:** Functional administration views.
 
 ### TASK-19 — Implement Loan and Return Views
@@ -365,6 +388,10 @@ Tasks are organized according to their execution order and dependencies between 
   5. Consistency between requirements, implementation, and tests is reviewed.
   6. Results and evidence are documented.
   7. The project can be executed for its presentation.
+  8. Category registration, logical activation, and deactivation are verified through automated tests.
+  9. Category deactivation restrictions involving pending loans are verified.
+  10. Instrument registration, updates, and loan restrictions involving inactive categories are verified.
+  11. The category management scope extension remains consistent across the specification, API contract, data model, architecture, and implementation evidence.
 - **Deliverable or Evidence:** Automated tests, results, technical documentation, and delivery evidence.
 
 ### 3.1 Task Traceability Matrix
@@ -535,10 +562,8 @@ The proposed organization allows progress from repository preparation and databa
 |---|---|---|
 | 1.0 | 08/11/2026 | Initial creation of the task plan with 23 activities and their acceptance criteria. |
 | 1.2 | 09/11/2026 | Update of the actual repository structure and logical architecture diagram, including Dashboard, services, and the initialization tool. Under review. |
-
----
-
 | 1.3 | 13/11/2026 | Completion of the 23 tasks, validation of automated tests, and update of evidence. |
+| 1.4 | 24/11/2026 | Updated existing tasks to document logical category activation and deactivation as a scope extension, aligned acceptance criteria with the updated specification, API contract, and data model, and reopened affected tasks for validation. |
 
 ---
 
