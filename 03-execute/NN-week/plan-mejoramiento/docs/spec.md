@@ -4,7 +4,7 @@
 **Identifier:** music-school  
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
-**Version:** 1.0  
+**Version:** 1.2
 **Status:** Draft for Validation
 
 ---
@@ -23,6 +23,7 @@ Music School shall allow users to:
 
 - Manage the musical instrument catalog.
 - Organize instruments into five categories.
+- Manage logical category activation and deactivation as a scope extension.
 - View the total and available units of each instrument.
 - Manage student information.
 - Register instrument loans.
@@ -46,6 +47,7 @@ The system must include five initial categories:
 | CAT-05 | Electronic Instruments |
 
 These categories must be available through the data seeding tool.
+As a scope extension, the system supports logical category activation and deactivation. Categories are active by default. A category cannot be deactivated while any of its instruments has a pending loan. Inactive categories can be reactivated without deleting their records.
 
 ### 2.2 Instrument Models and Physical Units
 
@@ -114,6 +116,10 @@ The system must prevent two operators from simultaneously lending the last avail
 - Each model must record its total and available units.
 - Negative quantities must not be accepted.
 - Available units must not exceed total units.
+- Categories must support logical activation and deactivation.
+- Categories with pending instrument loans cannot be deactivated.
+- Inactive categories can be reactivated.
+- Instruments belonging to inactive categories cannot be borrowed.
 
 ### HU-02. Catalog Consultation
 
@@ -151,6 +157,7 @@ The system must prevent two operators from simultaneously lending the last avail
 
 - The loan must be associated with a student.
 - The instrument model must have available units.
+- The instrument must belong to an active category.
 - The student must not have another unreturned instrument.
 - The system must record the loan date.
 - The due date must be set to 21 days after loan registration.
@@ -289,6 +296,12 @@ Subsequent catalog changes must not modify historical loan and return informatio
 
 Instruments removed from the catalog must be managed through logical deactivation without deleting associated historical records.
 
+Logical deactivation also applies to instrument categories as a scope extension.
+
+A category cannot be deactivated while any associated instrument has a pending loan.
+
+Inactive categories cannot be used for new instrument loans and can be reactivated without deleting their records.
+
 ### RN-05. Concurrency Control
 
 When two operators simultaneously attempt to lend the last available unit of an instrument, only one operation may succeed.
@@ -307,10 +320,10 @@ The following functional requirements describe the operations supported by the M
 
 | Code | Functional Requirement | Related User Story |
 |---|---|---|
-| RF-01 | Register instrument models with a unique code, category, total units, and available units. | HU-01 |
+| RF-01 | Register instrument models with a unique code, category, total units, and available units. Support logical category activation and deactivation as a scope extension, subject to pending loan restrictions. | HU-01 |
 | RF-02 | View the catalog of active instruments, including their categories and available units. | HU-02 |
 | RF-03 | Register and view student information. | HU-03 |
-| RF-04 | Register loans associated with students and instruments, validating availability, pending loan limits, and the 21-day period. | HU-04 |
+| RF-04 | Register loans associated with students and instruments, validating availability, active category status, pending loan limits, and the 21-day period. | HU-04 |
 | RF-05 | Register loan returns, update availability, and preserve transaction history. | HU-05 |
 | RF-06 | Identify and view overdue loans that remain unreturned. | HU-06 |
 | RF-07 | View and control the total and available units of each instrument model while maintaining inventory integrity. | HU-07 |
@@ -417,6 +430,9 @@ The Music School system shall be considered functionally acceptable when the fol
 - Available units always remain between zero and total units.
 - Loan and return history is preserved without physical deletion or modification of snapshot data.
 - Instruments removed from the catalog use logical deactivation.
+- Categories can be logically activated and deactivated without deleting their records.
+- Categories with pending instrument loans cannot be deactivated.
+- Instruments belonging to inactive categories cannot be borrowed.
 - A report of the most requested instrument models is generated, ordered by the number of registered loans.
 - Concurrency is controlled when two operators attempt to lend the last available unit: one operation succeeds and the other receives HTTP `409 Conflict`.
 - Operation dates and times are stored and processed in UTC.
@@ -430,7 +446,7 @@ The following matrix links user stories to their functional requirements, busine
 
 | User Story | Functional Requirement | Business Rules | Non-Functional Requirements |
 |---|---|---|---|
-| HU-01 | RF-01 | RN-03 | RNF-01, RNF-02 |
+| HU-01 | RF-01 | RN-03, RN-04 | RNF-01, RNF-02 |
 | HU-02 | RF-02 | RN-04 | RNF-01 |
 | HU-03 | RF-03 | None directly | RNF-01 |
 | HU-04 | RF-04 | RN-01, RN-02, RN-03, RN-04, RN-05, RN-06 | RNF-01, RNF-02 |
@@ -475,3 +491,4 @@ Features not included in this specification must not be introduced.
 |---|---|---|---|
 | 1.0 | 07/11/2026 | Initial creation of the Music School requirements specification. | Draft |
 | 1.1 | 07/11/2026 | Adjustments to the acceptance criteria of user stories HU-02 and HU-05 to improve consistency with the data model. | Draft for Validation |
+| 1.2 | 24/11/2026 | Document category activation and deactivation as a scope extension aligned with the current implementation. | Under Review |
