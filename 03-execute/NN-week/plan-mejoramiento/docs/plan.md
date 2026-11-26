@@ -5,7 +5,7 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Draft for Validation
 
 ---
@@ -46,6 +46,8 @@ The plan includes the following activities:
 - Validation of functional and non-functional requirements.
 
 Development must comply with the ten user stories, six business rules, and five non-functional requirements established in `spec.md`.
+
+The project also includes deliverables and support components documented in this plan and `tasks.md`: the static public website, API-based data initialization tool, Docker Compose environment, automated tests, and database backup utility. These components support delivery, verification, or maintenance and do not automatically create additional domain requirements. Dashboard indicators and local administrative searches and filters are presentation mechanisms. Category activation/deactivation remains a scope extension under review.
 
 ## 5. Development Phases
 
@@ -92,7 +94,7 @@ Development must comply with the ten user stories, six business rules, and five 
 
 **Activities:**
 
-- Elaborate the conceptual data model documented in `data-model.md` version 1.3, identifying the five domain entities: Category, Instrument, Student, Loan, and Return.
+- Elaborate the conceptual data model documented in `data-model.md` version 1.4, identifying the five domain entities: Category, Instrument, Student, Loan, and Return.
 - Define and document the relationships between those entities, including minimum and maximum cardinalities, and provide the conceptual entity-relationship diagram.
 - Map the conceptual model to the logical model and to the physical MySQL schema implemented through Laravel migrations.
 - Identify entities and their attributes.
@@ -108,7 +110,7 @@ Development must comply with the ten user stories, six business rules, and five 
 
 **Deliverables:**
 
-- `data-model.md` version 1.3, including the conceptual model, entities, relationships, cardinalities, and conceptual-to-logical-to-physical correspondence.
+- `data-model.md` version 1.4, including the conceptual model, entities, relationships, cardinalities, and conceptual-to-logical-to-physical correspondence.
 - `api-contract.md`
 
 ### Phase 4. Task Organization and Implementation
@@ -129,11 +131,15 @@ Development must comply with the ten user stories, six business rules, and five 
 - Implement concurrency control.
 - Build the static public website.
 - Implement data seeding through the API.
+- Implement the documented management views for instruments and students, including their existing update operations.
+- Provide local searches and filters as React presentation mechanisms rather than independent business rules.
+- Present the most requested instruments report and existing inventory and loan indicators through the Dashboard.
 
 **Deliverables:**
 
 - `tasks.md`
 - Source code for the system components.
+- React presentation components and views.
 
 ### Phase 5. Infrastructure and Integration
 
@@ -153,6 +159,7 @@ Development must comply with the ten user stories, six business rules, and five 
 
 - Infrastructure configuration in `infra/`.
 - Integrated and executable application.
+- `infra/backup.ps1` as a technical maintenance utility; it creates a SQL export and does not implement restoration.
 
 ### Phase 6. Testing and Validation
 
@@ -304,3 +311,4 @@ This structure represents the planned organization of deliverables and does not 
 |---|---|---|---|
 | 1.0 | 07/11/2026 | Initial creation of the Music School development plan. | Draft for Validation |
 | 1.1 | 25/11/2026 | Updated Phase 3 to document the conceptual data model and its entity, relationship, cardinality, and model-correspondence deliverables, referencing data-model.md version 1.3. | Draft for Validation |
+| 1.2 | 25/11/2026 | Updated current data-model references to version 1.4 and distinguished domain features, project deliverables, presentation mechanisms, and maintenance support components without changing the planned phases or milestones. | Draft for Validation |
