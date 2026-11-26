@@ -94,23 +94,39 @@ Docker Compose integrates MySQL, Laravel, React, and the static public website.
 
 ## Implemented Features
 
-The system allows users to:
+### Domain Features
 
-- Retrieve and manage instrument categories.
-- Activate and deactivate instrument categories without deleting their records.
-- Prevent category deactivation when associated instruments have pending loans.
-- Validate category activation status during instrument registration, instrument updates, and loan registration.
-- Preserve existing instruments and historical records when category status changes.
-- Register, retrieve, update, and deactivate instruments.
-- Control available inventory units.
+- Register and retrieve instrument models and control their inventory.
 - Register and retrieve students.
+- Control available inventory units.
 - Register instrument loans.
-- Retrieve active, overdue, and historical loans.
+- Retrieve loan details, overdue loans, and student loan history through the API.
 - Register returns.
 - Retrieve the most requested instruments.
-- Manage operations through a React interface.
-- Present general information through an independent public website.
-- Initialize categories and instruments using a tool that consumes the API.
+
+### Previously Documented Operations
+
+Instrument updates, including total-unit recalculation while preserving units on loan, and student updates were already documented in TASK-07/TASK-08, TASK-09, and the earlier API contract. Their traceability is clarified in the current specification; this does not claim instructor approval or establish them as original-scope acceptance criteria.
+
+Category creation through the API is a previously documented operation, and initializing the five specified categories is original project scope. Manual category creation through React, logical category activation/deactivation, and related inactive-category restrictions remain scope extensions pending validation. Their implementation is not evidence of academic approval; the category lifecycle remains **Under Review**.
+
+### Scope Extension Pending Validation
+
+Logical category activation and deactivation, pending-loan restrictions, inactive-category validations, and category reactivation are documented as a scope extension in `docs/spec.md`. They remain **Under Review**. The repository contains no evidence of formal instructor approval.
+
+### Administrative Presentation
+
+React provides local searches and filters for administrative lists. The Dashboard presents existing API information, including inventory and loan counts, overdue loans, and the most-requested-instruments report. These controls and indicators are presentation mechanisms; they do not define separate business rules. Eligible availability includes only positive available units for active instruments in active categories; total physical inventory still includes inactive records. Each loan represents one physical unit, decreases availability by one, and its return restores one unit. Under the inventory-integrity rules, pending-loan count corresponds to units currently on loan. The availability percentage uses eligible available units divided by total physical units and is zero when total inventory is zero. This relationship is derived from the domain rules and is not presented as a separately executed aggregate test.
+
+The React application provides loan and return lists. Per-student loan history is available through the API, but there is no separate student-history screen.
+
+### Project Deliverables and Technical Support
+
+- The static public website is a project deliverable documented in TASK-20. It presents general information and does not provide a live catalog or loan transactions.
+- Docker Compose integrates the API, MySQL, React application, and public website.
+- The API-based tool initializes the five categories and sample instruments without direct database access.
+- Automated tests support requirement verification. Historical results are recorded separately and are not new executions.
+- Laravel default user/session/cache/queue tables, the welcome route, and the `/up` health route are framework or infrastructure scaffolding, not domain features. No authentication or authorization flow is claimed as implemented.
 
 ## Business Rules
 
@@ -168,7 +184,7 @@ Loans and returns are preserved in separate records to maintain the history of o
 
 Logical category activation and deactivation are documented as a scope extension in version 1.2 of `docs/spec.md`.
 
-The following rules apply:
+The following behavior is implemented for the pending scope extension and is not claimed as formally approved:
 
 - Categories are active by default.
 - Categories are managed through logical activation and deactivation.
@@ -446,6 +462,16 @@ Errores: 0
 
 Execution evidence is recorded in `docs/evidence.md`.
 
+## Database Backup Utility
+
+`infra/backup.ps1` creates a timestamped SQL export by invoking `mysqldump` in the running Docker Compose MySQL service. From the `infra/` directory, with the Compose `.env` configuration available and the main MySQL service running, execute:
+
+```powershell
+.\backup.ps1
+```
+
+The script writes the export under `infra/backups/`. It does not restore a backup, verify recoverability, or provide automated recovery. No restoration script is present in the repository.
+
 ## Automated Tests
 
 The backend contains **16 automated test files**.
@@ -547,6 +573,7 @@ Detailed evidence is available in `docs/evidence.md` and `docs/evidence/concurre
 | `docs/api-contract.md` | API contract. |
 | `docs/evidence.md` | Technical evidence and test results. |
 | `docs/evidence/concurrency-test.md` | Concurrency evidence. |
+| `docs/evidence/availability-validation.md` | Manual availability and loan-selector validation. |
 | `docs/adr/ADR-001.md` | Architectural Decision Record 001. |
 | `docs/adr/ADR-002.md` | Architectural Decision Record 002. |
 | `docs/adr/ADR-003.md` | Architectural Decision Record 003. |
@@ -569,6 +596,16 @@ The work plan contains exactly 23 tasks.
 | Task Plan Progress | 100% |
 
 The technical revalidation performed on 24/11/2026 confirmed the automated test results, database structure, migration status, inventory constraints, category management behavior, concurrency scenario, and availability of the main Docker services.
+
+### Latest Automated and Manual Validation — 25/11/2026
+
+The latest isolated PHPUnit run used PHP 8.3.37, PHPUnit 12.5.43, and the `music_school_test` database in Docker project `music-school-clean`. It passed **57 tests with 148 assertions**, with no errors, failures, or PHPUnit warnings. The earlier 56-test/138-assertion result remains recorded as a historical execution.
+
+The isolated React container rebuilt successfully. Oxlint analyzed 15 files with 104 rules, reporting 0 errors and 9 pre-existing warnings. Vite 8.3.7 transformed 93 modules and completed the production build in 290 ms. The frontend is not warning-free.
+
+Manual validation at `http://localhost:5174` recorded 76 physical units and 69 loan-eligible units initially (90.79% in Dashboard and 91% rounded in Instruments). With the Strings category inactive, 46 units were eligible (60.53%); eight selector options summed to 46 units, and `INS-001`/`INS-002` were absent. Reactivation restored 69 eligible units and the initial values, including 15 units for `INS-001` and 8 for `INS-002`. No loans were registered. The detailed record is in `docs/evidence/availability-validation.md`; no repository screenshots are claimed.
+
+The snapshot endpoint test in `LoanSnapshotTest.php` passed as part of this suite and verified the four original loan snapshot fields after real student and instrument `PUT` requests. Full results and evidence distinctions are recorded in `docs/evidence.md`.
 
 The documentation has been updated to reflect the current implementation.
 
@@ -630,5 +667,8 @@ Detailed results and execution commands are available in `docs/evidence.md`.
 | Date | Description |
 |---|---|
 | 24/11/2026 | Updated the project documentation to describe logical category activation and deactivation, database integrity constraints, transaction flows, testing configuration, concurrency evidence, and technical revalidation results. |
+| 25/11/2026 | Clarified requirement traceability and scope classifications for previously documented operations, supplementary deliverables, Dashboard presentation, and technical support components. Documented the backup script's export-only behavior and preserved historical console/test results. |
+| 25/11/2026 | Corrected category scope descriptions and inventory metric explanations; clarified that pending loans represent units on loan under the implemented inventory rules. |
+| 25/11/2026 | Recorded the latest isolated PHPUnit and frontend build results, linked endpoint-level snapshot evidence, and added the manual availability validation record. |
 
 The documented scope extension remains subject to formal validation.
