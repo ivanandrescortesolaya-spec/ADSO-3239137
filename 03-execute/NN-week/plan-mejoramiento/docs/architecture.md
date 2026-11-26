@@ -5,7 +5,7 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.3
+**Version:** 1.6
 **Status:** Under Review
 
 ---
@@ -49,7 +49,7 @@ Provide the user interface for interacting with the system's features.
 
 **Main Functions:**
 
-- View the instrument catalog.
+- View and manage the administrative instrument inventory. No separate student-facing catalog view is implemented in the React application.
 - Register and manage instrument categories.
 - Activate and deactivate categories through the REST API.
 - Display the current activation status of categories.
@@ -59,9 +59,13 @@ Provide the user interface for interacting with the system's features.
 - Register loans.
 - Register returns.
 - View overdue loans.
-- View transaction history.
+- View loan and return lists. Per-student loan history is available through the API; the React application has no separate student-history screen.
 - View inventory.
 - Display the most requested instruments report.
+- Display existing inventory, student, active-loan, overdue-loan, and report indicators in the Dashboard.
+- Provide local search and filter controls in administrative lists.
+- Update permitted instrument and student information through the corresponding API operations.
+- Display active and inactive instruments for administration; loan eligibility is determined by backend status and availability checks.
 
 **Implementation Rules:**
 
@@ -70,6 +74,8 @@ Provide the user interface for interacting with the system's features.
 - Display user-facing messages in Spanish.
 - Keep presentation logic separate from business rules.
 - Do not access the database directly.
+
+Category creation through the API is a previously documented operation, while initialization of the five specified categories is part of the original scope. Manual category creation through React, logical activation/deactivation, and inactive-category restrictions remain scope extensions pending validation. No formal instructor approval is evidenced; the architecture document remains Under Review.
 
 ### 4.2. Backend — PHP and Laravel
 
@@ -95,6 +101,7 @@ Centralize business logic, validate operations, and control data access.
 - Generate the most requested instruments report.
 - Control simultaneous operations.
 - Provide HTTP and JSON responses.
+- Expose read and update operations for students and instruments as documented in the API contract.
 
 **Internal Organization:**
 
@@ -214,6 +221,24 @@ Facilitate the initialization of test data through API endpoints.
 The tool must prepare the data required to validate system features without directly modifying the database outside the established mechanisms.
 
 The initial data must include the five instrument categories defined in `spec.md`.
+
+The tool initializes the five specified categories and sample instruments through the API. This original-scope initialization is distinct from category creation through the API as a general operation and from manual category creation in the React administration view. Manual React creation and category lifecycle operations remain scope extensions pending validation.
+
+### 4.7. Dashboard and Administrative Presentation
+
+The Dashboard is a React presentation component. It consolidates responses from the instrument, student, loan, overdue-loan, and report APIs. It displays instrument and student counts, total and available-unit aggregates, active and overdue loan counts, an availability percentage, and the most-requested-instruments ranking with visual bars.
+
+These indicators do not create independent business rules. Eligible units available for new loans are the `available_units` of instruments whose instrument and category are active. Inactive records may retain physically unloaned units, which remain part of total physical inventory but are not eligible for new loans. Each loan represents one physical unit: loan registration decreases availability by one and return registration restores one. Under the inventory-integrity rules, pending loans correspond to units currently on loan. The Dashboard and inventory view use the same eligible-availability criterion; the percentage uses eligible available units divided by total physical units, and displays zero when the total is zero. Manual observations of nonempty inventory states are recorded in `docs/evidence/availability-validation.md`; the zero-total guard is documented from source inspection and was not manually exercised.
+
+RNF-01 requires backend validation to prevent unauthorized modifications or inconsistent data, secret management through environment variables, and secure password hashing when applicable. Laravel input and business-rule validation, database constraints, transactions, concurrency locks, environment-based configuration, and password hashing are implemented. The current API routes have no authentication or role-based authorization mechanism. The academic interpretation of “unauthorized modifications” remains pending validation; no authentication or role feature is inferred from RNF-01.
+
+Administrative React views provide local searches and filters for the records returned by the API. These controls affect presentation only and do not change API routes or backend rules.
+
+### 4.8. Maintenance Support and Framework Scaffolding
+
+`infra/backup.ps1` invokes `mysqldump` through the running Docker Compose MySQL service and writes a timestamped SQL export under `infra/backups/`. It must be run from the `infra/` directory with the Compose environment configured and the MySQL service running. It does not implement restoration, recovery validation, or an automated recovery process.
+
+Laravel's default `users`, password-reset, session, cache, and queue tables, model scaffolding, web welcome route, and `/up` health route are framework or infrastructure components. They are not Music School domain features. No authentication or authorization flow is documented as implemented; the API contract leaves it conditional on approved scope.
 
 ## 5. Logical Architecture
 
@@ -354,7 +379,7 @@ Additional evidence is documented in `docs/evidence.md`.
 
 ### 6.4. Category Activation and Deactivation
 
-Logical category activation and deactivation are documented as a scope extension defined in `spec.md`.
+Logical category activation and deactivation are documented as a scope extension in `spec.md` and remain under review. The Accepted status of ADR-003 applies to its recorded instrument-history decision and does not establish instructor approval of the category extension.
 
 #### Category Deactivation
 
@@ -405,6 +430,8 @@ The architecture must comply with the following guidelines:
 Communication between the frontend and backend will be performed through a REST API using HTTP and JSON.
 
 The detailed communication contract will be documented in `api-contract.md`.
+
+Loan details are retrieved through `GET /loans/{id}` and include the associated return record when one exists. The historical contract's `GET /loans/{id}/returns` operation is not implemented in the current route set; return registration uses `POST /loans/{loanId}/returns`.
 
 This document must define:
 
@@ -562,3 +589,6 @@ These records must be maintained in the `docs/adr/` directory.
 | 1.1 | 08/11/2026 | Updated the logical architecture diagram, concurrency control description, Docker Compose infrastructure organization, data access through Eloquent and migrations, and directory structure. | Draft for Validation |
 | 1.2 | 24/11/2026 | Documented logical category activation and deactivation, aligned loan and return transaction flows with the implementation, updated concurrency test evidence, and documented the isolated testing environment and Docker services. | Under Review |
 | 1.3 | 25/11/2026 | Updated the data-model reference to cover its conceptual, logical, and physical models and clarified that Laravel migrations materialize the physical MySQL schema. Unified the current status with the existing review state. | Under Review |
+| 1.4 | 25/11/2026 | Documented actual Dashboard and administrative presentation behavior, student/instrument management, the API-only student history query, the static website and API seeding tool, the backup script limits, and Laravel scaffold components. Clarified that category lifecycle remains under review and that presentation metrics do not change backend rules. | Under Review |
+| 1.5 | 25/11/2026 | Corrected HU-02 and category-scope traceability, documented eligible availability and the one-loan/one-unit relationship, and clarified implemented RNF-01 controls and pending interpretation. | Under Review |
+| 1.6 | 25/11/2026 | Linked the current isolated test, frontend build/lint, and manual availability evidence while preserving category-scope review status and distinguishing source inspection from manual validation. | Under Review |
