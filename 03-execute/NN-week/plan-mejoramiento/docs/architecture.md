@@ -5,8 +5,8 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.2
-**Status:** Draft for Validation
+**Version:** 1.3
+**Status:** Under Review
 
 ---
 
@@ -170,7 +170,7 @@ The main tables will be:
 
 The structure implemented through migrations must remain consistent with the data model documented in `docs/data-model.md`.
 
-Therefore, `data-model.md` will serve as the logical design reference, while Laravel migrations will provide the mechanism for creating and maintaining the MySQL database schema.
+Therefore, `data-model.md` documents the conceptual and logical models and their correspondence with the physical model. Laravel migrations materialize and maintain the physical schema in MySQL.
 
 ### 4.4. Static Public Website
 
@@ -561,3 +561,4 @@ These records must be maintained in the `docs/adr/` directory.
 | 1.0 | 07/11/2026 | Initial creation of the Music School architecture document. | Draft for Validation |
 | 1.1 | 08/11/2026 | Updated the logical architecture diagram, concurrency control description, Docker Compose infrastructure organization, data access through Eloquent and migrations, and directory structure. | Draft for Validation |
 | 1.2 | 24/11/2026 | Documented logical category activation and deactivation, aligned loan and return transaction flows with the implementation, updated concurrency test evidence, and documented the isolated testing environment and Docker services. | Under Review |
+| 1.3 | 25/11/2026 | Updated the data-model reference to cover its conceptual, logical, and physical models and clarified that Laravel migrations materialize the physical MySQL schema. Unified the current status with the existing review state. | Under Review |
