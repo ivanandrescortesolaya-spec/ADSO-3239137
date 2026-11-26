@@ -5,8 +5,8 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.2
-**Status:** Draft for Validation
+**Version:** 1.4
+**Status:** Under Review
 
 ---
 
@@ -49,9 +49,9 @@ The initial data must include the following five categories:
 |---|---|
 | CAT-01 | Cuerdas |
 | CAT-02 | Vientos |
-| CAT-03 | Percusion |
+| CAT-03 | Percusión |
 | CAT-04 | Teclados |
-| CAT-05 | Electronicos |
+| CAT-05 | Electrónicos |
 
 The tool may use API endpoints to register the categories, instruments, and students required for system testing.
 
@@ -103,7 +103,7 @@ Example:
 
 ```json
 {
-  "message": "Operacion realizada correctamente.",
+  "message": "Operación realizada correctamente.",
   "data": {
     "id": 1
   }
@@ -116,7 +116,7 @@ Example:
 
 ```json
 {
-  "message": "No fue posible completar la operacion.",
+  "message": "No fue posible completar la operación.",
   "errors": {}
 }
 ```
@@ -127,7 +127,7 @@ Example:
 
 ```json
 {
-  "message": "Los datos proporcionados no son validos.",
+  "message": "Los datos proporcionados no son válidos.",
   "errors": {
     "student_id": [
       "El estudiante seleccionado no existe."
@@ -182,7 +182,7 @@ Example response:
     {
       "id": 3,
       "code": "CAT-03",
-      "name": "Percusion",
+      "name": "Percusión",
       "is_active": true
     },
     {
@@ -194,7 +194,7 @@ Example response:
     {
       "id": 5,
       "code": "CAT-05",
-      "name": "Electronicos",
+      "name": "Electrónicos",
       "is_active": true
     }
   ]
@@ -240,7 +240,7 @@ HTTP Status: `201 Created`
 
 ```json
 {
-  "message": "Categoria registrada correctamente.",
+  "message": "Categoría registrada correctamente.",
   "data": {
     "id": 1,
     "code": "CAT-01",
@@ -269,7 +269,7 @@ HTTP Status: `201 Created`
 
 - The category must exist.
 - The category must be active.
-- The category must not have instruments with pending returns.
+- The category must not have instruments with loans pending return.
 - Deactivation must set `is_active` to `false` without physically deleting the category.
 - Instruments belonging to inactive categories must not be available for new loans.
 
@@ -279,7 +279,7 @@ No request body is required.
 
 ```json
 {
-  "message": "Categoria desactivada correctamente.",
+  "message": "Categoría desactivada correctamente.",
   "data": {
     "id": 1,
     "code": "CAT-01",
@@ -292,7 +292,7 @@ No request body is required.
 **Error Responses:**
 
 - `404 Not Found`: The category does not exist.
-- `409 Conflict`: The category is already inactive or has instruments with pending returns.
+- `409 Conflict`: The category is already inactive or has associated instruments with loans pending return.
 
 ### 6.4. Activate a Category
 
@@ -318,7 +318,7 @@ No request body is required.
 
 ```json
 {
-  "message": "Categoria activada correctamente.",
+  "message": "Categoría activada correctamente.",
   "data": {
     "id": 1,
     "code": "CAT-01",
@@ -353,7 +353,7 @@ Example response:
       "id": 1,
       "category_id": 1,
       "code": "GTR-001",
-      "name": "Guitarra acustica",
+      "name": "Guitarra acústica",
       "total_units": 5,
       "available_units": 3,
       "is_active": true
@@ -387,7 +387,7 @@ Example request:
 {
   "category_id": 1,
   "code": "GTR-002",
-  "name": "Guitarra electrica",
+  "name": "Guitarra eléctrica",
   "total_units": 4
 }
 ```
@@ -417,7 +417,7 @@ Validations:
 {
   "category_id": 1,
   "code": "GTR-001",
-  "name": "Guitarra acustica profesional",
+  "name": "Guitarra acústica profesional",
   "total_units": 6
 }
 ```
@@ -580,7 +580,7 @@ Example response:
 
 ```json
 {
-  "message": "Prestamo registrado correctamente.",
+  "message": "Préstamo registrado correctamente.",
   "data": {
     "id": 1,
     "student_id": 1,
@@ -588,7 +588,7 @@ Example response:
     "student_code": "EST-001",
     "student_name": "Estudiante de prueba",
     "instrument_code": "GTR-001",
-    "instrument_name": "Guitarra acustica",
+    "instrument_name": "Guitarra acústica",
     "loaned_at": "2026-11-08T14:30:00Z",
     "due_at": "2026-11-29T14:30:00Z",
     "created_at": "2026-11-08T14:30:00Z"
@@ -690,17 +690,9 @@ Duplicate conflicts must be handled and returned as `409 Conflict`, not as an in
 
 If the loan has already been returned, the operation must be rejected and inventory must not be increased again.
 
-### 10.2. Retrieve a Return
+### 10.2. Return Data in Loan Details
 
-| Property | Definition |
-|---|---|
-| Method | GET |
-| Endpoint | `/loans/{id}` |
-| Description | Retrieve loan details, including the associated return record when available. |
-| Successful Response | 200 OK |
-| Possible Error | 404 Not Found |
-
-The associated return record is retrieved as part of the loan details.
+The associated return record is retrieved as part of the loan details returned by `GET /loans/{id}`, defined in Section 9.2. This is not a separate API operation; it uses the loan-detail response and its existing `200 OK` and `404 Not Found` outcomes.
 
 If the loan has not been returned, the associated return record is null.
 
@@ -731,7 +723,7 @@ Example response:
     {
       "instrument_id": 1,
       "instrument_code": "GTR-001",
-      "instrument_name": "Guitarra acustica",
+      "instrument_name": "Guitarra acústica",
       "total_loans": 15
     },
     {
@@ -794,19 +786,19 @@ Examples:
 |---|---|---|
 | Student does not exist | 404 | El estudiante no existe. |
 | Instrument does not exist | 404 | El instrumento no existe. |
-| Instrument has no available units | 409 | No hay unidades disponibles para este instrumento. |
-| Student has a pending loan | 409 | El estudiante ya tiene un instrumento sin devolver. |
-| Student has an overdue loan | 409 | El estudiante tiene prestamos vencidos pendientes. |
-| Inactive instrument | 409 | No es posible prestar un instrumento dado de baja. |
-| Loan already returned | 409 | Este prestamo ya tiene una devolucion registrada. |
-| Invalid data | 422 | Los datos proporcionados no son validos. |
-| Internal error | 500 | Ocurrio un error interno del servidor. |
+| Instrument has no available units | 409 | No hay unidades disponibles de este instrumento. |
+| Student has a pending loan | 409 | El estudiante tiene un préstamo pendiente de devolución. |
+| Student has an overdue loan | 409 | El estudiante tiene un préstamo pendiente de devolución. |
+| Inactive instrument | 409 | El instrumento no está disponible para préstamos. |
+| Loan already returned | 409 | Este préstamo ya tiene registrada una devolución. |
+| Invalid data | 422 | Los datos proporcionados no son válidos. |
+| Internal error | 500 | Ocurrió un error interno del servidor. |
 | Category does not exist | 404 | La categoría no existe. |
-| Category already inactive | 409 | La categoria ya se encuentra inactiva. |
-| Category already active | 409 | La categoria ya se encuentra activa. |
-| Category has pending loans | 409 | No se puede desactivar esta categoria porque tiene instrumentos con prestamos pendientes de devolucion |
-| Register or update an instrument with an inactive category | 422 | No se puede registrar un instrumento en una categoria inactiva |
-| Loan involving an inactive category | 422 | No se puede prestar un instrumento de una categoria inactiva |
+| Category already inactive | 409 | La categoría ya se encuentra inactiva. |
+| Category already active | 409 | La categoría ya se encuentra activa. |
+| Category has pending loans | 409 | No se puede desactivar esta categoría porque tiene instrumentos con préstamos pendientes de devolución. |
+| Register or update an instrument with an inactive category | 422 | No se puede registrar un instrumento en una categoría inactiva. |
+| Loan involving an inactive category | 422 | No se puede prestar un instrumento de una categoría inactiva. |
 
 ## 14. Security and Validation
 
@@ -861,3 +853,5 @@ The API contract shall be considered validated when:
 | 1.0 | 08/11/2026 | Initial creation of the Music School REST API contract. | Draft for Validation |
 | 1.1 | 08/11/2026 | Added the POST /categories endpoint, validations to maintain inventory integrity, concurrency control for returns, and conflict handling for duplicate operations. | Draft for Validation |
 | 1.2 | 24/11/2026 | Documented category activation and deactivation endpoints, inactive category validations, and aligned business rule identifiers with spec.md version 1.2. | Under Review |
+| 1.3 | 25/11/2026 | Removed the duplicate return-retrieval operation, clarified pending-loan wording for category deactivation, corrected Spanish orthography in user-facing examples, and unified the current document status with the review state. | Under Review |
+| 1.4 | 25/11/2026 | Aligned documented API response-message examples with the corrected backend messages and corrected Spanish orthography in the validation and server-error examples. | Under Review |
