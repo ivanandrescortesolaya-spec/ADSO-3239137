@@ -5,7 +5,7 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.3
+**Version:** 1.4
 **Status:** Draft for Validation
 
 ---
@@ -137,9 +137,9 @@ Initial categories:
 |---|---|
 | CAT-01 | Cuerdas |
 | CAT-02 | Vientos |
-| CAT-03 | Percusion |
+| CAT-03 | Percusión |
 | CAT-04 | Teclados |
-| CAT-05 | Electronicos |
+| CAT-05 | Electrónicos |
 
 ### 5.2. `instruments` Table
 
@@ -429,5 +429,6 @@ The data model shall be considered acceptable when it meets the following condit
 | 1.1 | 07/11/2026 | Added implementation considerations, referential integrity, concurrency control, inventory constraints, and acceptance criteria. |
 | 1.2 | 24/11/2026 | Documented logical category activation and deactivation, aligned historical field names, data types, indexes, and inventory constraints with Laravel migrations. |
 | 1.3 | 25/11/2026 | Added an explicit conceptual model with domain entities, minimum and maximum cardinalities, a conceptual ER diagram, specification rule traceability, and correspondence with the logical and physical models. |
+| 1.4 | 25/11/2026 | Corrected the Spanish category labels to match the UTF-8 values in `tool/categories.json`. No conceptual, cardinality, or constraint changes were made. |
 
 **Current Status:** Draft for Validation.
