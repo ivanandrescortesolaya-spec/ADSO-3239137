@@ -4,9 +4,9 @@
 **Identifier:** music-school  
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Evidence Register
-**Date:** 25/11/2026
+**Date:** 26/11/2026
 
 ---
 
@@ -58,6 +58,9 @@ Record and organize the evidence used to verify the deliverables developed and p
 | EVT-14 | Return transaction implementation | `api/app/Services/ReturnService.php` |
 | EVT-15 | Current isolated PHPUnit suite and endpoint snapshot verification | `api/tests/Feature/`, `api/tests/Unit/` |
 | EVT-16 | Manual inventory availability and loan-selector validation | `docs/evidence/availability-validation.md` |
+| EVT-17 | Spanish application localization and validation messages | `api/lang/es/`, `api/config/app.php`, `api/.env.example` |
+| EVT-18 | Administrative interface localization and category statistics verification | `app/src/` |
+| EVT-19 | Public website branding and visual verification | `page/` |
 
 ## 5. Validation Criteria
 
@@ -411,6 +414,73 @@ The React application was checked at `http://localhost:5174` against the isolate
 
 During one browser session, a 0% Instrument availability display was observed while Chrome translated the page. In an incognito session without automatic translation, the displayed value was 91%, consistent with the eligible-unit calculation. The code formula was inspected and judged correct; the browser's internal cause for the temporary display was not established. No source change was made to `Instruments.jsx` for this observation.
 
+## 8.12. Localization and Interface Revalidation — 26/11/2026
+
+This entry records the latest isolated regression execution, localization changes, interface corrections, and visual observations. Previous execution results in Sections 6 and 8.1–8.11 remain historical evidence.
+
+### Backend Localization and Validation Messages
+
+The application locale and fallback locale are configured for Spanish. The configuration is represented in `api/.env.example`, `api/config/app.php`, and `infra/docker-compose.yml`.
+
+Spanish validation rules and attribute names are defined in `api/lang/es/validation.php`. General validation messages and singular/plural error summaries are defined in `api/lang/es.json`. The localization includes nine translated validation rules and ten translated attribute names. Technical identifiers remain in English.
+
+HTTP 422 responses were manually verified in the isolated environment by submitting empty student and loan registration requests. The student response displayed two additional validation errors in Spanish, and the loan response displayed one additional validation error in Spanish. These observations verify the tested requests only; they do not establish that every possible Laravel error message has been translated.
+
+### Automated Regression Validation
+
+The latest isolated PHPUnit execution used the `music-school-clean` Docker project and the `music_school_test` database. Its MySQL volume was `music-school-clean_music_school_data`.
+
+| Indicator | Result |
+|---|---|
+| PHP | 8.3.37 |
+| PHPUnit | 12.5.43 |
+| Tests passed | 57 |
+| Assertions | 148 |
+| Failures | 0 |
+| Errors | 0 |
+| PHPUnit warnings | 0 |
+| Duration | 2.556 seconds |
+| Memory | 54.50 MB |
+| Database isolation test | PASS |
+
+The isolated regression suite passed. These results supplement the previous executions, which remain preserved above.
+
+### Administrative Interface
+
+Visible Dashboard labels were replaced with “Panel de control”. The student management heading was changed from “CRUD” to “Gestión”. The application title is “Music School”, the HTML language is configured as Spanish, and a custom musical SVG favicon was added.
+
+The category statistics indicator was corrected to use the existing categories and instruments API responses. In the isolated environment, the corrected indicator displayed five categories and five categories with associated instruments. It counts categories with associated instruments regardless of instrument activation status. This correction required no new API endpoints or database schema changes.
+
+### Final Frontend Build and Lint
+
+The Docker application image build and isolated React container recreation completed successfully. Vite 8.3.7 produced a successful production build.
+
+| Check | Result |
+|---|---|
+| Modules transformed | 93 |
+| Build duration | 265 ms |
+| Oxlint files | 15 |
+| Oxlint rules | 104 |
+| Oxlint errors | 0 |
+| Oxlint warnings | 9 |
+| Lint duration | 36 ms |
+
+The nine remaining lint warnings comprise one unused `StrictMode` import, two render purity warnings related to `Date`, and six state-update-in-effect warnings. The frontend is not warning-free.
+
+### Public Website Visual Verification
+
+Spanish orthography was improved and a custom musical SVG favicon was added to the public website. Desktop visual verification was performed. The initial mobile viewport was inspected at approximately 400 × 738 pixels, with no visible horizontal overflow in that viewport.
+
+Complete mobile navigation and all anchor destinations were not independently verified. No screenshots are claimed as stored in the repository.
+
+### Synchronization and Infrastructure Protection
+
+Nine selected files were synchronized from the isolated environment to the original project. SHA-256 comparisons confirmed identical contents for all nine files.
+
+The original Docker Compose configuration retained its existing ports and database connection settings. Only Spanish locale and fallback locale settings were added to the original API and testing services. The original Docker Compose configuration passed `config --quiet`.
+
+No automated tests were executed against the original application database during this revalidation. The original containers were not rebuilt as part of the latest isolated frontend verification.
+
 ## 9. Change Log
 
 | Version | Date | Description |
@@ -418,6 +488,7 @@ During one browser session, a 0% Instrument availability display was observed wh
 | 1.0 | 10/11/2026 | Initial creation of the general evidence register. |
 | 1.1 | 24/11/2026 | Updated technical evidence, automated test results, category management validation, database migrations, inventory constraints, test database isolation, concurrency results, and Docker infrastructure verification. |
 | 1.2 | 25/11/2026 | Added the current isolated PHPUnit execution, endpoint-level snapshot result, frontend build/lint results, and manual availability validation while retaining prior test results as historical evidence. |
+| 1.3 | 26/11/2026 | Added Spanish backend localization and validation evidence, isolated regression results, administrative interface corrections, frontend build and remaining lint warnings, public website visual verification, and synchronization and infrastructure protection records. |
 
 ---
 
