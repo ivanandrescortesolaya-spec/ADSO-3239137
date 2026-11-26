@@ -121,7 +121,7 @@ class CategoryTest extends TestCase
             ->assertStatus(409)
             ->assertJsonPath(
                 'message',
-                'No se puede desactivar esta categoria porque tiene instrumentos con prestamos pendientes de devolucion'
+                'No se puede desactivar esta categoría porque tiene instrumentos con préstamos pendientes de devolución.'
             );
 
         $this->assertDatabaseHas('categories', [

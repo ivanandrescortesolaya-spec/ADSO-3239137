@@ -40,7 +40,7 @@ class CategoryController extends Controller
         $category = Category::create([...$validated, 'is_active' => true]);
 
         return response()->json([
-            'message' => 'Categoria registrada correctamente.',
+            'message' => 'Categoría registrada correctamente.',
             'data' => $category,
         ], 201);
     }
@@ -50,7 +50,7 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         if (!$category->is_active) {
-            throw new ConflictHttpException('La categoria ya se encuentra inactiva.');
+            throw new ConflictHttpException('La categoría ya se encuentra inactiva.');
         }
 
         $hasPendingLoans = $category->instruments()
@@ -61,14 +61,14 @@ class CategoryController extends Controller
 
         if ($hasPendingLoans) {
             throw new ConflictHttpException(
-                'No se puede desactivar esta categoria porque tiene instrumentos con prestamos pendientes de devolucion'
+                'No se puede desactivar esta categoría porque tiene instrumentos con préstamos pendientes de devolución.'
             );
         }
 
         $category->update(['is_active' => false]);
 
         return response()->json([
-            'message' => 'Categoria desactivada correctamente.',
+            'message' => 'Categoría desactivada correctamente.',
             'data' => $category,
         ], 200);
     }
@@ -78,13 +78,13 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         if ($category->is_active) {
-            throw new ConflictHttpException('La categoria ya se encuentra activa.');
+            throw new ConflictHttpException('La categoría ya se encuentra activa.');
         }
 
         $category->update(['is_active' => true]);
 
         return response()->json([
-            'message' => 'Categoria activada correctamente.',
+            'message' => 'Categoría activada correctamente.',
             'data' => $category,
         ], 200);
     }

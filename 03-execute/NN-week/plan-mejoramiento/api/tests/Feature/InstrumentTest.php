@@ -82,7 +82,7 @@ class InstrumentTest extends TestCase
         ])
             ->assertUnprocessable()
             ->assertJsonValidationErrors([
-                'category_id' => 'No se puede registrar un instrumento en una categoria inactiva',
+                'category_id' => 'No se puede registrar un instrumento en una categoría inactiva.',
             ]);
 
         $this->assertDatabaseMissing('instruments', ['code' => 'INS-INACTIVE']);
