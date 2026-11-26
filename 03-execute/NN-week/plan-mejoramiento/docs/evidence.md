@@ -4,9 +4,9 @@
 **Identifier:** music-school  
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Evidence Register
-**Date:** 24/11/2026
+**Date:** 25/11/2026
 
 ---
 
@@ -56,6 +56,8 @@ Record and organize the evidence used to verify the deliverables developed and p
 | EVT-12 | Static public website | `page/` |
 | EVT-13 | Loan transaction implementation | `api/app/Services/LoanService.php` |
 | EVT-14 | Return transaction implementation | `api/app/Services/ReturnService.php` |
+| EVT-15 | Current isolated PHPUnit suite and endpoint snapshot verification | `api/tests/Feature/`, `api/tests/Unit/` |
+| EVT-16 | Manual inventory availability and loan-selector validation | `docs/evidence/availability-validation.md` |
 
 ## 5. Validation Criteria
 
@@ -361,12 +363,61 @@ The updated documentation describes the existing implementation and its verified
 
 Formal evaluation, technical presentation, and approval of the documented scope extension remain pending.
 
+## 8.11. Current Automated and Manual Validation — 25/11/2026
+
+This entry records the latest execution results and visual validation supplied for this review. It supplements, and does not replace, the historical 56-test/138-assertion execution recorded in Sections 6 and 8.1–8.10.
+
+### Automated PHPUnit Validation
+
+**Execution command:**
+
+```bash
+docker compose -p music-school-clean --env-file infra/.env -f infra/docker-compose.yml --profile testing run --rm --no-deps api-test php vendor/bin/phpunit --display-warnings
+```
+
+| Indicator | Result |
+|---|---|
+| PHP | 8.3.37 |
+| PHPUnit | 12.5.43 |
+| Isolated Docker project | `music-school-clean` |
+| MySQL volume | `music-school-clean_music_school_data` |
+| Effective test database | `music_school_test` |
+| Database isolation test | 1 test, 1 assertion, passed |
+| Loan snapshot test | 2 tests, 11 assertions, passed |
+| Full suite | 57 tests, 148 assertions, passed |
+| Failures, errors, PHPUnit warnings | 0 |
+| Duration | 2.854 seconds |
+| Memory | 54.50 MB |
+
+The executed `LoanSnapshotTest.php` now includes endpoint-level updates using `PUT /students/{id}` and `PUT /instruments/{id}`. It verifies successful responses, changed current records, and preservation of the original `student_code`, `student_name`, `instrument_code`, and `instrument_name` in the loan snapshot.
+
+### Frontend Build and Lint Validation
+
+| Check | Result |
+|---|---|
+| React container rebuild | Successful |
+| Oxlint files and rules | 15 files, 104 rules |
+| Oxlint errors | 0 |
+| Oxlint warnings | 9 pre-existing warnings |
+| Vite | 8.3.7, successful production build |
+| Modules transformed | 93 |
+| Build duration | 290 ms |
+
+The frontend is not described as warning-free.
+
+### Manual Availability Validation
+
+The React application was checked at `http://localhost:5174` against the isolated API. No loans were registered during this visual validation. The observed baseline, category deactivation, and reactivation results are recorded in [`availability-validation.md`](evidence/availability-validation.md). No screenshot is claimed as a repository artifact.
+
+During one browser session, a 0% Instrument availability display was observed while Chrome translated the page. In an incognito session without automatic translation, the displayed value was 91%, consistent with the eligible-unit calculation. The code formula was inspected and judged correct; the browser's internal cause for the temporary display was not established. No source change was made to `Instruments.jsx` for this observation.
+
 ## 9. Change Log
 
 | Version | Date | Description |
 |---|---|---|
 | 1.0 | 10/11/2026 | Initial creation of the general evidence register. |
 | 1.1 | 24/11/2026 | Updated technical evidence, automated test results, category management validation, database migrations, inventory constraints, test database isolation, concurrency results, and Docker infrastructure verification. |
+| 1.2 | 25/11/2026 | Added the current isolated PHPUnit execution, endpoint-level snapshot result, frontend build/lint results, and manual availability validation while retaining prior test results as historical evidence. |
 
 ---
 
