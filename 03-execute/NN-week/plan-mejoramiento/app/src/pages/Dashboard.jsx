@@ -75,7 +75,10 @@ function Dashboard() {
         0
       );
       const availableUnits = instruments.reduce(
-        (total, item) => total + Number(item.available_units || 0),
+        (total, item) =>
+          item.is_active && item.category?.is_active && Number(item.available_units) > 0
+            ? total + Number(item.available_units)
+            : total,
         0
       );
       setStats((previous) => ({
