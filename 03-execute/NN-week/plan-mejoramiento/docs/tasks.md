@@ -5,9 +5,9 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** 3239137  
 **Apprentice Identification:** A12  
-**Version:** 1.4
+**Version:** 1.5
 **Status:** Completed
-**Update Date:** 24/11/2026
+**Update Date:** 25/11/2026
 
 ---
 
@@ -240,23 +240,26 @@ Tasks are organized according to their execution order and dependencies between 
 - **Acceptance Criteria:**
   1. Critical operations use transactions.
   2. Row-level locks are applied when necessary.
-  3. Availability is checked again after acquiring the lock.
+  3. Loan availability is checked again after the student and instrument locks are acquired.
   4. When two operators attempt to lend the last available unit, only one completes the operation.
   5. The operation that cannot be completed receives HTTP 409.
-  6. Errors cause the corresponding transaction to be rolled back.
+  6. Exceptions during a loan or return operation roll back the corresponding database transaction.
 
-  **Status:** Under Review.
+  **Status:** Completed.
 
 **Recorded Evidence:**
 
 - Implementation of transactions in loan and return operations.
 - Row-level locking using `lockForUpdate()`.
-- Availability revalidation after acquiring the lock.
+- Loan availability revalidation after acquiring the student and instrument locks.
+- Both services use `DB::transaction()`; exceptions abort the callback and roll back its database changes.
 - Manual test with two independent requests.
+- Initial available units: 1.
 - First request: HTTP 201 Created.
 - Second request: HTTP 409 Conflict.
+- Loans created: 1.
 - Final instrument availability: 0 units.
-- **Deliverable or Evidence:** Transactional implementation and concurrency tests.
+- **Deliverable or Evidence:** `api/app/Services/LoanService.php`, `api/app/Services/ReturnService.php`, `docs/evidence.md`, `docs/evidence/concurrency-test.md`, and `api/tests/concurrency.php`.
 
 ### TASK-15 — Implement the Most Requested Instruments Report
 
@@ -564,6 +567,7 @@ The proposed organization allows progress from repository preparation and databa
 | 1.2 | 09/11/2026 | Update of the actual repository structure and logical architecture diagram, including Dashboard, services, and the initialization tool. Under review. |
 | 1.3 | 13/11/2026 | Completion of the 23 tasks, validation of automated tests, and update of evidence. |
 | 1.4 | 24/11/2026 | Updated existing tasks to document logical category activation and deactivation as a scope extension, aligned acceptance criteria with the updated specification, API contract, and data model, and reopened affected tasks for validation. |
+| 1.5 | 25/11/2026 | Reconciled TASK-14 as Completed after reviewing the loan and return transaction implementation and the existing concurrency evidence. The v1.4 reopening remains part of the historical record; the current tracking matrix lists 23 completed tasks and 0 pending tasks. |
 
 ---
 
