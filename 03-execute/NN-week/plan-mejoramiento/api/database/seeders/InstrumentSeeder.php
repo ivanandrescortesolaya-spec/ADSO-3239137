@@ -80,7 +80,7 @@ class InstrumentSeeder extends Seeder
 
             if (!$category) {
                 throw new \RuntimeException(
-                    "No existe la categoria {$instrument['category_code']}."
+                    "No existe la categoría {$instrument['category_code']}."
                 );
             }
 
