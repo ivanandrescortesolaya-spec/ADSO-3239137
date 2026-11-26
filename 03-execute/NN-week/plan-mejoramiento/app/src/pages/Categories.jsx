@@ -117,8 +117,8 @@ function Categories() {
   ).length;
   const inactiveCategories = totalCategories - activeCategories;
 
-  // Se usa el contador de Laravel si está disponible.
-  // Si no, se intenta contar la relación incluida en la respuesta.
+  // Use Laravel's counter when available.
+  // Otherwise, count the relationship included in the response.
   const categoriesWithInstruments = categories.filter((category) => {
     const count =
       category.instruments_count ?? category.instruments?.length ?? 0;

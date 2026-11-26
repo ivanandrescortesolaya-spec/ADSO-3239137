@@ -51,7 +51,7 @@ function Loans() {
       setInstruments(instrumentResponse.data ?? []);
     } catch (err) {
       console.error(err);
-      setError("No fue posible cargar la informacion de prestamos.");
+      setError("No fue posible cargar la información de préstamos.");
     } finally {
       setLoading(false);
     }
@@ -89,7 +89,7 @@ function Loans() {
       });
 
       setSuccess(
-        response.message || "Prestamo registrado correctamente."
+        response.message || "Préstamo registrado correctamente."
       );
 
       setForm({
@@ -109,7 +109,7 @@ function Loans() {
         setError(firstError || "Revisa los datos ingresados.");
       } else {
         setError(
-          data?.message || "No fue posible registrar el prestamo."
+          data?.message || "No fue posible registrar el préstamo."
         );
       }
     } finally {
@@ -129,7 +129,7 @@ function Loans() {
       setCurrentPage(1);
     } catch (err) {
       console.error(err);
-      setError("No fue posible consultar los prestamos vencidos.");
+      setError("No fue posible consultar los préstamos vencidos.");
     } finally {
       setLoading(false);
     }
