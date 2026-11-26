@@ -1,8 +1,9 @@
-
 import { useEffect, useMemo, useState } from "react";
 import {
   getInstruments,
   createInstrument,
+  updateInstrument,
+  deactivateInstrument,
 } from "../services/instrumentService";
 import { getCategories } from "../services/categoryService";
 import { getLoans } from "../services/loanService";
@@ -22,8 +23,10 @@ function Instruments() {
   const [success, setSuccess] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [changingId, setChangingId] = useState(null);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("todos");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const [form, setForm] = useState({
     category_id: "",
@@ -67,6 +70,41 @@ function Instruments() {
     }));
   };
 
+  const resetForm = () => {
+    setForm({ category_id: "", code: "", name: "", total_units: "" });
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  const handleEdit = (instrument) => {
+    setForm({
+      category_id: String(instrument.category_id),
+      code: instrument.code,
+      name: instrument.name,
+      total_units: String(instrument.total_units),
+    });
+    setEditingId(instrument.id);
+    setError("");
+    setSuccess("");
+    setShowForm(true);
+  };
+
+  const handleDeactivate = async (instrument) => {
+    if (!window.confirm(`¿Deseas desactivar ${instrument.name}? No estará disponible para nuevos préstamos.`)) return;
+    setError("");
+    setSuccess("");
+    setChangingId(instrument.id);
+    try {
+      await deactivateInstrument(instrument.id);
+      setSuccess("Instrumento desactivado correctamente.");
+      await loadData();
+    } catch (err) {
+      setError(err.response?.data?.message || "No fue posible desactivar el instrumento.");
+    } finally {
+      setChangingId(null);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
@@ -92,22 +130,20 @@ function Instruments() {
     try {
       setSaving(true);
 
-      await createInstrument({
+      const instrumentData = {
         category_id: Number(form.category_id),
         code: form.code.trim(),
         name: form.name.trim(),
         total_units: totalUnits,
-      });
-
-      setForm({
-        category_id: "",
-        code: "",
-        name: "",
-        total_units: "",
-      });
-
-      setShowForm(false);
-      setSuccess("Instrumento registrado correctamente.");
+      };
+      if (editingId !== null) {
+        await updateInstrument(editingId, instrumentData);
+        setSuccess("Instrumento actualizado correctamente.");
+      } else {
+        await createInstrument(instrumentData);
+        setSuccess("Instrumento registrado correctamente.");
+      }
+      resetForm();
 
       await loadData();
     } catch (err) {
@@ -124,7 +160,7 @@ function Instruments() {
       } else {
         setError(
           responseData?.message ||
-          "No fue posible registrar el instrumento."
+          "No fue posible guardar el instrumento."
         );
       }
     } finally {
@@ -139,7 +175,7 @@ function Instruments() {
     0
   );
 
-  const availableUnits = instruments.reduce(
+  const availableUnits = instruments.filter((item) => item.is_active && item.category?.is_active).reduce(
     (total, item) => total + Number(item.available_units || 0),
     0
   );
@@ -162,9 +198,9 @@ function Instruments() {
         String(instrument.code ?? "").toLowerCase().includes(term);
 
       const matchesStatus =
-        statusFilter === "todos" ||
-        (statusFilter === "activos" && instrument.is_active) ||
-        (statusFilter === "inactivos" && !instrument.is_active);
+        statusFilter === "all" ||
+        (statusFilter === "active" && instrument.is_active) ||
+        (statusFilter === "inactive" && !instrument.is_active);
 
       return matchesSearch && matchesStatus;
     });
@@ -261,10 +297,12 @@ function Instruments() {
 
           <button
             className="primary-button instrument-add-button"
+            disabled={saving || changingId !== null}
             onClick={() => {
               setError("");
               setSuccess("");
-              setShowForm((previous) => !previous);
+              resetForm();
+              setShowForm(true);
             }}
           >
             <span>＋</span> Nuevo instrumento
@@ -273,7 +311,7 @@ function Instruments() {
 
         {showForm && (
           <form className="instrument-form" onSubmit={handleSubmit}>
-            <h3>Registrar instrumento</h3>
+            <h3>{editingId !== null ? "Actualizar instrumento" : "Registrar instrumento"}</h3>
 
             <div className="form-grid">
               <div className="form-field">
@@ -283,6 +321,7 @@ function Instruments() {
                   name="category_id"
                   value={form.category_id}
                   onChange={handleChange}
+                  disabled={saving || changingId !== null}
                   required
                 >
                   <option value="">Selecciona una categoría</option>
@@ -303,6 +342,7 @@ function Instruments() {
                   name="code"
                   value={form.code}
                   onChange={handleChange}
+                  disabled={saving || changingId !== null}
                   placeholder="Ej. GTR-011"
                   maxLength={30}
                   required
@@ -316,7 +356,9 @@ function Instruments() {
                   name="name"
                   value={form.name}
                   onChange={handleChange}
+                  disabled={saving || changingId !== null}
                   placeholder="Ej. Guitarra acústica"
+                  maxLength={150}
                   required
                 />
               </div>
@@ -331,6 +373,7 @@ function Instruments() {
                   step="1"
                   value={form.total_units}
                   onChange={handleChange}
+                  disabled={saving || changingId !== null}
                   placeholder="Ej. 5"
                   required
                 />
@@ -341,7 +384,8 @@ function Instruments() {
               <button
                 type="button"
                 className="secondary-button"
-                onClick={() => setShowForm(false)}
+                onClick={resetForm}
+                disabled={saving}
               >
                 Cancelar
               </button>
@@ -349,9 +393,9 @@ function Instruments() {
               <button
                 type="submit"
                 className="primary-button"
-                disabled={saving}
+                disabled={saving || changingId !== null}
               >
-                {saving ? "Guardando..." : "Guardar instrumento"}
+                {saving ? "Guardando..." : editingId !== null ? "Actualizar instrumento" : "Guardar instrumento"}
               </button>
             </div>
           </form>
@@ -374,9 +418,9 @@ function Instruments() {
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
             >
-              <option value="todos">Todos</option>
-              <option value="activos">Activos</option>
-              <option value="inactivos">Inactivos</option>
+              <option value="all">Todos</option>
+              <option value="active">Activos</option>
+              <option value="inactive">Inactivos</option>
             </select>
           </label>
         </div>
@@ -392,7 +436,13 @@ function Instruments() {
               </span>
             </div>
 
-            <InstrumentTable instruments={filteredInstruments} />
+            <InstrumentTable
+              instruments={filteredInstruments}
+              onEdit={handleEdit}
+              onDeactivate={handleDeactivate}
+              busy={saving || changingId !== null}
+              changingId={changingId}
+            />
           </>
         )}
       </section>
@@ -400,7 +450,7 @@ function Instruments() {
   );
 }
 
-function InstrumentTable({ instruments }) {
+function InstrumentTable({ instruments, onEdit, onDeactivate, busy, changingId }) {
   return (
     <div className="table-container instrument-table-container">
       <table className="inventory-table instrument-modern-table">
@@ -412,13 +462,14 @@ function InstrumentTable({ instruments }) {
             <th>TOTAL</th>
             <th>DISPONIBLES</th>
             <th>ESTADO</th>
+            <th>ACCIONES</th>
           </tr>
         </thead>
 
         <tbody>
           {instruments.length === 0 ? (
             <tr>
-              <td colSpan="6" className="instrument-empty">
+              <td colSpan="7" className="instrument-empty">
                 No se encontraron instrumentos.
               </td>
             </tr>
@@ -440,7 +491,7 @@ function InstrumentTable({ instruments }) {
                 <td>{instrument.total_units}</td>
                 <td>
                   <span className="available-count">
-                    {instrument.available_units}
+                    {instrument.is_active && instrument.category?.is_active ? instrument.available_units : 0}
                   </span>
                 </td>
                 <td>
@@ -453,6 +504,20 @@ function InstrumentTable({ instruments }) {
                   >
                     {instrument.is_active ? "Activo" : "Inactivo"}
                   </span>
+                </td>
+                <td>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <button type="button" className="secondary-button" disabled={busy} onClick={() => onEdit(instrument)}>
+                      Editar
+                    </button>
+                    <button type="button" className="secondary-button" disabled={busy || !instrument.is_active} onClick={() => onDeactivate(instrument)}>
+                      {changingId === instrument.id
+                        ? "Desactivando..."
+                        : instrument.is_active
+                          ? "Desactivar"
+                          : "Desactivado"}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))
