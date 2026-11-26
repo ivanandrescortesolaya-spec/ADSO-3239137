@@ -6,9 +6,11 @@ import {
   updateCategoryStatus,
 } from "../services/categoryService";
 import "./Categories.css";
+import { getInstruments } from "../services/instrumentService";
 
 function Categories() {
   const [categories, setCategories] = useState([]);
+  const [instruments, setInstruments] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -24,10 +26,41 @@ function Categories() {
   });
 
   const loadCategories = async () => {
+    setLoading(true);
+    setError("");
+    setInstruments(null);
+
     try {
-      setError("");
-      const response = await getCategories();
-      setCategories(Array.isArray(response) ? response : response.data ?? []);
+      const [categoriesResult, instrumentsResult] =
+        await Promise.allSettled([
+          getCategories(),
+          getInstruments(),
+        ]);
+
+      if (categoriesResult.status === "fulfilled") {
+        const response = categoriesResult.value;
+
+        setCategories(
+          Array.isArray(response)
+            ? response
+            : response.data ?? []
+        );
+      } else {
+        throw categoriesResult.reason;
+      }
+
+      if (instrumentsResult.status === "fulfilled") {
+        const response = instrumentsResult.value;
+
+        setInstruments(
+          Array.isArray(response)
+            ? response
+            : response.data ?? []
+        );
+      } else {
+        console.error(instrumentsResult.reason);
+        setError("No fue posible cargar los instrumentos asociados.");
+      }
     } catch (err) {
       console.error(err);
       setError("No fue posible cargar las categorías.");
@@ -104,7 +137,7 @@ function Categories() {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "No fue posible actualizar el estado de la categoría."
+        "No fue posible actualizar el estado de la categoría."
       );
     } finally {
       setChangingCategoryId(null);
@@ -117,13 +150,16 @@ function Categories() {
   ).length;
   const inactiveCategories = totalCategories - activeCategories;
 
-  // Use Laravel's counter when available.
-  // Otherwise, count the relationship included in the response.
-  const categoriesWithInstruments = categories.filter((category) => {
-    const count =
-      category.instruments_count ?? category.instruments?.length ?? 0;
-    return Number(count) > 0;
-  }).length;
+  // Count categories with associated instruments.
+  const instrumentCategoryIds = new Set(
+    (instruments ?? []).map(
+      (instrument) => instrument.category_id
+    )
+  );
+
+  const categoriesWithInstruments = categories.filter(
+    (category) => instrumentCategoryIds.has(category.id)
+  ).length;
 
   const filteredCategories = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -210,7 +246,11 @@ function Categories() {
           <div className="category-stat-icon">♫</div>
           <div>
             <p>Con instrumentos</p>
-            <h2>{loading ? "—" : categoriesWithInstruments}</h2>
+            <h2>
+              {loading || instruments === null
+                ? "—"
+                : categoriesWithInstruments}
+            </h2>
             <small>Tienen instrumentos asociados</small>
           </div>
         </article>
