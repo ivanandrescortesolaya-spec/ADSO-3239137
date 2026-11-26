@@ -183,6 +183,7 @@ function Loans() {
   const availableInstruments = instruments.filter(
     (instrument) =>
       instrument.is_active !== false &&
+      instrument.category?.is_active === true &&
       instrument.available_units > 0
   );
 
