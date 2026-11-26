@@ -4,7 +4,7 @@
 **Identifier:** music-school  
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
-**Version:** 1.3
+**Version:** 1.5
 **Status:** Under Review
 
 ---
@@ -50,6 +50,8 @@ These categories must be available through the data seeding tool.
 As a scope extension, the system supports logical category activation and deactivation. Categories are active by default. A category cannot be deactivated while any of its instruments has a pending loan. Inactive categories can be reactivated without deleting their records.
 
 The category activation and deactivation scope extension remains under review. This status does not indicate formal instructor approval.
+
+Category creation through `POST /categories` is a previously documented API operation. Initializing the five specified categories through the data seeding tool is part of the original project scope. Manual category registration through the React administration view is a scope extension pending validation. Logical category activation and deactivation are also scope extensions pending validation. These classifications do not indicate formal instructor approval.
 
 ### 2.2 Instrument Models and Physical Units
 
@@ -118,6 +120,11 @@ The system must prevent two operators from simultaneously lending the last avail
 - Each model must record its total and available units.
 - Negative quantities must not be accepted.
 - Available units must not exceed total units.
+- Instrument records must be retrievable through the administrative API; catalog consultation for users is covered by HU-02.
+- Permitted instrument data may be updated through the administrative interface and API.
+- When the total number of units is updated, the backend must preserve the number of units currently on loan and recalculate available units. Clients must not set available units directly.
+- The total number of units must not be reduced below the number of units currently on loan.
+- Updating instrument data must not modify historical information stored in previous loans. These operations were already documented in TASK-07, TASK-08, and API contract Section 7.4; this clarification does not claim a new implementation or instructor approval.
 - Categories must support logical activation and deactivation.
 - Categories with pending instrument loans cannot be deactivated.
 - Inactive categories can be reactivated.
@@ -132,9 +139,11 @@ The system must prevent two operators from simultaneously lending the last avail
 **Acceptance Criteria:**
 
 - The system must display active instruments.
+- The existing inventory view displays instruments, their categories, available units, and instrument status. Its search and status filters allow the catalog to be consulted; they are presentation mechanisms and do not change instrument status or loan eligibility.
 - The corresponding category must be displayed.
 - Available units must be displayed.
 - Deactivated instruments must not appear as available for new loans, and new loans involving them must not be permitted.
+- The loan selector excludes inactive instruments and instruments without available units. Laravel also validates instrument status and availability when registering a loan. No separate student-facing screen is specified by this user story.
 
 ### HU-03. Student Management
 
@@ -147,6 +156,8 @@ The system must prevent two operators from simultaneously lending the last avail
 - The system must allow students to be registered.
 - Each student must have an identifier.
 - The system must allow registered information to be viewed.
+- Permitted student information may be updated through the administrative interface and API. Student code and email values must remain unique.
+- Updating student information must not change snapshot data stored in previous loans. This records the operation already described by TASK-09 and API contract Section 8.4; it does not claim a new feature or instructor approval.
 - Loans must be associated with an existing student.
 
 ### HU-04. Loan Registration
@@ -166,6 +177,8 @@ The system must prevent two operators from simultaneously lending the last avail
 - The operation must update available units.
 - The operation must preserve the original instrument information.
 - The system must reject a loan when the student has an overdue, unreturned loan.
+
+The active-category validation is part of the category lifecycle scope extension, which remains under review and is not represented as formally approved.
 
 ### HU-05. Return Registration
 
@@ -199,6 +212,7 @@ The system must prevent two operators from simultaneously lending the last avail
 - Students with overdue and unreturned loans must not receive new instruments.
 - The restriction must remain until the corresponding return is registered.
 - Dates and times used to determine overdue status must be handled in UTC.
+- The Dashboard's overdue-loan indicator presents the result of the existing overdue-loan query; it does not define an additional overdue rule.
 
 ### HU-07. Inventory Control
 
@@ -215,6 +229,7 @@ The system must prevent two operators from simultaneously lending the last avail
 - The system must not allow loans when no units are available.
 - Operations that modify inventory must maintain data integrity.
 - When simultaneous operations attempt to lend the last available unit, only one may succeed, and the other must receive HTTP `409 Conflict`.
+- Each loan record represents one physical instrument unit: registering a loan decreases available units by one, and registering its return restores one unit. Under the existing inventory-integrity rules, pending loan records therefore correspond to units currently on loan. Physically unloaned units in inactive instruments or inactive categories may remain in inventory but are not eligible for new loans. The Dashboard and inventory view must label and calculate eligible availability consistently; aggregate equivalence is a domain consequence of these rules, not a separately executed test result.
 
 ### HU-08. Historical Record Preservation
 
@@ -231,6 +246,7 @@ The system must prevent two operators from simultaneously lending the last avail
 - Instruments removed from the catalog must be managed through logical deactivation.
 - Deactivated instruments must not be available for new loans.
 - Logical deactivation must not delete or modify associated historical records.
+- Loan details include the associated return record through the existing loan-detail API. The API also provides a per-student loan-history endpoint; the administrative React application does not provide a separate student-history screen.
 
 ### HU-09. Most Requested Instruments Report
 
@@ -247,6 +263,7 @@ The system must prevent two operators from simultaneously lending the last avail
 - Results must correspond to transactions registered in the system.
 - The report must include historical loans even when an instrument has been removed from the catalog.
 - Viewing the report must not modify or delete historical data.
+- The Dashboard presents the report as a ranked table with visual popularity bars. Those visual elements do not change the report calculation.
 
 ### HU-10. Loan Concurrency Control
 
@@ -322,9 +339,9 @@ The following functional requirements describe the operations supported by the M
 
 | Code | Functional Requirement | Related User Story |
 |---|---|---|
-| RF-01 | Register instrument models with a unique code, category, total units, and available units. Support logical category activation and deactivation as a scope extension, subject to pending loan restrictions. | HU-01 |
-| RF-02 | View the catalog of active instruments, including their categories and available units. | HU-02 |
-| RF-03 | Register and view student information. | HU-03 |
+| RF-01 | Register and update instrument models with a unique code, category, and total units; calculate available units in the backend while preserving units on loan and historical loan information. Category activation and deactivation remain a scope extension subject to pending-loan restrictions. | HU-01 |
+| RF-02 | View the catalog of active instruments, including their categories and available units. The administrative inventory view also supports local search and status filters; these do not change loan eligibility, which remains backend-controlled. | HU-02 |
+| RF-03 | Register, view, and update permitted student information, enforcing unique student codes and email addresses and preserving historical loan snapshots. | HU-03 |
 | RF-04 | Register loans associated with students and instruments, validating availability, active category status, pending loan limits, and the 21-day period. | HU-04 |
 | RF-05 | Register loan returns, update availability, and preserve transaction history. | HU-05 |
 | RF-06 | Identify and view overdue loans that remain unreturned. | HU-06 |
@@ -349,6 +366,7 @@ Credentials and secrets must be managed through environment variables. Passwords
 - Verify that secrets are not hardcoded in the source code.
 - Confirm that passwords are not stored in plain text.
 - Confirm that operations rejected by validation do not modify stored data.
+- The current API routes do not implement authentication or role-based authorization. The academic interpretation of “unauthorized modifications” remains pending validation; this statement does not add authentication or authorization to the approved scope.
 
 ### RNF-02. Data Integrity
 
@@ -469,7 +487,24 @@ The following non-functional requirements apply to the project as a whole and ar
 | RNF-04. Portability and Deployment | Entire project: frontend, backend, and database. |
 | RNF-05. Verifiability | All ten user stories and six business rules. |
 
-## 11. Relationship with Other Documents
+## 11. Supplementary Deliverables and Support Components
+
+The following components support project delivery, verification, or presentation. They are not additional domain requirements and do not change the required counts of ten user stories, six business rules, ten functional requirements, and five non-functional requirements.
+
+| Component | Classification | Traceability and limit |
+|---|---|---|
+| Static public website | Mandatory project deliverable | Defined by TASK-20 and the project plan. It presents general information and does not provide a student catalog or loan operations. |
+| API-based data seeding tool | Technical support component | Initializes the five categories and sample instruments through existing API operations; it does not access MySQL directly. |
+| Docker Compose infrastructure | Mandatory project deliverable | Supports RNF-04 and integrated execution of the API, database, React application, and public website. |
+| Automated tests | Mandatory project deliverable | Supports RNF-05; recorded test results are historical evidence of prior executions. |
+| Database backup script | Technical support component | `infra/backup.ps1` exports a SQL dump from the running MySQL service. No restore script or automated recovery mechanism is documented. |
+| Laravel framework scaffold | Technical support component | Default users, sessions, cache, queue, welcome-page, and health-check components are infrastructure scaffolding, not Music School domain features. |
+| Administrative searches and filters | User interface presentation mechanism | Local React behavior helps find records and does not add domain rules or API operations. |
+| Dashboard indicators | User interface presentation mechanism | Displays API-derived counts and report results. Eligible availability excludes instruments and categories that are inactive; physical inventory may still include units from those records. Each pending loan represents one unit currently on loan under the inventory rules. |
+
+Category creation through the API is a previously documented operation, and initialization of the five specified categories is original project scope. Manual category creation through React, category activation/deactivation, and related inactive-category behavior remain scope extensions pending validation. Their current implementation is not evidence of academic approval; the document status remains Under Review.
+
+## 12. Relationship with Other Documents
 
 This specification serves as a reference for creating the following project artifacts. All documents must remain consistent with the functional requirements, business rules, non-functional requirements, and constraints established here.
 
@@ -487,7 +522,7 @@ All artifacts must respect the scope defined in this specification and maintain 
 
 Features not included in this specification must not be introduced.
 
-## 12. Change Log
+## 13. Change Log
 
 | Version | Date | Description | Status |
 |---|---|---|---|
@@ -495,3 +530,5 @@ Features not included in this specification must not be introduced.
 | 1.1 | 07/11/2026 | Adjustments to the acceptance criteria of user stories HU-02 and HU-05 to improve consistency with the data model. | Draft for Validation |
 | 1.2 | 24/11/2026 | Document category activation and deactivation as a scope extension aligned with the current implementation. | Under Review |
 | 1.3 | 25/11/2026 | Unified the current document status with the existing review state and retained the category lifecycle scope extension as under review. | Under Review |
+| 1.4 | 25/11/2026 | Completed traceability for previously documented instrument and student update operations, distinguished administrative presentation from loan eligibility, and classified supplementary project deliverables without changing the required requirement counts or claiming instructor approval. | Under Review |
+| 1.5 | 25/11/2026 | Corrected HU-02 traceability, documented the one-loan/one-unit inventory relationship, classified category operations by scope, and clarified RNF-01 security controls and pending academic interpretation. | Under Review |
