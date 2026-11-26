@@ -195,7 +195,7 @@ function Students() {
           <div className="students-stat-icon">✎</div>
           <div>
             <p>Gestión de estudiantes</p>
-            <h2>CRUD</h2>
+            <h2>Gestión</h2>
             <small>Registro y actualización</small>
           </div>
         </article>

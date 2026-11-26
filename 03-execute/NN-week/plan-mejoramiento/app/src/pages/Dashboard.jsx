@@ -209,7 +209,7 @@ function Dashboard() {
 
       {/* Header */}
       <div className="dashboard-heading">
-        <h2>Dashboard</h2>
+        <h2>Panel de control</h2>
         <p>Resumen general del sistema Music School.</p>
       </div>
 
