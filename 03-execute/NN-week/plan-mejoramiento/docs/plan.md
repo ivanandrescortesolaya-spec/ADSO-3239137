@@ -5,7 +5,7 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.0  
+**Version:** 1.1
 **Status:** Draft for Validation
 
 ---
@@ -92,6 +92,9 @@ Development must comply with the ten user stories, six business rules, and five 
 
 **Activities:**
 
+- Elaborate the conceptual data model documented in `data-model.md` version 1.3, identifying the five domain entities: Category, Instrument, Student, Loan, and Return.
+- Define and document the relationships between those entities, including minimum and maximum cardinalities, and provide the conceptual entity-relationship diagram.
+- Map the conceptual model to the logical model and to the physical MySQL schema implemented through Laravel migrations.
 - Identify entities and their attributes.
 - Define primary and foreign keys.
 - Establish relationships between entities.
@@ -105,7 +108,7 @@ Development must comply with the ten user stories, six business rules, and five 
 
 **Deliverables:**
 
-- `data-model.md`
+- `data-model.md` version 1.3, including the conceptual model, entities, relationships, cardinalities, and conceptual-to-logical-to-physical correspondence.
 - `api-contract.md`
 
 ### Phase 4. Task Organization and Implementation
@@ -300,3 +303,4 @@ This structure represents the planned organization of deliverables and does not 
 | Version | Date | Description | Status |
 |---|---|---|---|
 | 1.0 | 07/11/2026 | Initial creation of the Music School development plan. | Draft for Validation |
+| 1.1 | 25/11/2026 | Updated Phase 3 to document the conceptual data model and its entity, relationship, cardinality, and model-correspondence deliverables, referencing data-model.md version 1.3. | Draft for Validation |
