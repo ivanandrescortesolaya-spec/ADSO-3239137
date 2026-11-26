@@ -5,7 +5,7 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
 **Apprentice Code:** A12  
-**Version:** 1.4
+**Version:** 1.5
 **Status:** Under Review
 
 ---
@@ -96,6 +96,8 @@ Accept: application/json
 ## 4. Response Conventions
 
 API responses must use consistent JSON structures.
+
+The response bodies in Sections 4.1–4.3 are illustrative examples of JSON envelopes, not transcripts of specific endpoints. Endpoint examples are structural unless their custom message is identified as verified in the source. Framework-generated validation envelopes can include Laravel's default message and depend on the configured application locale; this contract does not claim that the generic validation message is a literal Spanish backend response.
 
 ### 4.1. Successful Response
 
@@ -205,15 +207,13 @@ The five initial categories must be available for instrument classification.
 
 ### 6.2. Register a Category
 
-**Endpoint:**
-
-```http
-POST /categories
-```
-
-**Description:**
-
-Allows a new musical instrument category to be registered in the system catalog.
+| Property | Definition |
+|---|---|
+| Method | POST |
+| Endpoint | `/categories` |
+| Description | Register a category in the system catalog. |
+| Successful Response | 201 Created |
+| Possible Errors | 422 Unprocessable Entity, 500 Internal Server Error |
 
 **Request Body:**
 
@@ -410,6 +410,7 @@ Validations:
 | Endpoint | `/instruments/{id}` |
 | Description | Update instrument information. |
 | Successful Response | 200 OK |
+| Possible Errors | 404 Not Found, 409 Conflict, 422 Unprocessable Entity |
 
 #### Example Request
 
@@ -438,6 +439,7 @@ Validations:
 - `available_units` must not be modified directly through the client request; it must be updated by backend-managed loan and return operations.
 - The system must preserve inventory integrity after any update.
 - The update must not modify historical snapshot data stored in previous loans.
+- If the requested total is less than the number of units currently on loan, the backend returns HTTP `409 Conflict` with the verified custom message `El total de unidades no puede ser inferior a las unidades actualmente prestadas.`
 
 #### Successful Response
 
@@ -572,6 +574,15 @@ Loans must allow their status to be identified through associated return records
 | Possible Conflict | 409 Conflict |
 | Validation Error | 422 Unprocessable Entity |
 
+#### Example Request
+
+```json
+{
+  "student_id": 1,
+  "instrument_id": 1
+}
+```
+
 #### Successful Response
 
 When the loan is successfully registered, the backend must return HTTP `201 Created`.
@@ -696,6 +707,8 @@ The associated return record is retrieved as part of the loan details returned b
 
 If the loan has not been returned, the associated return record is null.
 
+An earlier version of this contract documented `GET /loans/{id}/returns`. That historical route is not implemented in the current Laravel API. The current API retrieves the associated return through `GET /loans/{id}`; `POST /loans/{id}/returns` remains the operation for registering a return.
+
 ## 11. Most Requested Instruments Report Endpoint
 
 ### 11.1. Retrieve Most Requested Instruments
@@ -707,14 +720,8 @@ If the loan has not been returned, the associated return record is null.
 | Description | Retrieve the most requested instruments report. |
 | Successful Response | 200 OK |
 
-#### Example Request
+No request body is required for this `GET` operation.
 
-```json
-{
-  "student_id": 1,
-  "instrument_id": 1
-}
-```
 Example response:
 
 ```json
@@ -778,27 +785,34 @@ All processes must follow the same locking order to reduce the risk of deadlocks
 
 ## 13. Error Handling
 
-The API must display clear messages in Spanish.
+Messages explicitly listed below are custom literals verified in the referenced controllers or services. A validation field message is distinct from Laravel's framework-generated top-level validation envelope.
 
-Examples:
+| Situation | HTTP Code | Verified custom text | Source |
+|---|---:|---|---|
+| Category registered | 201 | `Categoría registrada correctamente.` | `CategoryController.php` |
+| Category already inactive | 409 | `La categoría ya se encuentra inactiva.` | `CategoryController.php` |
+| Category has loans pending return | 409 | `No se puede desactivar esta categoría porque tiene instrumentos con préstamos pendientes de devolución.` | `CategoryController.php` |
+| Category deactivated | 200 | `Categoría desactivada correctamente.` | `CategoryController.php` |
+| Category already active | 409 | `La categoría ya se encuentra activa.` | `CategoryController.php` |
+| Category activated | 200 | `Categoría activada correctamente.` | `CategoryController.php` |
+| Instrument registered | 201 | `Instrumento registrado correctamente.` | `InstrumentController.php` |
+| Instrument updated | 200 | `Instrumento actualizado correctamente.` | `InstrumentController.php` |
+| Instrument already inactive | 409 | `El instrumento ya se encuentra inactivo.` | `InstrumentController.php` |
+| Instrument deactivated | 200 | `Instrumento desactivado correctamente.` | `InstrumentController.php` |
+| Instrument total lower than units on loan | 409 | `El total de unidades no puede ser inferior a las unidades actualmente prestadas.` | `InstrumentController.php` |
+| Register/update instrument using inactive category | 422 | `No se puede registrar un instrumento en una categoría inactiva.` (field validation message) | `InstrumentController.php` |
+| Student registered | 201 | `Estudiante registrado correctamente.` | `StudentController.php` |
+| Student updated | 200 | `Estudiante actualizado correctamente.` | `StudentController.php` |
+| Loan registered | 201 | `Préstamo registrado correctamente.` | `LoanController.php` |
+| Instrument inactive for lending | 409 | `El instrumento no está disponible para préstamos.` | `LoanService.php` |
+| Student already has an unreturned loan | 409 | `El estudiante tiene un préstamo pendiente de devolución.` | `LoanService.php` |
+| Instrument has no available units | 409 | `No hay unidades disponibles de este instrumento.` | `LoanService.php` |
+| Loan involving inactive category | 422 | `No se puede prestar un instrumento de una categoría inactiva.` (field validation message) | `LoanService.php` |
+| Return registered | 201 | `Devolución registrada correctamente.` | `ReturnController.php` |
+| Loan already has a return | 409 | `Este préstamo ya tiene registrada una devolución.` | `ReturnService.php` |
+| Return would exceed instrument total | 409 | `No es posible devolver esta unidad porque el inventario alcanzaría un valor inválido.` | `ReturnService.php` |
 
-| Situation | HTTP Code | Message |
-|---|---|---|
-| Student does not exist | 404 | El estudiante no existe. |
-| Instrument does not exist | 404 | El instrumento no existe. |
-| Instrument has no available units | 409 | No hay unidades disponibles de este instrumento. |
-| Student has a pending loan | 409 | El estudiante tiene un préstamo pendiente de devolución. |
-| Student has an overdue loan | 409 | El estudiante tiene un préstamo pendiente de devolución. |
-| Inactive instrument | 409 | El instrumento no está disponible para préstamos. |
-| Loan already returned | 409 | Este préstamo ya tiene registrada una devolución. |
-| Invalid data | 422 | Los datos proporcionados no son válidos. |
-| Internal error | 500 | Ocurrió un error interno del servidor. |
-| Category does not exist | 404 | La categoría no existe. |
-| Category already inactive | 409 | La categoría ya se encuentra inactiva. |
-| Category already active | 409 | La categoría ya se encuentra activa. |
-| Category has pending loans | 409 | No se puede desactivar esta categoría porque tiene instrumentos con préstamos pendientes de devolución. |
-| Register or update an instrument with an inactive category | 422 | No se puede registrar un instrumento en una categoría inactiva. |
-| Loan involving an inactive category | 422 | No se puede prestar un instrumento de una categoría inactiva. |
+Laravel-generated `404`, generic `422`, and `500` messages are not asserted here as Spanish custom literals. Their exact envelope and wording depend on the framework exception renderer and application locale. The illustrative JSON examples in Section 4 must not be read as verified endpoint transcripts.
 
 ## 14. Security and Validation
 
@@ -846,6 +860,8 @@ The API contract shall be considered validated when:
 12. Category deactivation is rejected when associated instruments have pending loans.
 13. Instrument registration, updates, and new loans involving inactive categories are rejected.
 
+Criteria 11–13 describe the category lifecycle scope extension, which remains under review. Their presence in this contract does not constitute academic approval.
+
 ## 17. Change Log
 
 | Version | Date | Description | Status |
@@ -855,3 +871,4 @@ The API contract shall be considered validated when:
 | 1.2 | 24/11/2026 | Documented category activation and deactivation endpoints, inactive category validations, and aligned business rule identifiers with spec.md version 1.2. | Under Review |
 | 1.3 | 25/11/2026 | Removed the duplicate return-retrieval operation, clarified pending-loan wording for category deactivation, corrected Spanish orthography in user-facing examples, and unified the current document status with the review state. | Under Review |
 | 1.4 | 25/11/2026 | Aligned documented API response-message examples with the corrected backend messages and corrected Spanish orthography in the validation and server-error examples. | Under Review |
+| 1.5 | 25/11/2026 | Moved the loan request example to POST /loans, clarified that the report GET request has no body, documented the instrument-update 409 response, distinguished illustrative framework responses from verified custom messages, and explained current versus historical return retrieval. | Under Review |
