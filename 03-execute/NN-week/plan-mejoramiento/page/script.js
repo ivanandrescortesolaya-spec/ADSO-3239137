@@ -1,4 +1,4 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Music School: sitio publico cargado correctamente.");
+    console.log("Music School: public website loaded successfully.");
 });
