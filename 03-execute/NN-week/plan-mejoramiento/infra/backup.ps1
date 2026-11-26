@@ -22,7 +22,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 if (-not $dump) {
-    throw "El respaldo esta vacio."
+    throw "El respaldo está vacío."
 }
 
 # Save the SQL file without a BOM
