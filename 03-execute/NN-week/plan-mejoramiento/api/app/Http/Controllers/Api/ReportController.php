@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class ReportController extends Controller
 {
     /**
-     * Reporte de instrumentos mas solicitados.
+     * Report of the most requested instruments.
      */
     public function mostRequestedInstruments(): JsonResponse
     {
