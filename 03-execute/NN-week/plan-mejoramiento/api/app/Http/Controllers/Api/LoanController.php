@@ -59,7 +59,7 @@ class LoanController extends Controller
         );
 
         return response()->json([
-            'message' => 'Prestamo registrado correctamente.',
+            'message' => 'Préstamo registrado correctamente.',
             'data' => $loan->load([
                 'student',
                 'instrument',

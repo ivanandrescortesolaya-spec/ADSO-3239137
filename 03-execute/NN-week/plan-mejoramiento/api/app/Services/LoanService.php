@@ -28,13 +28,13 @@ class LoanService
             // Check that the instrument is active.
             if (!$instrument->is_active) {
                 throw new ConflictHttpException(
-                    'El instrumento no esta disponible para prestamos.'
+                    'El instrumento no está disponible para préstamos.'
                 );
             }
 
             if (!$instrument->category()->where('is_active', true)->exists()) {
                 throw ValidationException::withMessages([
-                    'instrument_id' => 'No se puede prestar un instrumento de una categoria inactiva',
+                    'instrument_id' => 'No se puede prestar un instrumento de una categoría inactiva.',
                 ]);
             }
 
@@ -46,7 +46,7 @@ class LoanService
 
             if ($hasPendingLoan) {
                 throw new ConflictHttpException(
-                    'El estudiante tiene un prestamo pendiente de devolucion.'
+                    'El estudiante tiene un préstamo pendiente de devolución.'
                 );
             }
 

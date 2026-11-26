@@ -22,7 +22,7 @@ class ReturnService
             // Check that the loan has not been returned.
             if ($loan->returnRecord()->exists()) {
                 throw new ConflictHttpException(
-                    'Este prestamo ya tiene registrada una devolucion.'
+                    'Este préstamo ya tiene registrada una devolución.'
                 );
             }
 
@@ -40,7 +40,7 @@ class ReturnService
             // Restore one unit to the inventory.
             if ($instrument->available_units >= $instrument->total_units) {
                 throw new ConflictHttpException(
-                    'No es posible devolver esta unidad porque el inventario alcanzaria un valor invalido.'
+                    'No es posible devolver esta unidad porque el inventario alcanzaría un valor inválido.'
                 );
             }
 

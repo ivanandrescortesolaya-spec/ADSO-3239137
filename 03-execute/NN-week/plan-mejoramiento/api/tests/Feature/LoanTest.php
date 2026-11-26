@@ -89,7 +89,7 @@ class LoanTest extends TestCase
         ])
             ->assertUnprocessable()
             ->assertJsonValidationErrors([
-                'instrument_id' => 'No se puede prestar un instrumento de una categoria inactiva',
+                'instrument_id' => 'No se puede prestar un instrumento de una categoría inactiva.',
             ]);
 
         $this->assertDatabaseCount('loans', 0);
