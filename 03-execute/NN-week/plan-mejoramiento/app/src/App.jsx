@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 import Dashboard from "./pages/Dashboard";
@@ -14,13 +13,17 @@ function App() {
   const [activePage, setActivePage] = useState("Dashboard");
 
   const menuItems = [
-    { name: "Dashboard", icon: "▦" },
-    { name: "Instrumentos", icon: "♫" },
-    { name: "Categorías", icon: "▤" },
-    { name: "Estudiantes", icon: "♙" },
-    { name: "Préstamos", icon: "▣" },
-    { name: "Devoluciones", icon: "↩" },
+    { name: "Dashboard", label: "Panel de control", icon: "▦" },
+    { name: "Instruments", label: "Instrumentos", icon: "♫" },
+    { name: "Categories", label: "Categorías", icon: "▤" },
+    { name: "Students", label: "Estudiantes", icon: "♙" },
+    { name: "Loans", label: "Préstamos", icon: "▣" },
+    { name: "Returns", label: "Devoluciones", icon: "↩" },
   ];
+
+  const activePageLabel = menuItems.find(
+    (item) => item.name === activePage
+  )?.label;
 
   return (
     <div className="app-layout">
@@ -47,7 +50,7 @@ function App() {
               onClick={() => setActivePage(item.name)}
             >
               <span>{item.icon}</span>
-              {item.name}
+              {item.label}
             </button>
           ))}
         </nav>
@@ -62,7 +65,7 @@ function App() {
         <header className="topbar">
           <div>
             <span className="breadcrumb">Principal /</span>
-            <strong>{activePage}</strong>
+            <strong>{activePageLabel}</strong>
           </div>
 
           <div className="user-profile">
@@ -73,14 +76,15 @@ function App() {
 
         <section className="page-content">
           {activePage === "Dashboard" && <Dashboard />}
-          {activePage === "Instrumentos" && <Instruments />}
-          {activePage === "Categorías" && <Categories />}
-          {activePage === "Estudiantes" && <Students />}
-          {activePage === "Préstamos" && <Loans />}
-          {activePage === "Devoluciones" && <Returns />}
+          {activePage === "Instruments" && <Instruments />}
+          {activePage === "Categories" && <Categories />}
+          {activePage === "Students" && <Students />}
+          {activePage === "Loans" && <Loans />}
+          {activePage === "Returns" && <Returns />}
         </section>
       </main>
     </div>
   );
 }
+
 export default App;
