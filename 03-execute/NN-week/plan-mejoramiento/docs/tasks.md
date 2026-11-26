@@ -5,7 +5,7 @@
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** 3239137  
 **Apprentice Identification:** A12  
-**Version:** 1.5
+**Version:** 1.8
 **Status:** Completed
 **Update Date:** 25/11/2026
 
@@ -33,7 +33,7 @@ The plan covers the activities required to build a musical instrument loan manag
 - Technical and architectural documentation.
 
 The system will support the management of categories, instruments, students, loans, returns, and reports.
-Logical category activation and deactivation are documented as a scope extension aligned with `spec.md`, `api-contract.md`, and `data-model.md` version 1.2, pending validation.
+Logical category activation and deactivation are documented as a scope extension aligned with `spec.md` version 1.5, `api-contract.md` version 1.5, and `data-model.md` version 1.4. Academic validation remains pending.
 
 ## 3. Task Organization
 
@@ -110,9 +110,9 @@ Tasks are organized according to their execution order and dependencies between 
 
 ### TASK-06 — Implement Category Management
 
-- **Description:** Develop operations to register, retrieve, logically deactivate, and reactivate musical instrument categories as a scope extension.
+- **Description:** Develop the documented API operations for category registration and retrieval and support the five initial categories. Logical deactivation and reactivation are separately classified as scope extensions pending validation.
 - **Component:** Laravel API.
-- **Related Requirements:** HU-01, RF-01, RN-04, and initial categories CAT-01 through CAT-05.
+- **Related Requirements:** Initial categories CAT-01 through CAT-05 are an original project deliverable. Category lifecycle extension behavior relates to RN-04; TASK-06 does not directly implement HU-01/RF-01 instrument management.
 - **Dependencies:** TASK-04, TASK-05.
 - **Acceptance Criteria:**
   1. Registered categories can be retrieved.
@@ -133,7 +133,7 @@ Tasks are organized according to their execution order and dependencies between 
 
 - **Description:** Develop operations to register, retrieve, update, and logically deactivate musical instruments.
 - **Component:** Laravel API.
-- **Related Requirements:** Catalog management, availability, and logical deactivation of instruments.
+- **Related Requirements:** HU-01/RF-01, HU-02/RF-02, HU-07/RF-07, and HU-08/RF-08. Instrument update was already documented in this task and API contract Section 7.4; this traceability clarification does not claim a new implementation or instructor approval.
 - **Dependencies:** TASK-04, TASK-05, TASK-06.
 - **Acceptance Criteria:**
   1. Instruments associated with a category can be registered.
@@ -165,7 +165,7 @@ Tasks are organized according to their execution order and dependencies between 
 
 - **Description:** Develop operations to register, retrieve, and update information about students who use the system.
 - **Component:** Laravel API.
-- **Related Requirements:** Student management.
+- **Related Requirements:** HU-03/RF-03. Student update was already documented in this task and API contract Section 8.4; this traceability clarification does not claim a new implementation or instructor approval.
 - **Dependencies:** TASK-04, TASK-05.
 - **Acceptance Criteria:**
   1. Students can be registered.
@@ -295,7 +295,7 @@ Tasks are organized according to their execution order and dependencies between 
 
 - **Description:** Create the frontend application that allows operators to interact with the system's features.
 - **Component:** React application.
-- **Related Requirements:** User interface and API consumption.
+- **Related Requirements:** User interface and API consumption, including the existing Dashboard and local administrative search/filter presentation mechanisms. These controls present existing API data and do not establish separate business rules.
 - **Dependencies:** TASK-01, TASK-02, TASK-16.
 - **Acceptance Criteria:**
   1. The React application starts correctly.
@@ -309,7 +309,7 @@ Tasks are organized according to their execution order and dependencies between 
 
 - **Description:** Build frontend interfaces to manage categories, instruments, and students.
 - **Component:** React application.
-- **Related Requirements:** Catalog and student management.
+- **Related Requirements:** Catalog and student management, including existing local search and status filters as presentation behavior.
 - **Dependencies:** TASK-06, TASK-07, TASK-09, TASK-17.
 - **Acceptance Criteria:**
   1. A view exists for retrieving, registering, activating, and deactivating categories.
@@ -340,7 +340,7 @@ Tasks are organized according to their execution order and dependencies between 
 
 - **Description:** Build the Music School project's static public website to present general information about the system.
 - **Component:** Public website.
-- **Related Requirements:** Project public website and separation from the administrative frontend.
+- **Related Requirements:** Mandatory project deliverable defined in the plan and task organization; it is not an independent domain requirement in `spec.md`.
 - **Dependencies:** TASK-01, TASK-02.
 - **Acceptance Criteria:**
   1. A public page exists independently of the administrative application.
@@ -353,7 +353,7 @@ Tasks are organized according to their execution order and dependencies between 
 
 - **Description:** Create a tool that loads the system's initial data through API endpoints without directly accessing MySQL.
 - **Component:** Auxiliary tool.
-- **Related Requirements:** Data initialization and categories CAT-01 through CAT-05.
+- **Related Requirements:** Availability of the five initial categories through the data seeding tool; sample-instrument initialization is technical support for system validation.
 - **Dependencies:** TASK-06, TASK-07, TASK-09, TASK-16.
 - **Acceptance Criteria:**
   1. The tool uses the HTTP API.
@@ -408,8 +408,8 @@ The following matrix links technical tasks to the user stories and functional re
 | TASK-03 | HU-01 to HU-08 | RF-01 to RF-08 |
 | TASK-04 | HU-01 to HU-08 | RF-01 to RF-08 |
 | TASK-05 | Cross-cutting | Data persistence |
-| TASK-06 | HU-01 | RF-01 |
-| TASK-07 | HU-01, HU-02 | RF-01, RF-02 |
+| TASK-06 | None directly; initial category setup | Category initialization; RN-04 only for the lifecycle extension |
+| TASK-07 | HU-01, HU-02, HU-07, HU-08 | RF-01, RF-02, RF-07, RF-08 |
 | TASK-08 | HU-01, HU-07 | RF-01, RF-07 |
 | TASK-09 | HU-03 | RF-03 |
 | TASK-10 | HU-04 | RF-04 |
@@ -419,8 +419,8 @@ The following matrix links technical tasks to the user stories and functional re
 | TASK-14 | HU-04, HU-07, HU-10 | RF-04, RF-07, RF-10 |
 | TASK-15 | HU-09 | RF-09 |
 | TASK-16 | HU-01 to HU-10 | RF-01 to RF-10 |
-| TASK-17 | Cross-cutting | Interface and API consumption |
-| TASK-18 | HU-01, HU-02, HU-03 | RF-01, RF-02, RF-03 |
+| TASK-17 | HU-02, HU-06, HU-07, HU-09 | RF-02, RF-06, RF-07, RF-09; Dashboard and local presentation controls |
+| TASK-18 | HU-01, HU-02, HU-03, HU-07 | RF-01, RF-02, RF-03, RF-07; administration, search, and filters |
 | TASK-19 | HU-04, HU-05, HU-06, HU-08 | RF-04, RF-05, RF-06, RF-08 |
 | TASK-20 | Cross-cutting | Public website |
 | TASK-21 | Cross-cutting | API-based data initialization |
@@ -459,6 +459,46 @@ Tasks will be executed according to their technical and functional dependencies.
 10. TASK-23 depends on the availability of the components that will undergo testing and validation.
 
 **Note:** This sequence represents technical planning. Parallel execution is permitted when individual dependencies are respected. No task will be considered completed without verifying its acceptance criteria and preserving the corresponding evidence.
+
+### 3.3 Feature-to-Implementation Traceability Matrix
+
+This matrix records current implementation correspondence to the documented requirements. “Previously documented operation” describes behavior recorded in an earlier task or API contract but not stated explicitly as an original SPEC acceptance criterion. Historical test results are not new executions.
+
+| Functionality | User Story | Requirement | Business Rule | Task | Endpoint(s) | Implementation | Existing tests or evidence | Scope classification | Validation status |
+|---|---|---|---|---|---|---|---|---|---|
+| Register and retrieve instrument models; maintain quantities | HU-01 | RF-01 | RN-03 | TASK-07, TASK-08 | `GET/POST /instruments`, `GET /instruments/{id}` | `InstrumentController.php`, `Instrument.php`, `Instruments.jsx` | `InstrumentTest.php`, `InstrumentManagementTest.php` | Original scope | Code and test files exist; results are historical. |
+| Update instrument fields and total units while preserving units on loan and snapshots | HU-01 | RF-01 | RN-03, RN-04 | TASK-07, TASK-08 | `PUT /instruments/{id}` | `InstrumentController.php`, `Instruments.jsx` | `InstrumentManagementTest.php` directly tests endpoint updates; `LoanSnapshotTest.php` now directly verifies all four loan snapshots after API updates | Previously documented operation | The latest isolated run passed the endpoint-level snapshot assertions; prior Eloquent-only coverage remains documented as historical. |
+| Logically deactivate instruments and block new loans | HU-02, HU-04 | RF-02, RF-04 | RN-04 | TASK-07, TASK-10 | `PATCH /instruments/{id}/deactivate`, `POST /loans` | `InstrumentController.php`, `LoanService.php`, `Instruments.jsx`, `Loans.jsx` | `InstrumentManagementTest.php`, `LoanTest.php` | Original HU-02/HU-04 restrictions | Inactivation prevents eligibility; API and loan registration enforce the restriction. Test results are historical. |
+| Consult instrument catalog, categories, available units, and status using the existing inventory view and filters | HU-02 | RF-02 | RN-04 | TASK-17, TASK-18 | `GET /instruments` | `InstrumentController.php`, `Instruments.jsx` | Manual validation recorded in `docs/evidence/availability-validation.md`; no dedicated frontend test file | Original HU-02 display criteria; no separate student screen specified | The view displays instruments, categories, units, and status. Manual validation confirmed excluded instruments no longer appeared in the loan selector after category deactivation and returned after reactivation. This does not imply academic approval of category lifecycle behavior. |
+| Register and retrieve student information | HU-03 | RF-03 | None directly | TASK-09 | `GET/POST /students`, `GET /students/{id}` | `StudentController.php`, `Students.jsx` | `StudentTest.php` | Original scope | Code and test files exist; results are historical. |
+| Update permitted student fields and preserve prior loan snapshots | HU-03 | RF-03 | RN-04 | TASK-09 | `PUT /students/{id}` | `StudentController.php`, `Students.jsx` | `StudentTest.php` directly tests student endpoint updates; `LoanSnapshotTest.php` now directly verifies all four loan snapshots after API updates | Previously documented operation | The latest isolated run passed the endpoint-level snapshot assertions, including `student_code`. |
+| Register loans with eligibility and availability checks | HU-04 | RF-04 | RN-01–RN-06 | TASK-10, TASK-14, TASK-16 | `POST /loans` | `LoanController.php`, `LoanService.php` | `LoanTest.php`, `LoanAvailabilityTest.php` | Original scope | Code and test files exist; results are historical. |
+| Register returns and update inventory once | HU-05 | RF-05 | RN-03, RN-04, RN-06 | TASK-13, TASK-14 | `POST /loans/{loanId}/returns` | `ReturnController.php`, `ReturnService.php` | `ReturnTest.php`, `ReturnEndpointTest.php` | Original scope | Code and test files exist; results are historical. |
+| Identify overdue, unreturned loans | HU-06 | RF-06 | RN-02, RN-06 | TASK-11, TASK-12 | `GET /loans/overdue` | `LoanController.php`, `Loans.jsx`, `Dashboard.jsx` | `OverdueLoanTest.php` | Original scope | Dashboard indicator presents the existing query. |
+| Display inventory totals and loan-eligible availability | HU-07 | RF-07 | RN-03 | TASK-08, TASK-17, TASK-18 | `GET /instruments` | `InstrumentController.php`, `Instruments.jsx`, `Dashboard.jsx` | `InstrumentManagementTest.php`, `LoanAvailabilityTest.php`; manual observations in `docs/evidence/availability-validation.md`; no dedicated frontend test | Original scope; presentation mechanism | The manual check observed 76 physical units and 69 eligible units (90.79% Dashboard; 91% rounded in Instruments), then 46 eligible units (60.53%) with Strings inactive; reactivation restored the initial values. |
+| Query loan details, returns, and student loan history | HU-08 | RF-08 | RN-04 | TASK-11, TASK-13 | `GET /loans`, `GET /loans/{id}`, `GET /students/{id}/loans` | `LoanController.php`, `StudentController.php`, `ReturnRecord.php` | `LoanQueryTest.php`, `StudentLoanHistoryTest.php`, `LoanSnapshotTest.php` | Original scope | API history exists; no separate React student-history screen. |
+| Rank most-requested instruments | HU-09 | RF-09 | RN-04 | TASK-15 | `GET /reports/most-requested-instruments` | `ReportController.php`, `Dashboard.jsx` | `ReportTest.php` | Original scope | Dashboard table and bars present the report; bars do not alter the calculation. |
+| Prevent simultaneous loans of the last unit | HU-10 | RF-10 | RN-03, RN-05 | TASK-14 | `POST /loans` | `LoanService.php` | `api/tests/concurrency.php`, `docs/evidence/concurrency-test.md` | Original scope | Historical evidence records 201/409 and one loan; not re-executed here. |
+| Initialize the five categories and sample instruments | No direct HU/RF; initial-category deliverable | Initial categories CAT-01–CAT-05 | None directly | TASK-21 | `GET/POST /categories`, `GET/POST /instruments` | `tool/src/seed.js`, `tool/categories.json`, `tool/instruments.json` | `docs/evidence.md` | Original scope and technical support | Historical initialization evidence exists; the tool is not a domain interface. |
+| Register categories through the API and initialize the five specified categories | No direct HU/RF; initial-category deliverable | Initial categories CAT-01–CAT-05 | None directly | TASK-06, TASK-21 | `POST /categories` | `CategoryController.php`, `tool/src/seed.js`, `tool/categories.json` | `CategoryTest.php`, historical initialization evidence | API category creation is previously documented; five-category initialization is original scope | Distinct from manual category creation in React. |
+| Register categories manually through React | No original HU/RF acceptance criterion identified | None | None | TASK-18 | `POST /categories` | `Categories.jsx`, `CategoryController.php`, `categoryService.js` | `CategoryTest.php` tests API behavior, not the manual React interaction | Scope extension pending validation | Existing implementation is not evidence of academic approval. |
+| Activate/deactivate categories and enforce pending-loan/inactive-category restrictions | No direct HU | No direct original RF; lifecycle extension | RN-04 | TASK-06, TASK-16, TASK-18 | `PATCH /categories/{id}/activate`, `PATCH /categories/{id}/deactivate` | `CategoryController.php`, `InstrumentController.php`, `LoanService.php`, `Categories.jsx` | `CategoryTest.php`, `InstrumentTest.php`, `LoanTest.php`, `InstrumentManagementTest.php` | Scope extension pending validation | The current SPEC documents this extension as Under Review; no formal instructor approval evidence. |
+| Public product information page | — | — | — | TASK-20 | None | `page/index.html`, `page/script.js`, `page/styles.css` | Prior HTTP 200 evidence in `docs/evidence.md` | Mandatory project deliverable | Static page exists; it does not provide catalog or loan transactions. |
+| Integrated service deployment | — | RNF-04 | Cross-cutting | TASK-02, TASK-05, TASK-22 | — | `infra/docker-compose.yml`, `infra/Dockerfile.api`, `infra/Dockerfile.app` | Prior infrastructure evidence in `docs/evidence.md` | Mandatory project deliverable | Historical evidence only; not revalidated in this audit. |
+| Automated requirement verification | All ten HU | RNF-05 | RN-01–RN-06 | TASK-23 | — | `api/tests/` | 16 PHPUnit test files; latest run: 57 tests/148 assertions | Mandatory project deliverable | The latest isolated suite passed with no errors, failures, or PHPUnit warnings. The earlier 56-test/138-assertion run remains historical evidence. |
+| Create a SQL backup from the running MySQL service | — | — | — | No separate task | — | `infra/backup.ps1` | No dedicated test or recovery evidence found | Technical support component | Export script exists; no restore script or automatic recovery is documented. |
+| Laravel default persistence, web welcome, and health scaffolding | — | RNF-04 support | — | TASK-02, TASK-04 | `GET /` in `web.php`; `/up` health route | Laravel default migrations/configuration and `api/bootstrap/app.php` | No domain test required | Technical support component | Framework scaffolding; not authentication or a Music School feature. |
+| Dashboard summaries and React list searches/filters | HU-02, HU-06, HU-07, HU-09 | RF-02, RF-06, RF-07, RF-09 | Existing rules only | TASK-17, TASK-18 | Existing query/report endpoints; local filtering adds no route | `Dashboard.jsx`, `Categories.jsx`, `Instruments.jsx`, `Students.jsx`, `Loans.jsx`, `Returns.jsx` | No dedicated frontend test suite found | User interface presentation mechanism | Source reviewed; no visual test result is claimed. Pending loan count corresponds to units on loan under the one-loan/one-unit invariant. Inactive catalog records may retain physical units that are not eligible for new loans. |
+
+### Snapshot Evidence Levels
+
+- **Existing Eloquent-level coverage:** the original `LoanSnapshotTest.php` scenario creates a loan through `LoanService`, updates the Student and Instrument models directly through Eloquent, and verifies the original `student_code`, `student_name`, `instrument_code`, and `instrument_name`. This is model-level coverage, not endpoint-level update coverage.
+- **New endpoint-level coverage:** the added scenario creates a loan through `POST /api/loans`, updates the student and instrument through their `PUT` endpoints, verifies successful responses and changed current values, then confirms all four original snapshot fields remain on the loan.
+- **Current execution:** both scenarios passed in the latest isolated run: `LoanSnapshotTest.php` reports 2 tests and 11 assertions. The entire suite reports 57 tests and 148 assertions. These are current execution results; earlier suite runs remain historical evidence with their original counts.
+- **Related tests:** `StudentTest.php` and `InstrumentManagementTest.php` independently cover their respective update endpoints, but do not assert snapshots for a loan.
+- The visual availability check is separate manual evidence in `docs/evidence/availability-validation.md`; it is not an automated frontend test.
+
+The classification “Previously documented operation” is not equivalent to original SPEC approval. The category lifecycle extension remains under review. This matrix records code and test-file correspondence; it does not convert historical test results into a new execution or prove instructor approval.
 
 ## 4. Task Registration and Tracking
 
@@ -568,6 +608,9 @@ The proposed organization allows progress from repository preparation and databa
 | 1.3 | 13/11/2026 | Completion of the 23 tasks, validation of automated tests, and update of evidence. |
 | 1.4 | 24/11/2026 | Updated existing tasks to document logical category activation and deactivation as a scope extension, aligned acceptance criteria with the updated specification, API contract, and data model, and reopened affected tasks for validation. |
 | 1.5 | 25/11/2026 | Reconciled TASK-14 as Completed after reviewing the loan and return transaction implementation and the existing concurrency evidence. The v1.4 reopening remains part of the historical record; the current tracking matrix lists 23 completed tasks and 0 pending tasks. |
+| 1.6 | 25/11/2026 | Updated current references to spec v1.4, API contract v1.5, and data model v1.4; clarified traceability for previously documented management operations and presentation/support components; and added a feature-to-implementation matrix without changing the 23 task statuses or historical evidence. |
+| 1.7 | 25/11/2026 | Corrected HU-02 and TASK-06 mappings, distinguished category API creation, initialization, and scope extensions, clarified inventory and RNF-01 traceability, and added endpoint-level snapshot coverage pending execution. The 23 task count and historical evidence remain unchanged. |
+| 1.8 | 25/11/2026 | Recorded the passing 57-test/148-assertion isolated suite, updated endpoint snapshot traceability, and linked the manual availability validation while retaining historical results and all 23 task records. |
 
 ---
 
