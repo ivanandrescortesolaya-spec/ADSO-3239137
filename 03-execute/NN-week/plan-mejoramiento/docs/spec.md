@@ -4,8 +4,8 @@
 **Identifier:** music-school  
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
-**Version:** 1.2
-**Status:** Draft for Validation
+**Version:** 1.3
+**Status:** Under Review
 
 ---
 
@@ -48,6 +48,8 @@ The system must include five initial categories:
 
 These categories must be available through the data seeding tool.
 As a scope extension, the system supports logical category activation and deactivation. Categories are active by default. A category cannot be deactivated while any of its instruments has a pending loan. Inactive categories can be reactivated without deleting their records.
+
+The category activation and deactivation scope extension remains under review. This status does not indicate formal instructor approval.
 
 ### 2.2 Instrument Models and Physical Units
 
@@ -492,3 +494,4 @@ Features not included in this specification must not be introduced.
 | 1.0 | 07/11/2026 | Initial creation of the Music School requirements specification. | Draft |
 | 1.1 | 07/11/2026 | Adjustments to the acceptance criteria of user stories HU-02 and HU-05 to improve consistency with the data model. | Draft for Validation |
 | 1.2 | 24/11/2026 | Document category activation and deactivation as a scope extension aligned with the current implementation. | Under Review |
+| 1.3 | 25/11/2026 | Unified the current document status with the existing review state and retained the category lifecycle scope extension as under review. | Under Review |
