@@ -1,68 +1,68 @@
-# Infraestructura - Music School
+# Music School Infrastructure
 
-## Descripción
+## Description
 
-Esta carpeta contiene la configuración necesaria para ejecutar la base de datos MySQL del proyecto Music School mediante Docker Compose.
+This directory contains the configuration required to run the Music School MySQL database with Docker Compose.
 
-## Requisitos
+## Requirements
 
-- Docker Desktop instalado y en ejecución.
-- Docker Compose disponible.
-- Archivo de configuración `.env`.
+- Docker Desktop installed and running.
+- Docker Compose available.
+- Configuration file `.env`.
 
-## Configuración inicial
+## Initial Configuration
 
-1. Copiar el archivo de ejemplo:
+1. Copy the example file:
 
    ```powershell
    Copy-Item .env.example .env
    ```
 
-2. Abrir el archivo `.env` y configurar las contraseñas:
+2. Open `.env` and configure the passwords:
 
    ```env
    DB_PASSWORD=change_this_password
    DB_ROOT_PASSWORD=change_this_root_password
    ```
 
-   Reemplazar los valores de ejemplo por contraseñas propias.
+   Replace the example values with your own passwords.
 
-## Iniciar la base de datos
+## Start the Database
 
-Desde esta carpeta, ejecutar:
+From this directory, run:
 
 ```powershell
 docker compose up -d
 ```
 
-## Verificar el servicio
+## Verify the Service
 
-Consultar el estado de los contenedores:
+Check the container status:
 
 ```powershell
 docker compose ps
 ```
 
-Consultar los registros de MySQL:
+Check the MySQL logs:
 
 ```powershell
 docker compose logs mysql
 ```
 
-## Detener el servicio
+## Stop the Service
 
-Para detener los contenedores:
+To stop the containers:
 
 ```powershell
 docker compose down
 ```
 
-Este comando conserva los datos almacenados en el volumen de Docker.
+This command preserves the data stored in the Docker volume.
 
-## Persistencia de datos
+## Data Persistence
 
-La base de datos utiliza el volumen `music_school_data`.
+The database uses the `music_school_data` volume.
 
-Esto permite conservar la información aunque se detenga o se elimine el contenedor.
+This preserves the information when the container is stopped or removed.
 
-**Importante:** no compartir el archivo `.env` ni publicar contraseñas reales. El archivo `.env.example` sirve como plantilla de configuración.
+**Important:** Do not share the `.env` file or publish real passwords. The `.env.example` file is a configuration template.
