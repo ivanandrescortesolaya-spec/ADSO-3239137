@@ -4,7 +4,7 @@
 **Identifier:** music-school  
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
-**Version:** 1.0  
+**Version:** 1.1
 **Apprentice Code:** A12
 
 ## 1. Purpose
@@ -106,7 +106,7 @@ Relationships, keys, indexes, and constraints must correspond to the model defin
 
 Code identifiers, variables, classes, methods, tables, and columns shall be written in English.
 
-Messages, notifications, and text displayed to users shall be written in Spanish, without accent marks on vowels and while preserving the letter `ñ`.
+Messages, notifications, and text displayed to users shall be written in Spanish.
 
 **Verification:** Review the source code and user interface.
 
@@ -171,3 +171,9 @@ The constitution shall be considered implemented when:
 - Secrets are protected.
 - Automated tests demonstrate compliance with the established principles.
 - Implemented features correspond to the approved specification.
+
+## 7. Change Log
+
+| Version | Date | Description |
+|---|---|---|
+| 1.1 | 25/11/2026 | Removed the restriction on Spanish accent marks while retaining English code identifiers and Spanish user-facing text. |
