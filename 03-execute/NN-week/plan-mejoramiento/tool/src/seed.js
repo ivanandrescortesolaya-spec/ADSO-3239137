@@ -17,11 +17,11 @@ function extractRecords(response) {
     return response.data;
   }
 
-  throw new Error('La API no devolvio una lista valida.');
+  throw new Error('La API no devolvió una lista válida.');
 }
 
 async function seedCategories() {
-  console.log('\n=== INICIALIZANDO CATEGORIAS ===\n');
+  console.log('\n=== INICIALIZANDO CATEGORÍAS ===\n');
 
   const categories = await loadJsonFile('categories.json');
   const response = await apiRequest('/categories');
@@ -96,7 +96,7 @@ async function seedInstruments() {
 
     if (!category) {
       console.error(
-        `[ERROR] ${instrument.code}: no existe la categoria ${instrument.category_code}`
+        `[ERROR] ${instrument.code}: no existe la categoría ${instrument.category_code}`
       );
       errors++;
       continue;
@@ -105,7 +105,7 @@ async function seedInstruments() {
     // Do not create instruments in inactive categories.
     if (category.is_active === false || category.is_active === 0) {
       console.log(
-        `[OMITIDO] ${instrument.code} - ${instrument.name}: la categoria ${category.name} esta inactiva`
+        `[OMITIDO] ${instrument.code} - ${instrument.name}: la categoría ${category.name} está inactiva`
       );
       skipped++;
       continue;
@@ -147,7 +147,7 @@ async function main() {
   const totalErrors = categoryResults.errors + instrumentResults.errors;
 
   console.log('\n========== RESUMEN FINAL ==========');
-  console.log('CATEGORIAS');
+  console.log('CATEGORÍAS');
   console.log(`Creadas: ${categoryResults.created}`);
   console.log(`Existentes: ${categoryResults.skipped}`);
   console.log(`Errores: ${categoryResults.errors}`);
@@ -159,10 +159,10 @@ async function main() {
   console.log(`Errores: ${instrumentResults.errors}`);
 
   if (totalErrors > 0) {
-    console.log('\nInicializacion finalizada con errores.');
+    console.log('\nInicialización finalizada con errores.');
     process.exitCode = 1;
   } else {
-    console.log('\nInicializacion finalizada correctamente.');
+    console.log('\nInicialización finalizada correctamente.');
   }
 }
 

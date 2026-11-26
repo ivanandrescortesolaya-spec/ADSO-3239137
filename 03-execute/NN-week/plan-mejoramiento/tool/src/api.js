@@ -27,7 +27,7 @@ export async function apiRequest(endpoint, options = {}) {
       data = JSON.parse(responseText);
     } catch {
       const error = new Error(
-        `La API respondio con un formato no valido. HTTP ${response.status}`
+        `La API respondió con un formato no válido. HTTP ${response.status}`
       );
 
       error.status = response.status;

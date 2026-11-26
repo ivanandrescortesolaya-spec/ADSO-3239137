@@ -3,7 +3,7 @@ const apiBaseUrl = process.env.API_BASE_URL;
 
 if (!apiBaseUrl) {
   throw new Error(
-    'No se encontro API_BASE_URL. Verifica el archivo .env de la herramienta.'
+    'No se encontró API_BASE_URL. Verifica el archivo .env de la herramienta.'
   );
 }
 
