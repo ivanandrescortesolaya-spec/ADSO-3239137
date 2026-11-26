@@ -4,7 +4,7 @@
 **Identifier:** music-school  
 **Project:** Musical Instrument Loan Management System  
 **Training Group:** ADSO 3239137  
-**Version:** 1.1
+**Version:** 1.2
 **Apprentice Code:** A12
 
 ## 1. Purpose
@@ -116,6 +116,8 @@ No functionality may be developed unless it is associated with a documented requ
 
 Features outside the defined scope must not be added.
 
+**Scope change traceability:** A proposed scope extension must remain distinguishable from the original specification. It may be described as approved only when evidence of the applicable approval is recorded. This clarification supports transparent change tracking and does not claim that the instructor has approved any existing extension.
+
 Each task shall be considered completed when verifiable evidence of its implementation exists.
 
 **Verification:** Trace the tasks defined in `tasks.md` to their corresponding requirements, tests, and results.
@@ -177,3 +179,4 @@ The constitution shall be considered implemented when:
 | Version | Date | Description |
 |---|---|---|
 | 1.1 | 25/11/2026 | Removed the restriction on Spanish accent marks while retaining English code identifiers and Spanish user-facing text. |
+| 1.2 | 25/11/2026 | Added a transparent scope-change traceability clarification while retaining the prohibition on undocumented out-of-scope features. This entry does not claim instructor approval. |
