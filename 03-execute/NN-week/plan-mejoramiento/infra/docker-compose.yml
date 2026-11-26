@@ -39,6 +39,8 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
+      APP_LOCALE: es
+      APP_FALLBACK_LOCALE: es
       APP_URL: http://localhost:8000
       DB_CONNECTION: mysql
       DB_HOST: mysql
@@ -70,6 +72,8 @@ services:
     environment:
       APP_ENV: testing
       APP_DEBUG: "true"
+      APP_LOCALE: es
+      APP_FALLBACK_LOCALE: es
       APP_URL: http://localhost:8001
       DB_CONNECTION: mysql
       DB_HOST: mysql
