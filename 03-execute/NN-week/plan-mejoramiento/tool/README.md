@@ -1,102 +1,101 @@
+# Music School Seed Tool
 
-# Music School - Seed Tool
+## Description
 
-## Descripcion
+Node.js tool for initializing Music School data through requests to the Laravel REST API.
 
-Herramienta desarrollada en Node.js para inicializar los datos de Music School mediante solicitudes HTTP a la API REST de Laravel.
+It registers categories and instruments without inserting data directly into the database.
 
-Permite registrar categorias e instrumentos sin insertar datos directamente en la base de datos.
+## Technologies
 
-## Tecnologias
-
-- Node.js 20 o superior.
-- JavaScript ES Modules.
+- Node.js 20 or later.
+- JavaScript ES modules.
 - Fetch API.
-- API REST de Laravel.
+- Laravel REST API.
 
-## Estructura
+## Structure
 
 ```text
 tool/
-├── src/
-│   ├── api.js
-│   ├── config.js
-│   └── seed.js
-├── .env
-├── .env.example
-├── .gitignore
-├── categories.json
-├── instruments.json
-├── package.json
-└── README.md
+|-- src/
+|   |-- api.js
+|   |-- config.js
+|   `-- seed.js
+|-- .env
+|-- .env.example
+|-- .gitignore
+|-- categories.json
+|-- instruments.json
+|-- package.json
+`-- README.md
 ```
 
-## Requisitos
+## Requirements
 
-- Node.js 20 o superior.
-- API de Music School funcionando.
-- Base de datos configurada y disponible.
-- Archivo `.env` correctamente configurado.
+- Node.js 20 or later.
+- The Music School API is running.
+- The database is configured and available.
+- The `.env` file is configured correctly.
 
-## Configuracion
+## Configuration
 
-Crear el archivo `.env` en la carpeta `tool/`:
+Create the `.env` file in the `tool/` directory:
 
 ```env
 API_BASE_URL=http://localhost:8000/api
 ```
 
-## Ejecucion
+## Running the Tool
 
-Desde la terminal:
+From a terminal:
 
 ```bash
 cd tool
 npm run seed
 ```
 
-## Funcionamiento
+## Operation
 
-El proceso realiza las siguientes operaciones:
+The tool performs the following steps:
 
-1. Lee las categorias definidas en `categories.json`.
-2. Consulta las categorias existentes en la API.
-3. Registra solamente las categorias que no existen.
-4. Lee los instrumentos definidos en `instruments.json`.
-5. Consulta las categorias para obtener sus identificadores.
-6. Consulta los instrumentos existentes.
-7. Registra solamente los instrumentos que no existen.
-8. Muestra un resumen de registros creados, existentes y errores.
+1. Reads the categories defined in `categories.json`.
+2. Retrieves the categories already available through the API.
+3. Registers only categories that do not already exist.
+4. Reads the instruments defined in `instruments.json`.
+5. Retrieves category identifiers from the API.
+6. Retrieves the instruments already available through the API.
+7. Registers only instruments that do not already exist.
+8. Displays a summary of created, existing, and failed records.
 
-## Idempotencia
+## Idempotency
 
-La herramienta verifica los codigos de las categorias e instrumentos antes de realizar una solicitud de creacion.
+Before making a create request, the tool checks the category and instrument codes. This allows it to run repeatedly without creating duplicate records.
 
-Esto permite ejecutar el proceso varias veces sin generar registros duplicados.
+## API Communication
 
-## Comunicacion con la API
-
-La herramienta utiliza solicitudes HTTP:
+The tool uses the following HTTP requests:
 
 - GET `/categories`
 - POST `/categories`
 - GET `/instruments`
 - POST `/instruments`
 
-No ejecuta instrucciones SQL ni modifica directamente la base de datos.
+It does not execute SQL statements or connect directly to the database.
 
-## Resultado esperado
+## Expected Output
 
-Al finalizar, muestra:
+The final summary reports:
 
-- Cantidad de categorias creadas.
-- Cantidad de categorias existentes.
-- Cantidad de instrumentos creados.
-- Cantidad de instrumentos existentes.
-- Cantidad de errores.
+- The number of categories created.
+- The number of existing categories.
+- The number of instruments created.
+- The number of existing instruments.
+- The number of errors.
 
-## Seguridad
+The tool's terminal messages remain in Spanish for its operator.
 
-El archivo `.env` contiene la configuracion local y no debe publicarse en el repositorio.
+## Security
 
-El archivo `.env.example` sirve como referencia para configurar la herramienta.
+The `.env` file contains local configuration and must not be published to the repository.
+
+The `.env.example` file provides a reference for configuring the tool.
